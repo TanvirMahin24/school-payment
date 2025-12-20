@@ -1,0 +1,251 @@
+:root {
+  --primary: #3c9cf6;
+  --primary-hover: #0a6afa;
+  --secondary: rgb(133, 133, 133);
+  --secondary-500: rgba(211, 211, 211, 0.5);
+  --danger: #dc3545;
+  --danger-hover: #a52734;
+  --dark: #1f1f1f;
+  --dark-bg: #333333;
+  --light: #f5f5f5;
+  --white: #fff;
+  --light-bg: #444444;
+  --border: #4d4d4d;
+  --success: #1db954;
+  --box-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
+
+body {
+  margin: 0;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden !important;
+  background: transparent;
+}
+
+/* CUSTOM SCROLLBAR */
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #0f1519;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+  transition: 0.3s all ease-in-out;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+  transition: 0.3s all ease-in-out;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.landing_loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100%;
+  background: #0f1519;
+}
+
+.form-control {
+  border-radius: 0 !important;
+}
+
+select.form-select option:hover {
+  background-color: var(--primary) !important;
+}
+
+.bg-dark {
+  background: var(--dark) !important;
+}
+
+.bg_dark {
+  background: var(--light) !important;
+}
+.bg_light {
+  background: var(--light) !important;
+}
+
+.dark_bg {
+  background: #0f1519;
+}
+
+.crd {
+  border-radius: 15px !important;
+  overflow: hidden;
+  width: 100%;
+  background: var(--white) !important;
+  border: 1px solid var(--white) !important;
+}
+
+.btn_primary {
+  outline: none !important;
+  border: none !important;
+  padding: 8px 26px !important;
+  font-weight: bold !important;
+  border-radius: 30px !important;
+  color: var(--white) !important;
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0%,
+    var(--primary-hover) 100%
+  ) !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.btn_primary:hover {
+  background: linear-gradient(
+    90deg,
+    var(--light-bg) 0%,
+    var(--light-bg) 100%
+  ) !important;
+  transition: 0.3s all ease-in-out;
+}
+.btn_danger {
+  outline: none !important;
+  border: none !important;
+  padding: 8px 26px !important;
+  font-weight: bold !important;
+  border-radius: 30px !important;
+  color: var(--white) !important;
+  background: linear-gradient(90deg, #ff7c02 0%, #f02e2e 100%) !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.btn_danger:hover {
+  background: linear-gradient(90deg, #fc2222 0%, #ff7c02 100%) !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.link-custom {
+  color: var(--dark) !important;
+  text-decoration: none !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.link-custom:hover {
+  color: var(--primary) !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.heading__1 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  font-size: 72px !important;
+  line-height: 98px !important;
+}
+
+.heading__2 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  font-size: 48px !important;
+  line-height: 64px !important;
+}
+
+.heading__3 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  font-size: 40px !important;
+  line-height: 54px !important;
+}
+
+.heading__4 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  font-size: 28px !important;
+  line-height: 40px !important;
+}
+
+.heading__5 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  font-size: 24px !important;
+  line-height: 32px !important;
+}
+
+.heading__6 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 30px !important;
+}
+
+.lead__1 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 32px;
+}
+
+.lead__2 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.body__1 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 26px;
+}
+
+.subtitle__1 {
+  font-family: "Manrope", "Segoe UI" !important;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 28px;
+}
+.feature__button {
+  background: var(--primary);
+  color: #fff;
+  max-width: 150px;
+  font-weight: normal;
+  text-decoration: none;
+  transition: 0.3s all ease-in-out;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin: 0 auto;
+}
+
+.feature__button:hover {
+  background: var(--primary-hover);
+  color: #fff;
+  transition: 0.3s all ease-in-out;
+  cursor: pointer;
+}

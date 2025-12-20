@@ -1,0 +1,50 @@
+.hero {
+  display: flex;
+  align-items: center;
+}
+
+.left {
+  padding-left: 9%;
+  width: 75vw !important;
+}
+
+.right {
+  float: right;
+}
+
+@media screen and (max-width: 769px) {
+  .left {
+    padding-top: 15%;
+    width: 100% !important;
+  }
+
+  .right {
+    width: 100%;
+  }
+  .right img {
+    width: 100%;
+    padding-top: 100px;
+    transform: translateX(-90px) translateY(10vh);
+  }
+  .hero {
+    flex-direction: column;
+    overflow-y: hidden;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .left {
+    padding-left: 0;
+    padding-top: 15%;
+  }
+  .left h1 {
+    font-size: 42px !important;
+    line-height: 60px !important;
+    text-align: center !important;
+  }
+  .right img {
+    width: 100%;
+    transform: translateX(0) translateY(-60px);
+  }
+}
+

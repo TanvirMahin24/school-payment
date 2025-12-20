@@ -1,0 +1,55 @@
+.crd {
+  padding: 20px 10px;
+  border-radius: 5px;
+  background: #fff;
+  border-left: 4px solid var(--primary) !important;
+  box-shadow: var(--box-shadow-1);
+  transition: 0.3s all ease-in-out;
+}
+.crd:hover {
+  background: var(--primary);
+  color: #fff !important;
+  border-left: 4px solid #a2cef7 !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.crd:hover .icon {
+  color: #fff !important;
+  transition: 0.3s all ease-in-out;
+}
+.crd:hover .link {
+  color: #fff !important;
+  transition: 0.3s all ease-in-out;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 24px;
+  color: var(--primary);
+  transition: 0.3s all ease-in-out;
+}
+
+.title {
+  font-size: 18px;
+}
+
+.count {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.link {
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.3s all ease-in-out;
+}
+
+.link:hover {
+  color: var(--primary);
+  transition: 0.3s all ease-in-out;
+}
+
