@@ -97,3 +97,4 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, { getPayments })(PaymentsPage);
 
+

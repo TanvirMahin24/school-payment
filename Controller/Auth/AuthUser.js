@@ -19,3 +19,4 @@ const authUserProfile = async (req, res) => {
 
 module.exports = { authUserProfile };
 
+

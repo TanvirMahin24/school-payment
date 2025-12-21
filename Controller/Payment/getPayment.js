@@ -22,3 +22,4 @@ const getPayments = async (req, res) => {
 
 module.exports = { getPayments };
 
+

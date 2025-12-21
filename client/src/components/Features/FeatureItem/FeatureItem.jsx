@@ -23,3 +23,4 @@ const FeatureItem = ({ title, description, image, link }) => {
 
 export default FeatureItem;
 
+

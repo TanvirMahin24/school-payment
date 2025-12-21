@@ -22,3 +22,4 @@ function validPassword(password, hash, salt) {
 module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 
+

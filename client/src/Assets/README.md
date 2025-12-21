@@ -16,3 +16,4 @@ This directory should contain the following assets:
 
 **Note:** Please copy these assets from the primary-coaching project or create new ones as needed.
 
+
