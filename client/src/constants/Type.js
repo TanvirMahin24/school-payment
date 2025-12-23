@@ -19,4 +19,7 @@ export const GET_PAYMENT_DETAILS = "GET_PAYMENT_DETAILS";
 export const UPDATE_PAYMENT = "UPDATE_PAYMENT";
 export const GET_PAYMENT = "GET_PAYMENT";
 
+// GRADE REDUCER
+export const GET_GRADE = "GET_GRADE";
+
 

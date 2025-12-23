@@ -1,4 +1,4 @@
-const { Payment, User } = require("../../Model");
+const { Payment } = require("../../Model");
 
 const getDashboard = async (req, res) => {
   try {

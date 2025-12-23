@@ -1,13 +1,12 @@
-const { Payment, User } = require("../../Model");
+const { Payment } = require("../../Model");
 
 const getPaymentDetails = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Find payment by id
-    const payment = await Payment.findByPk(id, {
-      include: [User],
-    });
+    // Note: userId is from primary-coaching project, not a foreign key to User table
+    const payment = await Payment.findByPk(id);
 
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });

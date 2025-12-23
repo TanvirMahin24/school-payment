@@ -10,9 +10,31 @@ import {
 import { BASE_URL } from "../constants/URL";
 
 // GET PAYMENT LIST
-export const getPayments = () => async (dispatch) => {
+export const getPayments = (filters = {}) => async (dispatch) => {
   try {
-    const res = await axios.get(`${BASE_URL}/api/payment`);
+    // If clear flag is set, just clear payments and return
+    if (filters.clear) {
+      dispatch({
+        type: GET_PAYMENT,
+        payload: [],
+      });
+      return;
+    }
+
+    // Build query string from filters
+    const queryParams = new URLSearchParams();
+    if (filters.tenant) queryParams.append("tenant", filters.tenant);
+    if (filters.year) queryParams.append("year", filters.year);
+    if (filters.gradeId) queryParams.append("gradeId", filters.gradeId);
+    if (filters.shiftId) queryParams.append("shiftId", filters.shiftId);
+    if (filters.batchId) queryParams.append("batchId", filters.batchId);
+
+    const queryString = queryParams.toString();
+    const url = queryString 
+      ? `${BASE_URL}/api/payment?${queryString}`
+      : `${BASE_URL}/api/payment`;
+
+    const res = await axios.get(url);
     dispatch({
       type: GET_PAYMENT,
       payload: res.data.data,

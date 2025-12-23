@@ -34,7 +34,7 @@ const DashboardPage = ({ data, getDashboardData }) => {
             <StatCard
               title="Total Amount"
               icon={<BsFillDiagram3Fill />}
-              count={`$${data.totalAmount || 0}`}
+              count={data.totalAmount || 0}
             />
           </Col>
 
