@@ -1,0 +1,210 @@
+import React, { useEffect, useState } from "react";
+import { Col, Container, Row, Button, ButtonGroup, Card, Spinner } from "react-bootstrap";
+import { connect } from "react-redux";
+import Layout from "../../components/shared/Layout/Layout";
+import {
+  syncAllStudents,
+  syncRecentStudents,
+  getSyncStatus,
+} from "../../actions/Student.action";
+import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
+
+const ManagementPage = ({
+  syncStatus,
+  syncAllStudents,
+  syncRecentStudents,
+  getSyncStatus,
+}) => {
+  const [selectedTenant, setSelectedTenant] = useState(DEFAULT_TENANT);
+  const [loading, setLoading] = useState({
+    syncAll: false,
+    syncRecent: false,
+  });
+
+  // Fetch sync status on mount and when tenant changes
+  useEffect(() => {
+    getSyncStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    getSyncStatus(selectedTenant);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTenant]);
+
+  const handleSyncAll = async () => {
+    setLoading({ ...loading, syncAll: true });
+    try {
+      await syncAllStudents(selectedTenant);
+    } finally {
+      setLoading({ ...loading, syncAll: false });
+      // Refresh sync status after sync
+      getSyncStatus(selectedTenant);
+    }
+  };
+
+  const handleSyncRecent = async () => {
+    setLoading({ ...loading, syncRecent: true });
+    try {
+      await syncRecentStudents(selectedTenant);
+    } finally {
+      setLoading({ ...loading, syncRecent: false });
+      // Refresh sync status after sync
+      getSyncStatus(selectedTenant);
+    }
+  };
+
+  // Get last sync time for selected tenant
+  const tenantStatus = syncStatus?.[selectedTenant] || { lastSyncTime: null };
+  const lastSyncTime = tenantStatus.lastSyncTime;
+
+  // Format last sync time
+  const formatLastSyncTime = (timeString) => {
+    if (!timeString) return "Never synced";
+    try {
+      const date = new Date(timeString);
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } catch (error) {
+      return "Invalid date";
+    }
+  };
+
+  return (
+    <Layout title="Management">
+      <Container>
+        <Row className="mb-3">
+          <Col>
+            <div className="d-flex align-items-center gap-3">
+              <label className="mb-0 fw-bold">Tenant:</label>
+              <ButtonGroup>
+                {TENANT_LIST.map((tenant) => (
+                  <Button
+                    key={tenant.value}
+                    variant={
+                      selectedTenant === tenant.value
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    onClick={() => setSelectedTenant(tenant.value)}
+                  >
+                    {tenant.label}
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </div>
+          </Col>
+        </Row>
+
+        <Card bg="white" text="dark" className="shadow mb-4">
+          <Card.Header>
+            <h5 className="mb-0">Student Data Synchronization</h5>
+          </Card.Header>
+          <Card.Body>
+            <Row>
+              <Col md={12} className="mb-4">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="mb-1">Last Sync Time</h6>
+                    <p className="mb-0 text-muted">
+                      {formatLastSyncTime(lastSyncTime)}
+                    </p>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6} className="mb-3">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-100"
+                  onClick={handleSyncAll}
+                  disabled={loading.syncAll || loading.syncRecent}
+                >
+                  {loading.syncAll ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                        className="me-2"
+                      />
+                      Syncing...
+                    </>
+                  ) : (
+                    "Sync All Students"
+                  )}
+                </Button>
+                <p className="text-muted small mt-2 mb-0">
+                  Synchronize all student data from {getTenantLabel(selectedTenant)} site
+                </p>
+              </Col>
+              <Col md={6} className="mb-3">
+                <Button
+                  variant="outline-primary"
+                  size="lg"
+                  className="w-100"
+                  onClick={handleSyncRecent}
+                  disabled={loading.syncAll || loading.syncRecent}
+                >
+                  {loading.syncRecent ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                        className="me-2"
+                      />
+                      Syncing...
+                    </>
+                  ) : (
+                    "Sync Recent (Last 48h)"
+                  )}
+                </Button>
+                <p className="text-muted small mt-2 mb-0">
+                  Synchronize students updated in the last 48 hours
+                </p>
+              </Col>
+            </Row>
+
+            <Row className="mt-4">
+              <Col>
+                <div className="alert alert-info mb-0">
+                  <strong>Note:</strong> The CRON job automatically syncs students
+                  updated in the last 48 hours every minute (for development). Use
+                  "Sync All Students" to perform a full synchronization.
+                </div>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+      </Container>
+    </Layout>
+  );
+};
+
+const mapStateToProps = (state) => ({
+  syncStatus: state.student?.syncStatus || {
+    primary: { lastSyncTime: null },
+    coaching: { lastSyncTime: null },
+  },
+});
+
+export default connect(mapStateToProps, {
+  syncAllStudents,
+  syncRecentStudents,
+  getSyncStatus,
+})(ManagementPage);
+

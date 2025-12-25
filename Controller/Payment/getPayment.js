@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-const { Payment } = require("../../Model");
+const { Payment, Student } = require("../../Model");
 
 const getPayments = async (req, res) => {
   try {
@@ -85,16 +85,59 @@ const getPayments = async (req, res) => {
       }
     }
 
-    // Payment list
+    // Payment list with student data
     // Note: userId is from primary-coaching project, not a foreign key to User table
     const paymentList = await Payment.findAll({
       where: whereClause,
       order: [["id", "DESC"]],
     });
 
+    // Get unique tenant values from payments
+    const tenants = [...new Set(paymentList.map((p) => p.tenant).filter(Boolean))];
+    
+    // Get unique userId values from payments
+    const userIds = [...new Set(paymentList.map((p) => p.userId).filter(Boolean))];
+
+    // Fetch all relevant students in one query
+    let students = [];
+    if (tenants.length > 0 && userIds.length > 0) {
+      students = await Student.findAll({
+        where: {
+          tenant: { [Sequelize.Op.in]: tenants },
+          primaryId: { [Sequelize.Op.in]: userIds },
+        },
+      });
+    }
+
+    // Create a map for quick student lookup: key = `${tenant}_${primaryId}`
+    const studentMap = new Map();
+    students.forEach((student) => {
+      const key = `${student.tenant}_${student.primaryId}`;
+      studentMap.set(key, {
+        name: student.name,
+        uid: student.uid,
+      });
+    });
+
+    // Map payments with student data
+    const paymentsWithStudents = paymentList.map((payment) => {
+      const paymentData = payment.toJSON();
+      
+      // Find student in map
+      if (payment.userId && payment.tenant) {
+        const key = `${payment.tenant}_${payment.userId}`;
+        const student = studentMap.get(key);
+        if (student) {
+          paymentData.student = student;
+        }
+      }
+      
+      return paymentData;
+    });
+
     return res.status(200).json({
       message: "Payment list",
-      data: paymentList,
+      data: paymentsWithStudents,
     });
   } catch (error) {
     console.error("Error fetching payments:", error);

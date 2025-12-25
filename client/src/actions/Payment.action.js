@@ -105,4 +105,118 @@ export const getPaymentDetails = (id) => async (dispatch) => {
   }
 };
 
+// GET PAYMENTS BY STUDENTS
+export const getPaymentsByStudents = async (filters) => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (filters.tenant) queryParams.append("tenant", filters.tenant);
+    if (filters.year) queryParams.append("year", filters.year);
+    if (filters.gradeId) queryParams.append("gradeId", filters.gradeId);
+    if (filters.shiftId) queryParams.append("shiftId", filters.shiftId);
+    if (filters.batchId) queryParams.append("batchId", filters.batchId);
+    if (filters.month) queryParams.append("month", filters.month);
+    if (filters.studentIds) {
+      // If array, join with comma; if string, use as is
+      const studentIds = Array.isArray(filters.studentIds)
+        ? filters.studentIds.join(",")
+        : filters.studentIds;
+      queryParams.append("studentIds", studentIds);
+    }
+
+    const queryString = queryParams.toString();
+    const url = `${BASE_URL}/api/payment/by-students?${queryString}`;
+
+    const res = await axios.get(url);
+    return res.data.data; // Returns a map of userId to payment
+  } catch (err) {
+    console.error("Error fetching payments by students:", err);
+    return {};
+  }
+};
+
+// CREATE MULTIPLE PAYMENTS - Submit payments in bulk (create or update)
+export const createPayments = async (paymentsArray) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/payment/create-bulk`,
+      { payments: paymentsArray },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success) {
+      // Map the results to include status for each student
+      const results = {
+        successful: [],
+        failed: [],
+        statusMap: {}, // Map userId to status (created/updated)
+      };
+
+      // Process created payments
+      response.data.data.results.created.forEach((item) => {
+        const payment = paymentsArray.find((p) => p.userId === item.userId);
+        results.successful.push({
+          studentId: payment?.meta?.studentId || item.userId,
+          studentName: payment?.meta?.studentName || `Student ${item.userId}`,
+          status: "created",
+          data: item.data,
+        });
+        results.statusMap[item.userId] = "created";
+      });
+
+      // Process updated payments
+      response.data.data.results.updated.forEach((item) => {
+        const payment = paymentsArray.find((p) => p.userId === item.userId);
+        results.successful.push({
+          studentId: payment?.meta?.studentId || item.userId,
+          studentName: payment?.meta?.studentName || `Student ${item.userId}`,
+          status: "updated",
+          data: item.data,
+        });
+        results.statusMap[item.userId] = "updated";
+      });
+
+      // Process failed payments
+      response.data.data.results.failed.forEach((item) => {
+        const payment = paymentsArray.find((p) => p.userId === item.userId);
+        results.failed.push({
+          studentId: payment?.meta?.studentId || item.userId,
+          studentName: payment?.meta?.studentName || `Student ${item.userId}`,
+          error: item.error,
+        });
+        results.statusMap[item.userId] = "failed";
+      });
+
+      return results;
+    } else {
+      return {
+        successful: [],
+        failed: paymentsArray.map((p) => ({
+          studentId: p.meta?.studentId,
+          studentName: p.meta?.studentName,
+          error: response.data.message || "Bulk payment creation failed",
+        })),
+        statusMap: {},
+      };
+    }
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Error creating bulk payments";
+    return {
+      successful: [],
+      failed: paymentsArray.map((p) => ({
+        studentId: p.meta?.studentId,
+        studentName: p.meta?.studentName,
+        error: errorMessage,
+      })),
+      statusMap: {},
+    };
+  }
+};
+
 

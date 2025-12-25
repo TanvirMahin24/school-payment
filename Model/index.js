@@ -3,6 +3,7 @@ const Payment = require("./Payment.model");
 const Grade = require("./Grade.model");
 const Shift = require("./Shift.model");
 const Batch = require("./Batch.model");
+const Student = require("./Student.model");
 
 module.exports = {
   User,
@@ -10,6 +11,5 @@ module.exports = {
   Grade,
   Shift,
   Batch,
+  Student,
 };
-
-

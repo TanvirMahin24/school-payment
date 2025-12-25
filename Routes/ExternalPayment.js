@@ -3,6 +3,7 @@ const { check, body } = require("express-validator");
 const apiKeyAuth = require("../Utils/apiKeyAuth");
 const { createExternalPayment } = require("../Controller/Payment/createExternalPayment");
 const { createBulkExternalPayment } = require("../Controller/Payment/createBulkExternalPayment");
+const { getExternalPaymentsByStudents } = require("../Controller/Payment/getExternalPaymentsByStudents");
 
 const router = express.Router();
 
@@ -57,6 +58,13 @@ router.post(
       .isFloat({ min: 0 }),
   ],
   createBulkExternalPayment
+);
+
+// External Payment API Route (3rd party access) - Get payments by students
+router.get(
+  "/by-students",
+  apiKeyAuth,
+  getExternalPaymentsByStudents
 );
 
 module.exports = router;

@@ -3,12 +3,14 @@ const passport = require("passport");
 
 const { check } = require("express-validator");
 const { createPayment } = require("../Controller/Payment/createPayment");
+const { createBulkPayment } = require("../Controller/Payment/createBulkPayment");
 const { deletePayment } = require("../Controller/Payment/deletePayment");
 const { updatePayment } = require("../Controller/Payment/updatePayment");
 const { getPayments } = require("../Controller/Payment/getPayment");
 const {
   getPaymentDetails,
 } = require("../Controller/Payment/getPaymentDetails");
+const { getPaymentsByStudents } = require("../Controller/Payment/getPaymentsByStudents");
 
 const router = express.Router();
 
@@ -50,7 +52,31 @@ router.post(
   createPayment
 );
 
+router.post(
+  "/create-bulk",
+  passport.authenticate("jwt", { session: false }),
+  [
+    check("payments", "Payments array is required").isArray({ min: 1 }),
+    check("payments.*.amount", "Amount is required and must be a number")
+      .not()
+      .isEmpty()
+      .isFloat({ min: 0 }),
+    check("payments.*.month", "Month is required").not().isEmpty().trim(),
+    check("payments.*.userId", "User ID is required and must be a number")
+      .not()
+      .isEmpty()
+      .isInt({ min: 1 }),
+  ],
+  createBulkPayment
+);
+
 router.get("/", passport.authenticate("jwt", { session: false }), getPayments);
+
+router.get(
+  "/by-students",
+  passport.authenticate("jwt", { session: false }),
+  getPaymentsByStudents
+);
 
 router.get(
   "/:id",

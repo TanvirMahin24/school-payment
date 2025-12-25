@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Col, Container, Row, Table, Button, ButtonGroup, Form, Card } from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
@@ -6,6 +6,7 @@ import { getPayments } from "../../actions/Payment.action";
 import { getGradeList } from "../../actions/Grade.action";
 import { useNavigate } from "react-router-dom";
 import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
 const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) 
   const [grade, setGrade] = useState("");
   const [shift, setShift] = useState("");
   const [batch, setBatch] = useState("");
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc"); // 'asc' or 'desc'
 
   // Fetch grades when tenant changes and clear payments
   useEffect(() => {
@@ -43,6 +46,114 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) 
   const currentShifts = currentGrade?.shifts || [];
   const currentShift = currentShifts.find((s) => s.id === parseInt(shift));
   const currentBatches = currentShift?.batches || [];
+
+  // Handle column sorting
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      // Toggle direction if same column
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // Set new column and default to ascending
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  // Get sort icon for column header
+  const getSortIcon = (column) => {
+    if (sortColumn !== column) {
+      return <FaSort className="ms-1" style={{ opacity: 0.3 }} />;
+    }
+    return sortDirection === "asc" ? (
+      <FaSortUp className="ms-1" />
+    ) : (
+      <FaSortDown className="ms-1" />
+    );
+  };
+
+  // Sort payments based on selected column and direction
+  const sortedPayments = useMemo(() => {
+    if (!payments || !sortColumn) return payments || [];
+
+    const sorted = [...payments].sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortColumn) {
+        case "roll":
+          aValue = a.student?.uid ?? 0;
+          bValue = b.student?.uid ?? 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
+        case "studentName":
+          aValue = (a.student?.name || "").toLowerCase();
+          bValue = (b.student?.name || "").toLowerCase();
+          if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+          if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+
+        case "amount":
+          aValue = parseFloat(a.amount) || 0;
+          bValue = parseFloat(b.amount) || 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
+        case "month":
+          // Convert month names to numbers for proper sorting
+          const monthNames = [
+            "january", "february", "march", "april", "may", "june",
+            "july", "august", "september", "october", "november", "december"
+          ];
+          aValue = monthNames.indexOf((a.month || "").toLowerCase());
+          bValue = monthNames.indexOf((b.month || "").toLowerCase());
+          // If not found in month names, try parsing as number
+          if (aValue === -1) aValue = parseInt(a.month) || 0;
+          if (bValue === -1) bValue = parseInt(b.month) || 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
+        case "class":
+          const gradeA = grades?.find((g) => g.id === a.gradePrimaryId);
+          const gradeB = grades?.find((g) => g.id === b.gradePrimaryId);
+          aValue = (gradeA?.name || "").toLowerCase();
+          bValue = (gradeB?.name || "").toLowerCase();
+          if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+          if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+
+        case "shift":
+          const gradeAForShift = grades?.find((g) => g.id === a.gradePrimaryId);
+          const gradeBForShift = grades?.find((g) => g.id === b.gradePrimaryId);
+          const shiftA = gradeAForShift?.shifts?.find((s) => s.id === a.shiftPrimaryId);
+          const shiftB = gradeBForShift?.shifts?.find((s) => s.id === b.shiftPrimaryId);
+          aValue = (shiftA?.name || "").toLowerCase();
+          bValue = (shiftB?.name || "").toLowerCase();
+          if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+          if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+
+        case "batch":
+          const gradeAForBatch = grades?.find((g) => g.id === a.gradePrimaryId);
+          const gradeBForBatch = grades?.find((g) => g.id === b.gradePrimaryId);
+          const shiftAForBatch = gradeAForBatch?.shifts?.find((s) => s.id === a.shiftPrimaryId);
+          const shiftBForBatch = gradeBForBatch?.shifts?.find((s) => s.id === b.shiftPrimaryId);
+          const batchA = shiftAForBatch?.batches?.find((batch) => batch.id === a.batchPrimaryId);
+          const batchB = shiftBForBatch?.batches?.find((batch) => batch.id === b.batchPrimaryId);
+          aValue = (batchA?.name || "").toLowerCase();
+          bValue = (batchB?.name || "").toLowerCase();
+          if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+          if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+
+        case "createdAt":
+          aValue = new Date(a.createdAt).getTime();
+          bValue = new Date(b.createdAt).getTime();
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [payments, sortColumn, sortDirection, grades]);
 
   return (
     <Layout title="Payments">
@@ -187,27 +298,64 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) 
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Amount</th>
-                    <th>Month</th>
-                    <th>Tenant</th>
-                    <th>Class</th>
-                    <th>Shift</th>
-                    <th>Batch</th>
-                    <th>User</th>
-                    <th>Created At</th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("roll")}
+                    >
+                      Roll {getSortIcon("roll")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("studentName")}
+                    >
+                      Student Name {getSortIcon("studentName")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("amount")}
+                    >
+                      Amount {getSortIcon("amount")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("month")}
+                    >
+                      Month {getSortIcon("month")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("class")}
+                    >
+                      Class {getSortIcon("class")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("shift")}
+                    >
+                      Shift {getSortIcon("shift")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("batch")}
+                    >
+                      Batch {getSortIcon("batch")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("createdAt")}
+                    >
+                      Created At {getSortIcon("createdAt")}
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {payments.map((payment) => (
+                  {sortedPayments.map((payment) => (
                     <tr key={payment.id}>
-                      <td>{payment.id}</td>
+                      <td>{payment.student?.uid || "-"}</td>
+                      <td>{payment.student?.name || "-"}</td>
                       <td>{payment.amount}</td>
                       <td>{payment.month}</td>
-                      <td>
-                        {payment.tenant ? getTenantLabel(payment.tenant) : "-"}
-                      </td>
                       <td>
                         {payment.gradePrimaryId
                           ? (() => {
@@ -234,9 +382,6 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) 
                               return batchObj?.name || "-";
                             })()
                           : "-"}
-                      </td>
-                      <td>
-                        {payment.user ? payment.user.name : `User ${payment.userId}`}
                       </td>
                       <td>
                         {new Date(payment.createdAt).toLocaleDateString()}

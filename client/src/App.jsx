@@ -10,6 +10,8 @@ import DashboardPage from "./views/DashboardPage/DashboardPage.jsx";
 import LoginPage from "./views/LoginPage/LoginPage.jsx";
 import LandingPage from "./views/LandingPage/LandingPage.jsx";
 import PaymentsPage from "./views/PaymentsPage/PaymentsPage.jsx";
+import ManagementPage from "./views/ManagementPage/ManagementPage.jsx";
+import PaymentEntryPage from "./views/PaymentEntryPage/PaymentEntryPage.jsx";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -50,6 +52,8 @@ function App() {
               {/* PRIVATE ROUTES */}
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="payments" element={<PaymentsPage />} />
+              <Route path="payment-entry" element={<PaymentEntryPage />} />
+              <Route path="management" element={<ManagementPage />} />
             </>
           </Route>
         </Routes>

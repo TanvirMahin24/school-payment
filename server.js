@@ -5,7 +5,8 @@ var morgan = require("morgan");
 const sequelize = require("./Utils/database");
 const path = require("path");
 const passport = require("passport");
-const { Payment, User, Grade, Shift, Batch } = require("./Model");
+const { Payment, User, Grade, Shift, Batch, Student } = require("./Model");
+const { Op } = require("sequelize");
 require("./Utils/passport");
 
 // INITIALIZE APP
@@ -60,6 +61,7 @@ app.use(express.static(path.join(__dirname, "./client/dist")));
 app.use("/api", require("./Routes/Auth"));
 app.use("/api/payment", require("./Routes/Payment"));
 app.use("/api/grade", require("./Routes/Grade"));
+app.use("/api/student", require("./Routes/Student"));
 app.use("/api/external", externalCors, require("./Routes/ExternalPayment"));
 
 app.get("/*", (req, res) => {
@@ -70,10 +72,42 @@ app.get("/*", (req, res) => {
 // Note: Payment.userId refers to student ID from primary-coaching project, NOT a foreign key to User table
 // Therefore, no relationship is defined between Payment and User
 
+// Payment belongs to Student (composite foreign key)
+// Note: Due to composite keys, constraints are disabled and relationships may need manual handling in queries
+Payment.belongsTo(Student, {
+  foreignKey: 'userId',
+  targetKey: 'primaryId',
+  constraints: false, // Disable foreign key constraint
+  as: 'student',
+});
+
+// Payment belongs to Grade (composite foreign key)
+Payment.belongsTo(Grade, {
+  foreignKey: 'gradePrimaryId',
+  targetKey: 'primaryId',
+  constraints: false,
+  as: 'grade',
+});
+
+// Payment belongs to Shift (composite foreign key)
+Payment.belongsTo(Shift, {
+  foreignKey: 'shiftPrimaryId',
+  targetKey: 'primaryId',
+  constraints: false,
+  as: 'shift',
+});
+
+// Payment belongs to Batch (composite foreign key)
+Payment.belongsTo(Batch, {
+  foreignKey: 'batchPrimaryId',
+  targetKey: 'primaryId',
+  constraints: false,
+  as: 'batch',
+});
+
 // Note: Grade, Shift, Batch use composite primary keys (tenant, primaryId)
-// Sequelize doesn't fully support composite foreign keys in associations,
-// so relationships will be handled manually in queries using where clauses
-// Example: { where: { gradeTenant: 'primary', gradePrimaryId: 1 } }
+// When querying with includes, you may need to add manual where clauses for tenant matching
+// Example: { include: [{ model: Grade, as: 'grade', where: { tenant: 'primary' } }] }
 
 // Sequelize Sync
 // Using alter: true to add missing columns to existing tables (development only)
@@ -85,6 +119,10 @@ sequelize
     // Start CRON job for syncing grades, shifts, and batches
     const { startSyncCron } = require("./Jobs/syncGradesCron");
     startSyncCron();
+    
+    // Start CRON job for syncing students
+    const { startSyncCron: startStudentSyncCron } = require("./Jobs/syncStudentsCron");
+    startStudentSyncCron();
 
     app.listen(port, () => {
       console.log(`Listening on port ${port}`);

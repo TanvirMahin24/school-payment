@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../../actions/Dashboard.action";
 import styles from "./Layout.module.css";
-import { MdPayment } from "react-icons/md";
+import { MdPayment, MdSettings } from "react-icons/md";
 
 const Layout = ({ logout, children, title }) => {
   const navigate = useNavigate();
@@ -56,6 +56,22 @@ const Layout = ({ logout, children, title }) => {
                   <MdPayment />
                 </span>
                 <span className={styles.nav__item_text}>Payments</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/payment-entry" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdPayment />
+                </span>
+                <span className={styles.nav__item_text}>Payment Entry</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/management" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdSettings />
+                </span>
+                <span className={styles.nav__item_text}>Management</span>
               </NavLink>
             </div>
 
