@@ -1,23 +1,39 @@
-import React from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Col, Container, Row, Button, ButtonGroup } from "react-bootstrap";
 import { AiOutlineHome } from "react-icons/ai";
 import { FiLogOut } from "react-icons/fi";
 import { HiMenu } from "react-icons/hi";
 import { connect } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../../actions/Dashboard.action";
+import { setTenant } from "../../../actions/Tenant.action";
+import { TENANT_LIST, getTenantLabel } from "../../../constants/Tenant";
 import styles from "./Layout.module.css";
 import { MdPayment, MdSettings } from "react-icons/md";
 
-const Layout = ({ logout, children, title }) => {
+const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
   const navigate = useNavigate();
   const [show, setShow] = React.useState(false);
+
+  useEffect(() => {
+    // Initialize tenant from Redux store (which loads from localStorage)
+    if (!selectedTenant) {
+      const storedTenant = localStorage.getItem("selectedTenant");
+      if (storedTenant) {
+        setTenant(storedTenant);
+      }
+    }
+  }, [selectedTenant, setTenant]);
 
   const logoutHandeler = async () => {
     let check = await logout();
     if (check === true) {
       navigate("/");
     }
+  };
+
+  const handleTenantChange = (tenant) => {
+    setTenant(tenant);
   };
   return (
     <div>
@@ -67,12 +83,55 @@ const Layout = ({ logout, children, title }) => {
               </NavLink>
             </div>
             <div className={styles.nav}>
+              <NavLink to="/expenses" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdPayment />
+                </span>
+                <span className={styles.nav__item_text}>Expenses</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/revenues" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdPayment />
+                </span>
+                <span className={styles.nav__item_text}>Revenues</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/categories" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdSettings />
+                </span>
+                <span className={styles.nav__item_text}>Categories</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
               <NavLink to="/management" className={styles.nav__item}>
                 <span className={styles.icon}>
                   <MdSettings />
                 </span>
                 <span className={styles.nav__item_text}>Management</span>
               </NavLink>
+            </div>
+
+            <div className={styles.nav}>
+              <div className={styles.tenant_selector}>
+                <label className={styles.tenant_label}>Tenant:</label>
+                <ButtonGroup className={styles.tenant_buttons}>
+                  {TENANT_LIST.map((tenant) => (
+                    <Button
+                      key={tenant.value}
+                      variant={selectedTenant === tenant.value ? "primary" : "outline-primary"}
+                      size="sm"
+                      onClick={() => handleTenantChange(tenant.value)}
+                      className={styles.tenant_button}
+                    >
+                      {tenant.label}
+                    </Button>
+                  ))}
+                </ButtonGroup>
+              </div>
             </div>
 
             <div className={styles.nav}>
@@ -106,5 +165,9 @@ const Layout = ({ logout, children, title }) => {
   );
 };
 
-export default connect(null, { logout })(Layout);
+const mapStateToProps = (state) => ({
+  selectedTenant: state.tenant?.selectedTenant,
+});
+
+export default connect(mapStateToProps, { logout, setTenant })(Layout);
 

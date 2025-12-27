@@ -12,6 +12,9 @@ import LandingPage from "./views/LandingPage/LandingPage.jsx";
 import PaymentsPage from "./views/PaymentsPage/PaymentsPage.jsx";
 import ManagementPage from "./views/ManagementPage/ManagementPage.jsx";
 import PaymentEntryPage from "./views/PaymentEntryPage/PaymentEntryPage.jsx";
+import ExpensePage from "./views/ExpensePage/ExpensePage.jsx";
+import RevenuePage from "./views/RevenuePage/RevenuePage.jsx";
+import CategoryManagementPage from "./views/CategoryManagementPage/CategoryManagementPage.jsx";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -54,6 +57,9 @@ function App() {
               <Route path="payments" element={<PaymentsPage />} />
               <Route path="payment-entry" element={<PaymentEntryPage />} />
               <Route path="management" element={<ManagementPage />} />
+              <Route path="expenses" element={<ExpensePage />} />
+              <Route path="revenues" element={<RevenuePage />} />
+              <Route path="categories" element={<CategoryManagementPage />} />
             </>
           </Route>
         </Routes>

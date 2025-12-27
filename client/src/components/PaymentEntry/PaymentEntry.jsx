@@ -23,9 +23,9 @@ const PaymentEntry = ({
   getStudentList,
   grades,
   getGradeList,
+  selectedTenant,
 }) => {
   const [rawList, setRawList] = useState([]);
-  const [selectedTenant, setSelectedTenant] = useState(DEFAULT_TENANT);
   const [grade, setGrade] = useState("");
   const [batch, setBatch] = useState("");
   const [shift, setShift] = useState("");
@@ -374,33 +374,6 @@ const PaymentEntry = ({
     <Container className="pb-4">
       <Card bg="white" text="dark" className="shadow mb-4">
         <Card.Body>
-          <Row className="mb-3">
-            <Col md={6}>
-              <div className="d-flex align-items-center gap-3">
-                <label className="mb-0 fw-bold">Tenant:</label>
-                <ButtonGroup>
-                  {TENANT_LIST.map((tenant) => (
-                    <Button
-                      key={tenant.value}
-                      variant={selectedTenant === tenant.value ? "primary" : "outline-primary"}
-                      onClick={() => {
-                        setSelectedTenant(tenant.value);
-                        getGradeList(tenant.value);
-                        setGrade("");
-                        setShift("");
-                        setBatch("");
-                        setRawList([]);
-                        setStudentPayments({});
-                        setPaymentStatus({});
-                      }}
-                    >
-                      {tenant.label}
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </div>
-            </Col>
-          </Row>
           <Row>
             <Col md={6} className="py-3">
               <div className="d-flex justify-content-between align-items-center pb-2">
@@ -796,6 +769,7 @@ const PaymentEntry = ({
 const mapStateToProps = (state) => ({
   list: state.student?.student,
   grades: state.grade?.grade,
+  selectedTenant: state.tenant?.selectedTenant,
 });
 
 const PaymentEntryConnected = connect(mapStateToProps, {

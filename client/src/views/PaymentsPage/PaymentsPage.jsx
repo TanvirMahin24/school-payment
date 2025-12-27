@@ -8,9 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
-const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) => {
+const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, selectedTenant }) => {
   const navigate = useNavigate();
-  const [selectedTenant, setSelectedTenant] = useState(DEFAULT_TENANT);
   const [year, setYear] = useState(`${new Date().getFullYear()}`);
   const [grade, setGrade] = useState("");
   const [shift, setShift] = useState("");
@@ -159,23 +158,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList }) 
     <Layout title="Payments">
       <Container>
         <Row className="mb-3">
-          <Col md={6}>
-            <div className="d-flex align-items-center gap-3">
-              <label className="mb-0 fw-bold">Tenant:</label>
-              <ButtonGroup>
-                {TENANT_LIST.map((tenant) => (
-                  <Button
-                    key={tenant.value}
-                    variant={selectedTenant === tenant.value ? "primary" : "outline-primary"}
-                    onClick={() => setSelectedTenant(tenant.value)}
-                  >
-                    {tenant.label}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </div>
-          </Col>
-          <Col md={6} className="text-end">
+          <Col md={12} className="text-end">
             <Button
               variant="primary"
               onClick={() => navigate("/payments/add")}
@@ -433,6 +416,7 @@ const mapStateToProps = (state) => ({
   payments: state.payment.payments,
   loading: state.payment.loading,
   grades: state.grade.grade,
+  selectedTenant: state.tenant?.selectedTenant,
 });
 
 export default connect(mapStateToProps, { getPayments, getGradeList })(PaymentsPage);

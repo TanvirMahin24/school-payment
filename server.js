@@ -5,7 +5,7 @@ var morgan = require("morgan");
 const sequelize = require("./Utils/database");
 const path = require("path");
 const passport = require("passport");
-const { Payment, User, Grade, Shift, Batch, Student } = require("./Model");
+const { Payment, User, Grade, Shift, Batch, Student, Expense, Revenue, ExpenseCategory, RevenueCategory } = require("./Model");
 const { Op } = require("sequelize");
 require("./Utils/passport");
 
@@ -63,6 +63,10 @@ app.use("/api/payment", require("./Routes/Payment"));
 app.use("/api/grade", require("./Routes/Grade"));
 app.use("/api/student", require("./Routes/Student"));
 app.use("/api/external", externalCors, require("./Routes/ExternalPayment"));
+app.use("/api/expense", require("./Routes/Expense"));
+app.use("/api/revenue", require("./Routes/Revenue"));
+app.use("/api/expense-category", require("./Routes/ExpenseCategory"));
+app.use("/api/revenue-category", require("./Routes/RevenueCategory"));
 
 app.get("/*", (req, res) => {
   return res.sendFile(path.join(__dirname, "./client/dist", "index.html"));
@@ -103,6 +107,18 @@ Payment.belongsTo(Batch, {
   targetKey: 'primaryId',
   constraints: false,
   as: 'batch',
+});
+
+// Expense belongs to ExpenseCategory
+Expense.belongsTo(ExpenseCategory, {
+  foreignKey: 'categoryId',
+  as: 'category',
+});
+
+// Revenue belongs to RevenueCategory
+Revenue.belongsTo(RevenueCategory, {
+  foreignKey: 'categoryId',
+  as: 'category',
 });
 
 // Note: Grade, Shift, Batch use composite primary keys (tenant, primaryId)

@@ -14,8 +14,8 @@ const ManagementPage = ({
   syncAllStudents,
   syncRecentStudents,
   getSyncStatus,
+  selectedTenant,
 }) => {
-  const [selectedTenant, setSelectedTenant] = useState(DEFAULT_TENANT);
   const [loading, setLoading] = useState({
     syncAll: false,
     syncRecent: false,
@@ -79,29 +79,6 @@ const ManagementPage = ({
   return (
     <Layout title="Management">
       <Container>
-        <Row className="mb-3">
-          <Col>
-            <div className="d-flex align-items-center gap-3">
-              <label className="mb-0 fw-bold">Tenant:</label>
-              <ButtonGroup>
-                {TENANT_LIST.map((tenant) => (
-                  <Button
-                    key={tenant.value}
-                    variant={
-                      selectedTenant === tenant.value
-                        ? "primary"
-                        : "outline-primary"
-                    }
-                    onClick={() => setSelectedTenant(tenant.value)}
-                  >
-                    {tenant.label}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </div>
-          </Col>
-        </Row>
-
         <Card bg="white" text="dark" className="shadow mb-4">
           <Card.Header>
             <h5 className="mb-0">Student Data Synchronization</h5>
@@ -200,6 +177,7 @@ const mapStateToProps = (state) => ({
     primary: { lastSyncTime: null },
     coaching: { lastSyncTime: null },
   },
+  selectedTenant: state.tenant?.selectedTenant,
 });
 
 export default connect(mapStateToProps, {
@@ -207,4 +185,5 @@ export default connect(mapStateToProps, {
   syncRecentStudents,
   getSyncStatus,
 })(ManagementPage);
+
 
