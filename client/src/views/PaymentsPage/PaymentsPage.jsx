@@ -161,7 +161,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
           <Col md={12} className="text-end">
             <Button
               variant="primary"
-              onClick={() => navigate("/payments/add")}
+              onClick={() => navigate("/payment-entry")}
             >
               Add Payment
             </Button>

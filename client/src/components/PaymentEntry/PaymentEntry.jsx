@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { getStudentList } from "../../actions/Student.action";
 import { getGradeList } from "../../actions/Grade.action";
 import { createPayments, getPaymentsByStudents } from "../../actions/Payment.action";
-import { months } from "../../constants/MonthsAndYears";
+import { months, years } from "../../constants/MonthsAndYears";
 import { TENANT_LIST, DEFAULT_TENANT } from "../../constants/Tenant";
 
 const PaymentEntry = ({
@@ -29,15 +29,14 @@ const PaymentEntry = ({
   const [grade, setGrade] = useState("");
   const [batch, setBatch] = useState("");
   const [shift, setShift] = useState("");
-  const [year, setYear] = useState(`${new Date().getFullYear()}`);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(months[new Date().getMonth()]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Bulk fill values
   const [bulkAmount, setBulkAmount] = useState("");
   const [bulkExtraAmount, setBulkExtraAmount] = useState("");
-  const [bulkMonth, setBulkMonth] = useState("");
-  const [bulkYear, setBulkYear] = useState(`${new Date().getFullYear()}`);
   const [bulkNote, setBulkNote] = useState("");
 
   // Student payment data
@@ -60,7 +59,7 @@ const PaymentEntry = ({
             shiftId: shift,
             batchId: batch,
             studentIds: studentIds,
-            month: bulkMonth,
+            month: month,
           });
 
           // Initialize payment data for each student
@@ -75,8 +74,6 @@ const PaymentEntry = ({
               initialPayments[student.id] = {
                 amount: existingPayment.amount?.toString() || "",
                 extra_amount: existingPayment.extra_amount?.toString() || "",
-                month: existingPayment.month || bulkMonth || "",
-                year: existingPayment.year?.toString() || bulkYear || year,
                 note: existingPayment.note || "",
               };
               initialStatus[student.id] = "existing";
@@ -85,8 +82,6 @@ const PaymentEntry = ({
               initialPayments[student.id] = {
                 amount: "",
                 extra_amount: "",
-                month: bulkMonth || "",
-                year: bulkYear || year,
                 note: "",
               };
               initialStatus[student.id] = "new";
@@ -102,8 +97,6 @@ const PaymentEntry = ({
             initialPayments[student.id] = {
               amount: "",
               extra_amount: "",
-              month: bulkMonth || "",
-              year: bulkYear || year,
               note: "",
             };
           });
@@ -132,7 +125,7 @@ const PaymentEntry = ({
     
     if (result && result.length > 0) {
       // Fetch existing payments for these students
-      // Match by: userId, year, gradeId, shiftId, batchId, and month (if bulkMonth is set)
+      // Match by: userId, year, gradeId, shiftId, batchId, and month
       const studentIds = result.map((s) => s.id);
       const existingPayments = await getPaymentsByStudents({
         tenant: selectedTenant,
@@ -141,8 +134,7 @@ const PaymentEntry = ({
         shiftId: shift,
         batchId: batch,
         studentIds: studentIds,
-        // Only filter by month if bulkMonth is set, otherwise get any payment for these students
-        month: bulkMonth || undefined,
+        month: month,
       });
 
       // Initialize payment data for loaded students
@@ -157,8 +149,6 @@ const PaymentEntry = ({
           initialPayments[student.id] = {
             amount: existingPayment.amount?.toString() || "",
             extra_amount: existingPayment.extra_amount?.toString() || "",
-            month: existingPayment.month || bulkMonth || "",
-            year: existingPayment.year?.toString() || bulkYear || year,
             note: existingPayment.note || "",
           };
           initialStatus[student.id] = "existing";
@@ -167,8 +157,6 @@ const PaymentEntry = ({
           initialPayments[student.id] = {
             amount: "",
             extra_amount: "",
-            month: bulkMonth || "",
-            year: bulkYear || year,
             note: "",
           };
           initialStatus[student.id] = "new";
@@ -193,8 +181,6 @@ const PaymentEntry = ({
         ...updatedPayments[student.id],
         amount: bulkAmount || updatedPayments[student.id]?.amount || "",
         extra_amount: bulkExtraAmount || updatedPayments[student.id]?.extra_amount || "",
-        month: bulkMonth || updatedPayments[student.id]?.month || "",
-        year: bulkYear || updatedPayments[student.id]?.year || year,
         note: bulkNote || updatedPayments[student.id]?.note || "",
       };
     });
@@ -226,13 +212,14 @@ const PaymentEntry = ({
       errors.push("Please select a Batch");
     }
     
+    if (!month || month === "") {
+      errors.push("Please select a Month");
+    }
+    
     rawList.forEach((student) => {
       const payment = studentPayments[student.id];
       if (!payment || !payment.amount || parseFloat(payment.amount) <= 0) {
         errors.push(`Student ${student.uid} (${student.name}): Amount is required`);
-      }
-      if (!payment || !payment.month) {
-        errors.push(`Student ${student.uid} (${student.name}): Month is required`);
       }
     });
 
@@ -283,8 +270,8 @@ const PaymentEntry = ({
         userId: student.id, // Use student primaryId as userId
         amount: parseFloat(payment.amount),
         extra_amount: payment.extra_amount ? parseFloat(payment.extra_amount) : 0,
-        month: payment.month,
-        year: payment.year ? parseInt(payment.year) : parseInt(year),
+        month: month,
+        year: year,
         tenant: selectedTenant,
         note: payment.note || "",
         meta: {
@@ -350,8 +337,6 @@ const PaymentEntry = ({
         clearedPayments[student.id] = {
           amount: "",
           extra_amount: "",
-          month: "",
-          year: year,
           note: "",
         };
       });
@@ -359,7 +344,6 @@ const PaymentEntry = ({
       // Clear bulk fill
       setBulkAmount("");
       setBulkExtraAmount("");
-      setBulkMonth("");
       setBulkNote("");
     }
   };
@@ -375,7 +359,29 @@ const PaymentEntry = ({
       <Card bg="white" text="dark" className="shadow mb-4">
         <Card.Body>
           <Row>
-            <Col md={6} className="py-3">
+            <Col md={3} className="py-3">
+              <div className="d-flex justify-content-between align-items-center pb-2">
+                <label htmlFor="month" className="d-block">
+                  Month
+                </label>
+              </div>
+              <Form.Select
+                onChange={(e) => {
+                  setMonth(e.target.value);
+                }}
+                id="month"
+                name="month"
+                value={month}
+              >
+                <option value={""}>Select Month</option>
+                {months.map((m, i) => (
+                  <option key={i} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+            <Col md={3} className="py-3">
               <div className="d-flex justify-content-between align-items-center pb-2">
                 <label htmlFor="year" className="d-block">
                   Year
@@ -383,37 +389,20 @@ const PaymentEntry = ({
               </div>
               <Form.Select
                 onChange={(e) => {
-                  setYear(e.target.value);
+                  setYear(parseInt(e.target.value));
                 }}
                 id="year"
                 name="year"
                 value={year}
               >
                 <option value={""}>Select Year</option>
-                {Array.from({ length: 20 }, (_, i) => i + 2010)
-                  .reverse()
-                  .map((item, i) => (
-                    <option key={i} value={`${item}`}>
-                      {item}
-                    </option>
-                  ))}
+                {years.map((y, i) => (
+                  <option key={i} value={y}>
+                    {y}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
-            <Col
-              md={6}
-              className="d-flex justify-content-end align-items-end py-3"
-            >
-              <Button
-                onClick={selectHandler}
-                variant="primary"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? "Loading..." : "Select"}
-              </Button>
-            </Col>
-          </Row>
-          <Row>
             <Col md={3} className="py-3">
               <div className="d-flex justify-content-between align-items-center pb-2">
                 <label htmlFor="grade" className="d-block">
@@ -460,6 +449,8 @@ const PaymentEntry = ({
             ) : (
               <></>
             )}
+          </Row>
+          <Row>
             {grade !== "" && shift !== "" ? (
               <Col md={3} className="py-3">
                 <div className="d-flex justify-content-between align-items-center pb-2">
@@ -479,6 +470,19 @@ const PaymentEntry = ({
             ) : (
               <></>
             )}
+            <Col
+              md={grade !== "" && shift !== "" ? 9 : 12}
+              className="d-flex justify-content-end align-items-end py-3"
+            >
+              <Button
+                onClick={selectHandler}
+                variant="primary"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Select"}
+              </Button>
+            </Col>
           </Row>
         </Card.Body>
       </Card>
@@ -489,7 +493,7 @@ const PaymentEntry = ({
           <Card.Body>
             <h5 className="mb-3">Bulk Fill (Apply to All Students)</h5>
             <Row>
-              <Col md={2} className="py-2">
+              <Col md={4} className="py-2">
                 <label htmlFor="bulkAmount" className="d-block pb-1">
                   Amount
                 </label>
@@ -503,7 +507,7 @@ const PaymentEntry = ({
                   onChange={(e) => setBulkAmount(e.target.value)}
                 />
               </Col>
-              <Col md={2} className="py-2">
+              <Col md={4} className="py-2">
                 <label htmlFor="bulkExtraAmount" className="d-block pb-1">
                   Extra Amount
                 </label>
@@ -515,37 +519,6 @@ const PaymentEntry = ({
                   min="0"
                   value={bulkExtraAmount}
                   onChange={(e) => setBulkExtraAmount(e.target.value)}
-                />
-              </Col>
-              <Col md={2} className="py-2">
-                <label htmlFor="bulkMonth" className="d-block pb-1">
-                  Month
-                </label>
-                <Form.Select
-                  id="bulkMonth"
-                  value={bulkMonth}
-                  onChange={(e) => setBulkMonth(e.target.value)}
-                >
-                  <option value={""}>Select Month</option>
-                  {months.map((month, i) => (
-                    <option key={i} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Col>
-              <Col md={2} className="py-2">
-                <label htmlFor="bulkYear" className="d-block pb-1">
-                  Year
-                </label>
-                <Form.Control
-                  type="number"
-                  id="bulkYear"
-                  placeholder="2024"
-                  min="2000"
-                  max="2100"
-                  value={bulkYear}
-                  onChange={(e) => setBulkYear(e.target.value)}
                 />
               </Col>
               <Col md={3} className="py-2">
@@ -590,7 +563,10 @@ const PaymentEntry = ({
           ) : (
             <>
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5>Student Payment Entry ({rawList.length} students)</h5>
+                <div>
+                  <h5 className="mb-1">Student Payment Entry ({rawList.length} students)</h5>
+                  <h6 className="text-muted mb-0">{month} {year}</h6>
+                </div>
                 <Button
                   variant="primary"
                   onClick={submitPayments}
@@ -605,12 +581,10 @@ const PaymentEntry = ({
                   <thead>
                     <tr>
                       <th style={{ width: "5%", padding: "0.5rem" }}>Roll</th>
-                      <th style={{ width: "12%", padding: "0.5rem" }}>Name</th>
-                      <th style={{ width: "10%", padding: "0.5rem" }}>Amount *</th>
-                      <th style={{ width: "10%", padding: "0.5rem" }}>Extra</th>
-                      <th style={{ width: "12%", padding: "0.5rem" }}>Month *</th>
-                      <th style={{ width: "8%", padding: "0.5rem" }}>Year</th>
-                      <th style={{ width: "18%", padding: "0.5rem" }}>Note</th>
+                      <th style={{ width: "15%", padding: "0.5rem" }}>Name</th>
+                      <th style={{ width: "12%", padding: "0.5rem" }}>Amount *</th>
+                      <th style={{ width: "12%", padding: "0.5rem" }}>Extra</th>
+                      <th style={{ width: "25%", padding: "0.5rem" }}>Note</th>
                       <th style={{ width: "10%", padding: "0.5rem", textAlign: "center" }}>Status</th>
                     </tr>
                   </thead>
@@ -625,8 +599,6 @@ const PaymentEntry = ({
                         const payment = studentPayments[student.id] || {
                           amount: "",
                           extra_amount: "",
-                          month: "",
-                          year: year,
                           note: "",
                         };
                         const status = paymentStatus[student.id];
@@ -681,46 +653,6 @@ const PaymentEntry = ({
                                   updateStudentPayment(
                                     student.id,
                                     "extra_amount",
-                                    e.target.value
-                                  )
-                                }
-                                size="sm"
-                                style={{ fontSize: "0.875rem", padding: "0.25rem 0.5rem" }}
-                              />
-                            </td>
-                            <td style={{ padding: "0.5rem" }}>
-                              <Form.Select
-                                value={payment.month}
-                                onChange={(e) =>
-                                  updateStudentPayment(
-                                    student.id,
-                                    "month",
-                                    e.target.value
-                                  )
-                                }
-                                required
-                                size="sm"
-                                style={{ fontSize: "0.875rem", padding: "0.25rem 0.5rem" }}
-                              >
-                                <option value={""}>Select</option>
-                                {months.map((month, i) => (
-                                  <option key={i} value={month}>
-                                    {month}
-                                  </option>
-                                ))}
-                              </Form.Select>
-                            </td>
-                            <td style={{ padding: "0.5rem" }}>
-                              <Form.Control
-                                type="number"
-                                placeholder="2024"
-                                min="2000"
-                                max="2100"
-                                value={payment.year || year}
-                                onChange={(e) =>
-                                  updateStudentPayment(
-                                    student.id,
-                                    "year",
                                     e.target.value
                                   )
                                 }

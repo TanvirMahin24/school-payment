@@ -67,6 +67,7 @@ app.use("/api/expense", require("./Routes/Expense"));
 app.use("/api/revenue", require("./Routes/Revenue"));
 app.use("/api/expense-category", require("./Routes/ExpenseCategory"));
 app.use("/api/revenue-category", require("./Routes/RevenueCategory"));
+app.use("/api/report", require("./Routes/Report"));
 
 app.get("/*", (req, res) => {
   return res.sendFile(path.join(__dirname, "./client/dist", "index.html"));

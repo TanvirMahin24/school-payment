@@ -9,7 +9,7 @@ import { logout } from "../../../actions/Dashboard.action";
 import { setTenant } from "../../../actions/Tenant.action";
 import { TENANT_LIST, getTenantLabel } from "../../../constants/Tenant";
 import styles from "./Layout.module.css";
-import { MdPayment, MdSettings } from "react-icons/md";
+import { MdPayment, MdSettings, MdBarChart } from "react-icons/md";
 
 const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
   const navigate = useNavigate();
@@ -55,6 +55,25 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
                 onClick={() => setShow(!show)}
               >
                 <HiMenu />
+              </div>
+            </div>
+
+            <div className={styles.nav}>
+              <div className={styles.tenant_selector}>
+                <label className={styles.tenant_label}>Tenant:</label>
+                <ButtonGroup className={styles.tenant_buttons}>
+                  {TENANT_LIST.map((tenant) => (
+                    <Button
+                      key={tenant.value}
+                      variant={selectedTenant === tenant.value ? "primary" : "outline-primary"}
+                      size="sm"
+                      onClick={() => handleTenantChange(tenant.value)}
+                      className={styles.tenant_button}
+                    >
+                      {tenant.label}
+                    </Button>
+                  ))}
+                </ButtonGroup>
               </div>
             </div>
 
@@ -107,31 +126,20 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
               </NavLink>
             </div>
             <div className={styles.nav}>
+              <NavLink to="/reports" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdBarChart />
+                </span>
+                <span className={styles.nav__item_text}>Reports</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
               <NavLink to="/management" className={styles.nav__item}>
                 <span className={styles.icon}>
                   <MdSettings />
                 </span>
                 <span className={styles.nav__item_text}>Management</span>
               </NavLink>
-            </div>
-
-            <div className={styles.nav}>
-              <div className={styles.tenant_selector}>
-                <label className={styles.tenant_label}>Tenant:</label>
-                <ButtonGroup className={styles.tenant_buttons}>
-                  {TENANT_LIST.map((tenant) => (
-                    <Button
-                      key={tenant.value}
-                      variant={selectedTenant === tenant.value ? "primary" : "outline-primary"}
-                      size="sm"
-                      onClick={() => handleTenantChange(tenant.value)}
-                      className={styles.tenant_button}
-                    >
-                      {tenant.label}
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </div>
             </div>
 
             <div className={styles.nav}>
