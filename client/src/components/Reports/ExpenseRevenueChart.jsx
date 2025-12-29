@@ -15,10 +15,14 @@ const ExpenseRevenueChart = ({ data }) => {
     options: {
       chart: {
         id: "expense-revenue-chart",
-        type: "bar",
+        type: "area",
         toolbar: {
           show: true,
         },
+        zoom: {
+          enabled: true,
+        },
+        stacked: false,
       },
       xaxis: {
         categories: data.map((d) => d.monthLabel),
@@ -48,19 +52,25 @@ const ExpenseRevenueChart = ({ data }) => {
         formatter: (val) => val.toFixed(2),
       },
       colors: ["#dc3545", "#28a745"],
+      stroke: {
+        curve: "smooth",
+        width: 3,
+      },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.7,
+          opacityTo: 0.3,
+          stops: [0, 90, 100],
+        },
+      },
       legend: {
         position: "top",
       },
       tooltip: {
         y: {
           formatter: (val) => `${val.toFixed(2)}`,
-        },
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "55%",
-          endingShape: "rounded",
         },
       },
     },
@@ -82,7 +92,7 @@ const ExpenseRevenueChart = ({ data }) => {
         <Chart
           options={chartData.options}
           series={chartData.series}
-          type="bar"
+          type="area"
           height={400}
         />
       </Card.Body>

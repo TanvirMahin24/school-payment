@@ -15,7 +15,7 @@ const FilteredChart = ({ data }) => {
     options: {
       chart: {
         id: "filtered-profit-chart",
-        type: "line",
+        type: "area",
         toolbar: {
           show: true,
         },
@@ -66,10 +66,14 @@ const FilteredChart = ({ data }) => {
     options: {
       chart: {
         id: "filtered-expense-revenue-chart",
-        type: "bar",
+        type: "area",
         toolbar: {
           show: true,
         },
+        zoom: {
+          enabled: true,
+        },
+        stacked: false,
       },
       xaxis: {
         categories: data.map((d) => d.monthLabel),
@@ -95,6 +99,19 @@ const FilteredChart = ({ data }) => {
         },
       },
       colors: ["#dc3545", "#28a745"],
+      stroke: {
+        curve: "smooth",
+        width: 3,
+      },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.7,
+          opacityTo: 0.3,
+          stops: [0, 90, 100],
+        },
+      },
       legend: {
         position: "top",
       },
@@ -125,7 +142,7 @@ const FilteredChart = ({ data }) => {
               <Chart
                 options={profitChartData.options}
                 series={profitChartData.series}
-                type="line"
+                type="area"
                 height={350}
               />
             </Card.Body>
@@ -137,7 +154,7 @@ const FilteredChart = ({ data }) => {
               <Chart
                 options={expenseRevenueChartData.options}
                 series={expenseRevenueChartData.series}
-                type="bar"
+                type="area"
                 height={350}
               />
             </Card.Body>
@@ -149,4 +166,3 @@ const FilteredChart = ({ data }) => {
 };
 
 export default FilteredChart;
-

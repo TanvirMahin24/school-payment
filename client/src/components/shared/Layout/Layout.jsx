@@ -9,7 +9,16 @@ import { logout } from "../../../actions/Dashboard.action";
 import { setTenant } from "../../../actions/Tenant.action";
 import { TENANT_LIST, getTenantLabel } from "../../../constants/Tenant";
 import styles from "./Layout.module.css";
-import { MdPayment, MdSettings, MdBarChart } from "react-icons/md";
+import {
+  MdPayment,
+  MdSettings,
+  MdBarChart,
+  MdAddCircle,
+  MdTrendingDown,
+  MdTrendingUp,
+  MdCategory,
+  MdAdminPanelSettings,
+} from "react-icons/md";
 
 const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
   const navigate = useNavigate();
@@ -60,12 +69,15 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
 
             <div className={styles.nav}>
               <div className={styles.tenant_selector}>
-                <label className={styles.tenant_label}>Tenant:</label>
                 <ButtonGroup className={styles.tenant_buttons}>
                   {TENANT_LIST.map((tenant) => (
                     <Button
                       key={tenant.value}
-                      variant={selectedTenant === tenant.value ? "primary" : "outline-primary"}
+                      variant={
+                        selectedTenant === tenant.value
+                          ? "primary"
+                          : "outline-primary"
+                      }
                       size="sm"
                       onClick={() => handleTenantChange(tenant.value)}
                       className={styles.tenant_button}
@@ -86,6 +98,14 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
               </NavLink>
             </div>
             <div className={styles.nav}>
+              <NavLink to="/reports" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdBarChart />
+                </span>
+                <span className={styles.nav__item_text}>Reports</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
               <NavLink to="/payments" className={styles.nav__item}>
                 <span className={styles.icon}>
                   <MdPayment />
@@ -96,7 +116,7 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
             <div className={styles.nav}>
               <NavLink to="/payment-entry" className={styles.nav__item}>
                 <span className={styles.icon}>
-                  <MdPayment />
+                  <MdAddCircle />
                 </span>
                 <span className={styles.nav__item_text}>Payment Entry</span>
               </NavLink>
@@ -104,7 +124,7 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
             <div className={styles.nav}>
               <NavLink to="/expenses" className={styles.nav__item}>
                 <span className={styles.icon}>
-                  <MdPayment />
+                  <MdTrendingDown />
                 </span>
                 <span className={styles.nav__item_text}>Expenses</span>
               </NavLink>
@@ -112,7 +132,7 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
             <div className={styles.nav}>
               <NavLink to="/revenues" className={styles.nav__item}>
                 <span className={styles.icon}>
-                  <MdPayment />
+                  <MdTrendingUp />
                 </span>
                 <span className={styles.nav__item_text}>Revenues</span>
               </NavLink>
@@ -120,23 +140,16 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
             <div className={styles.nav}>
               <NavLink to="/categories" className={styles.nav__item}>
                 <span className={styles.icon}>
-                  <MdSettings />
+                  <MdCategory />
                 </span>
                 <span className={styles.nav__item_text}>Categories</span>
               </NavLink>
             </div>
-            <div className={styles.nav}>
-              <NavLink to="/reports" className={styles.nav__item}>
-                <span className={styles.icon}>
-                  <MdBarChart />
-                </span>
-                <span className={styles.nav__item_text}>Reports</span>
-              </NavLink>
-            </div>
+
             <div className={styles.nav}>
               <NavLink to="/management" className={styles.nav__item}>
                 <span className={styles.icon}>
-                  <MdSettings />
+                  <MdAdminPanelSettings />
                 </span>
                 <span className={styles.nav__item_text}>Management</span>
               </NavLink>
@@ -178,4 +191,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { logout, setTenant })(Layout);
-

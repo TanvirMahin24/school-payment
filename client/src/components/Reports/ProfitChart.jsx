@@ -15,7 +15,7 @@ const ProfitChart = ({ data }) => {
     options: {
       chart: {
         id: "profit-chart",
-        type: "line",
+        type: "area",
         toolbar: {
           show: true,
         },
@@ -84,7 +84,7 @@ const ProfitChart = ({ data }) => {
         <Chart
           options={chartData.options}
           series={chartData.series}
-          type="line"
+          type="area"
           height={400}
         />
       </Card.Body>
@@ -93,4 +93,3 @@ const ProfitChart = ({ data }) => {
 };
 
 export default ProfitChart;
-

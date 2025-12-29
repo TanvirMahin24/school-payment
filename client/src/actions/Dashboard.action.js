@@ -13,10 +13,18 @@ import {
 import { BASE_URL } from "../constants/URL";
 import setAuthToken from "../utils/setAuthToken";
 
-//GET GRADE LIST
-export const getDashboardData = () => async (dispatch) => {
+//GET DASHBOARD DATA
+export const getDashboardData = (tenant) => async (dispatch) => {
   try {
-    const res = await axios.get(`${BASE_URL}/api/dashboard`);
+    const queryParams = new URLSearchParams();
+    if (tenant) queryParams.append("tenant", tenant);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `${BASE_URL}/api/dashboard?${queryString}`
+      : `${BASE_URL}/api/dashboard`;
+
+    const res = await axios.get(url);
     dispatch({
       type: DASHBOARD_DATA,
       payload: res.data.data,
