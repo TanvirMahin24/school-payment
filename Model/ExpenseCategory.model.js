@@ -25,3 +25,5 @@ const ExpenseCategory = sequelize.define("expense_category", {
 module.exports = ExpenseCategory;
 
 
+
+

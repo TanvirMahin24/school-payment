@@ -31,3 +31,6 @@ const syncAllStudents = async (req, res) => {
 module.exports = { syncAllStudents };
 
 
+
+
+

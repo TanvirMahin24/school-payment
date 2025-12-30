@@ -41,3 +41,5 @@ const Revenue = sequelize.define("revenue", {
 module.exports = Revenue;
 
 
+
+

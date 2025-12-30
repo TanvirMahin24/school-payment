@@ -25,6 +25,7 @@ export const getPayments = (filters = {}) => async (dispatch) => {
     const queryParams = new URLSearchParams();
     if (filters.tenant) queryParams.append("tenant", filters.tenant);
     if (filters.year) queryParams.append("year", filters.year);
+    if (filters.month) queryParams.append("month", filters.month);
     if (filters.gradeId) queryParams.append("gradeId", filters.gradeId);
     if (filters.shiftId) queryParams.append("shiftId", filters.shiftId);
     if (filters.batchId) queryParams.append("batchId", filters.batchId);

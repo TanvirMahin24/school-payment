@@ -1,8 +1,22 @@
-import React from "react";
-import { Card, Row, Col } from "react-bootstrap";
-import Chart from "react-apexcharts";
+import React, { useMemo } from "react";
+import { Card, Row, Col, Table } from "react-bootstrap";
+// import Chart from "react-apexcharts";
 
-const FilteredChart = ({ data }) => {
+const FilteredChart = ({ data, hasFilter = false }) => {
+  const totalStats = useMemo(() => {
+    if (!data || data.length === 0) return null;
+    return data.reduce(
+      (acc, d) => ({
+        revenue: acc.revenue + parseFloat(d.revenue || 0),
+        payment: acc.payment + parseFloat(d.payment || 0),
+        expense: acc.expense + parseFloat(d.expense || 0),
+        totalRevenue: acc.totalRevenue + parseFloat(d.totalRevenue || 0),
+        profit: acc.profit + parseFloat(d.profit || 0),
+      }),
+      { revenue: 0, payment: 0, expense: 0, totalRevenue: 0, profit: 0 }
+    );
+  }, [data]);
+
   if (!data || data.length === 0) {
     return (
       <div className="text-center py-5">
@@ -11,127 +25,128 @@ const FilteredChart = ({ data }) => {
     );
   }
 
-  const profitChartData = {
-    options: {
-      chart: {
-        id: "filtered-profit-chart",
-        type: "area",
-        toolbar: {
-          show: true,
-        },
-      },
-      xaxis: {
-        categories: data.map((d) => d.monthLabel),
-        labels: {
-          rotate: -45,
-          rotateAlways: false,
-        },
-      },
-      yaxis: {
-        title: {
-          text: "Amount",
-        },
-        labels: {
-          formatter: (value) => value.toFixed(2),
-        },
-      },
-      title: {
-        text: "Profit",
-        align: "center",
-        style: {
-          fontSize: "16px",
-          fontWeight: 600,
-        },
-      },
-      colors: ["#28a745"],
-      stroke: {
-        curve: "smooth",
-        width: 3,
-      },
-      tooltip: {
-        y: {
-          formatter: (val) => `${val.toFixed(2)}`,
-        },
-      },
-    },
-    series: [
-      {
-        name: "Profit",
-        data: data.map((d) => parseFloat(d.profit || 0)),
-      },
-    ],
-  };
+  // Chart code commented out
+  // const profitChartData = {
+  //   options: {
+  //     chart: {
+  //       id: "filtered-profit-chart",
+  //       type: "area",
+  //       toolbar: {
+  //         show: true,
+  //       },
+  //     },
+  //     xaxis: {
+  //       categories: data.map((d) => d.monthLabel),
+  //       labels: {
+  //         rotate: -45,
+  //         rotateAlways: false,
+  //       },
+  //     },
+  //     yaxis: {
+  //       title: {
+  //         text: "Amount",
+  //       },
+  //       labels: {
+  //         formatter: (value) => value.toFixed(2),
+  //       },
+  //     },
+  //     title: {
+  //       text: "Profit",
+  //       align: "center",
+  //       style: {
+  //         fontSize: "16px",
+  //         fontWeight: 600,
+  //       },
+  //     },
+  //     colors: ["#28a745"],
+  //     stroke: {
+  //       curve: "smooth",
+  //       width: 3,
+  //     },
+  //     tooltip: {
+  //       y: {
+  //         formatter: (val) => `${val.toFixed(2)}`,
+  //       },
+  //     },
+  //   },
+  //   series: [
+  //     {
+  //       name: "Profit",
+  //       data: data.map((d) => parseFloat(d.profit || 0)),
+  //     },
+  //   ],
+  // };
 
-  const expenseRevenueChartData = {
-    options: {
-      chart: {
-        id: "filtered-expense-revenue-chart",
-        type: "area",
-        toolbar: {
-          show: true,
-        },
-        zoom: {
-          enabled: true,
-        },
-        stacked: false,
-      },
-      xaxis: {
-        categories: data.map((d) => d.monthLabel),
-        labels: {
-          rotate: -45,
-          rotateAlways: false,
-        },
-      },
-      yaxis: {
-        title: {
-          text: "Amount",
-        },
-        labels: {
-          formatter: (value) => value.toFixed(2),
-        },
-      },
-      title: {
-        text: "Expense vs Revenue",
-        align: "center",
-        style: {
-          fontSize: "16px",
-          fontWeight: 600,
-        },
-      },
-      colors: ["#dc3545", "#28a745"],
-      stroke: {
-        curve: "smooth",
-        width: 3,
-      },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.7,
-          opacityTo: 0.3,
-          stops: [0, 90, 100],
-        },
-      },
-      legend: {
-        position: "top",
-      },
-      tooltip: {
-        y: {
-          formatter: (val) => `${val.toFixed(2)}`,
-        },
-      },
-    },
-    series: [
-      {
-        name: "Expense",
-        data: data.map((d) => parseFloat(d.expense || 0)),
-      },
-      {
-        name: "Revenue",
-        data: data.map((d) => parseFloat(d.totalRevenue || 0)),
-      },
-    ],
-  };
+  // const expenseRevenueChartData = {
+  //   options: {
+  //     chart: {
+  //       id: "filtered-expense-revenue-chart",
+  //       type: "area",
+  //       toolbar: {
+  //         show: true,
+  //       },
+  //     zoom: {
+  //       enabled: true,
+  //     },
+  //     stacked: false,
+  //   },
+  //   xaxis: {
+  //     categories: data.map((d) => d.monthLabel),
+  //     labels: {
+  //       rotate: -45,
+  //       rotateAlways: false,
+  //     },
+  //   },
+  //   yaxis: {
+  //     title: {
+  //       text: "Amount",
+  //     },
+  //     labels: {
+  //       formatter: (value) => value.toFixed(2),
+  //     },
+  //   },
+  //   title: {
+  //     text: "Expense vs Revenue",
+  //     align: "center",
+  //     style: {
+  //       fontSize: "16px",
+  //       fontWeight: 600,
+  //     },
+  //   },
+  //   colors: ["#dc3545", "#28a745"],
+  //   stroke: {
+  //     curve: "smooth",
+  //     width: 3,
+  //   },
+  //   fill: {
+  //     type: "gradient",
+  //     gradient: {
+  //       shadeIntensity: 1,
+  //       opacityFrom: 0.7,
+  //       opacityTo: 0.3,
+  //       stops: [0, 90, 100],
+  //     },
+  //   },
+  //   legend: {
+  //     position: "top",
+  //   },
+  //   tooltip: {
+  //     y: {
+  //       formatter: (val) => `${val.toFixed(2)}`,
+  //     },
+  //   },
+  // },
+  // series: [
+  //   {
+  //     name: "Expense",
+  //     data: data.map((d) => parseFloat(d.expense || 0)),
+  //   },
+  //   {
+  //     name: "Revenue",
+  //     data: data.map((d) => parseFloat(d.totalRevenue || 0)),
+  //   },
+  // ],
+  // };
 
   return (
     <div>
@@ -139,24 +154,80 @@ const FilteredChart = ({ data }) => {
         <Col md={12} className="mb-4">
           <Card className="border-0">
             <Card.Body>
-              <Chart
+              <h5 className="mb-3">Profit Breakdown</h5>
+              {/* <Chart
                 options={profitChartData.options}
                 series={profitChartData.series}
                 type="area"
                 height={350}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={12}>
-          <Card className="border-0">
-            <Card.Body>
-              <Chart
-                options={expenseRevenueChartData.options}
-                series={expenseRevenueChartData.series}
-                type="area"
-                height={350}
-              />
+              /> */}
+              <Table striped bordered hover responsive>
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    {!hasFilter && <th className="text-end">Revenue</th>}
+                    <th className="text-end">Payments</th>
+                    {!hasFilter && <th className="text-end">Expense</th>}
+                    <th className="text-end">Profit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((d, index) => (
+                    <tr key={index}>
+                      <td>{d.monthLabel}</td>
+                      {!hasFilter && (
+                        <td className="text-end">
+                          {parseFloat(d.revenue || 0).toFixed(2)}
+                        </td>
+                      )}
+                      <td className="text-end">
+                        {parseFloat(d.payment || 0).toFixed(2)}
+                      </td>
+                      {!hasFilter && (
+                        <td className="text-end">
+                          {parseFloat(d.expense || 0).toFixed(2)}
+                        </td>
+                      )}
+                      <td
+                        className={`text-end ${
+                          parseFloat(d.profit || 0) >= 0
+                            ? "text-success"
+                            : "text-danger"
+                        }`}
+                      >
+                        {parseFloat(d.profit || 0).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                  {totalStats && (
+                    <tr className="table-info fw-bold">
+                      <td>Total</td>
+                      {!hasFilter && (
+                        <td className="text-end">
+                          {totalStats.revenue.toFixed(2)}
+                        </td>
+                      )}
+                      <td className="text-end">
+                        {totalStats.payment.toFixed(2)}
+                      </td>
+                      {!hasFilter && (
+                        <td className="text-end">
+                          {totalStats.expense.toFixed(2)}
+                        </td>
+                      )}
+                      <td
+                        className={`text-end ${
+                          totalStats.profit >= 0
+                            ? "text-success"
+                            : "text-danger"
+                        }`}
+                      >
+                        {totalStats.profit.toFixed(2)}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
             </Card.Body>
           </Card>
         </Col>

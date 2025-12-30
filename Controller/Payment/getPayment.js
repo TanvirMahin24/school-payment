@@ -7,6 +7,7 @@ const getPayments = async (req, res) => {
     const {
       tenant,
       year,
+      month,
       gradeId,
       shiftId,
       batchId,
@@ -21,6 +22,10 @@ const getPayments = async (req, res) => {
 
     if (year) {
       whereClause.year = parseInt(year);
+    }
+
+    if (month) {
+      whereClause.month = month;
     }
 
     if (gradeId) {

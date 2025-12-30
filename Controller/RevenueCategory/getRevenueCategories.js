@@ -28,3 +28,5 @@ const getRevenueCategories = async (req, res) => {
 module.exports = { getRevenueCategories };
 
 
+
+

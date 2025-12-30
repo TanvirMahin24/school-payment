@@ -14,7 +14,10 @@ import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import { getStudentList } from "../../actions/Student.action";
 import { getGradeList } from "../../actions/Grade.action";
-import { createPayments, getPaymentsByStudents } from "../../actions/Payment.action";
+import {
+  createPayments,
+  getPaymentsByStudents,
+} from "../../actions/Payment.action";
 import { months, years } from "../../constants/MonthsAndYears";
 import { TENANT_LIST, DEFAULT_TENANT } from "../../constants/Tenant";
 
@@ -43,6 +46,8 @@ const PaymentEntry = ({
   const [studentPayments, setStudentPayments] = useState({});
   // Payment status for each student (created/updated/failed/existing/new)
   const [paymentStatus, setPaymentStatus] = useState({});
+  // Selected students for submission
+  const [selectedStudents, setSelectedStudents] = useState(new Set());
 
   useEffect(() => {
     if (list !== null && list.length > 0) {
@@ -65,10 +70,10 @@ const PaymentEntry = ({
           // Initialize payment data for each student
           const initialPayments = {};
           const initialStatus = {};
-          
+
           list.forEach((student) => {
             const existingPayment = existingPayments[student.id];
-            
+
             if (existingPayment) {
               // Pre-fill with existing payment data
               initialPayments[student.id] = {
@@ -87,9 +92,11 @@ const PaymentEntry = ({
               initialStatus[student.id] = "new";
             }
           });
-          
+
           setStudentPayments(initialPayments);
           setPaymentStatus(initialStatus);
+          // Select all students by default
+          setSelectedStudents(new Set(list.map((s) => s.id)));
         } else {
           // No filter context yet, just initialize with empty values
           const initialPayments = {};
@@ -102,17 +109,20 @@ const PaymentEntry = ({
           });
           setStudentPayments(initialPayments);
           setPaymentStatus({});
+          // Select all students by default
+          setSelectedStudents(new Set(list.map((s) => s.id)));
         }
       };
-      
+
       fetchExistingPayments();
     } else if (list !== null && list.length === 0) {
       // Empty list
       setRawList([]);
       setStudentPayments({});
       setPaymentStatus({});
+      setSelectedStudents(new Set());
     }
-    
+
     if (grades === null) {
       getGradeList(selectedTenant);
     }
@@ -121,8 +131,14 @@ const PaymentEntry = ({
 
   const selectHandler = async () => {
     setLoading(true);
-    const result = await getStudentList(year, grade, shift, batch, selectedTenant);
-    
+    const result = await getStudentList(
+      year,
+      grade,
+      shift,
+      batch,
+      selectedTenant
+    );
+
     if (result && result.length > 0) {
       // Fetch existing payments for these students
       // Match by: userId, year, gradeId, shiftId, batchId, and month
@@ -140,10 +156,10 @@ const PaymentEntry = ({
       // Initialize payment data for loaded students
       const initialPayments = {};
       const initialStatus = {};
-      
+
       result.forEach((student) => {
         const existingPayment = existingPayments[student.id];
-        
+
         if (existingPayment) {
           // Pre-fill with existing payment data
           initialPayments[student.id] = {
@@ -162,30 +178,42 @@ const PaymentEntry = ({
           initialStatus[student.id] = "new";
         }
       });
-      
+
       setStudentPayments(initialPayments);
       setPaymentStatus(initialStatus);
+      // Select all students by default
+      setSelectedStudents(new Set(result.map((s) => s.id)));
     } else {
       // No students found
       setStudentPayments({});
       setPaymentStatus({});
+      setSelectedStudents(new Set());
     }
-    
+
     setLoading(false);
   };
 
   const applyBulkFill = () => {
+    if (selectedStudents.size === 0) {
+      toast.warning("Please select at least one student to apply bulk values");
+      return;
+    }
     const updatedPayments = { ...studentPayments };
-    rawList.forEach((student) => {
-      updatedPayments[student.id] = {
-        ...updatedPayments[student.id],
-        amount: bulkAmount || updatedPayments[student.id]?.amount || "",
-        extra_amount: bulkExtraAmount || updatedPayments[student.id]?.extra_amount || "",
-        note: bulkNote || updatedPayments[student.id]?.note || "",
-      };
-    });
+    rawList
+      .filter((student) => selectedStudents.has(student.id))
+      .forEach((student) => {
+        updatedPayments[student.id] = {
+          ...updatedPayments[student.id],
+          amount: bulkAmount || updatedPayments[student.id]?.amount || "",
+          extra_amount:
+            bulkExtraAmount || updatedPayments[student.id]?.extra_amount || "",
+          note: bulkNote || updatedPayments[student.id]?.note || "",
+        };
+      });
     setStudentPayments(updatedPayments);
-    toast.success("Bulk values applied to all students");
+    toast.success(
+      `Bulk values applied to ${selectedStudents.size} selected student(s)`
+    );
   };
 
   const updateStudentPayment = (studentId, field, value) => {
@@ -198,9 +226,29 @@ const PaymentEntry = ({
     }));
   };
 
+  const handleStudentSelect = (studentId) => {
+    setSelectedStudents((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(studentId)) {
+        newSet.delete(studentId);
+      } else {
+        newSet.add(studentId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    setSelectedStudents(new Set(rawList.map((s) => s.id)));
+  };
+
+  const handleUnselectAll = () => {
+    setSelectedStudents(new Set());
+  };
+
   const validatePayments = () => {
     const errors = [];
-    
+
     // Validate filters are selected
     if (!grade || grade === "") {
       errors.push("Please select a Class");
@@ -211,15 +259,25 @@ const PaymentEntry = ({
     if (!batch || batch === "") {
       errors.push("Please select a Batch");
     }
-    
+
     if (!month || month === "") {
       errors.push("Please select a Month");
     }
-    
+
+    // Check if at least one student is selected
+    if (selectedStudents.size === 0) {
+      errors.push("Please select at least one student to submit");
+    }
+
+    // Only validate selected students
     rawList.forEach((student) => {
-      const payment = studentPayments[student.id];
-      if (!payment || !payment.amount || parseFloat(payment.amount) <= 0) {
-        errors.push(`Student ${student.uid} (${student.name}): Amount is required`);
+      if (selectedStudents.has(student.id)) {
+        const payment = studentPayments[student.id];
+        if (!payment || !payment.amount || parseFloat(payment.amount) <= 0) {
+          errors.push(
+            `Student ${student.uid} (${student.name}): Amount is required`
+          );
+        }
       }
     });
 
@@ -247,76 +305,101 @@ const PaymentEntry = ({
     const shiftNum = shift && shift !== "" ? parseInt(shift) : null;
     const batchNum = batch && batch !== "" ? parseInt(batch) : null;
 
-    const currentGrade = gradeNum ? grades?.find((g) => g.id === gradeNum) : null;
-    const currentShift = currentGrade && shiftNum ? currentGrade.shifts?.find((s) => s.id === shiftNum) : null;
-    const currentBatch = currentGrade && batchNum && shiftNum 
-      ? currentGrade.batches?.find((b) => b.id === batchNum && b.shiftId === shiftNum) 
+    const currentGrade = gradeNum
+      ? grades?.find((g) => g.id === gradeNum)
       : null;
+    const currentShift =
+      currentGrade && shiftNum
+        ? currentGrade.shifts?.find((s) => s.id === shiftNum)
+        : null;
+    const currentBatch =
+      currentGrade && batchNum && shiftNum
+        ? currentGrade.batches?.find(
+            (b) => b.id === batchNum && b.shiftId === shiftNum
+          )
+        : null;
 
-    const finalGradeId = currentGrade?.id || (gradeNum && !isNaN(gradeNum) ? gradeNum : null);
-    const finalShiftId = currentShift?.id || (shiftNum && !isNaN(shiftNum) ? shiftNum : null);
-    const finalBatchId = currentBatch?.id || (batchNum && !isNaN(batchNum) ? batchNum : null);
+    const finalGradeId =
+      currentGrade?.id || (gradeNum && !isNaN(gradeNum) ? gradeNum : null);
+    const finalShiftId =
+      currentShift?.id || (shiftNum && !isNaN(shiftNum) ? shiftNum : null);
+    const finalBatchId =
+      currentBatch?.id || (batchNum && !isNaN(batchNum) ? batchNum : null);
 
     if (!finalGradeId || !finalShiftId || !finalBatchId) {
-      toast.error("Grade, Shift, and Batch must be selected before submitting payments");
+      toast.error(
+        "Grade, Shift, and Batch must be selected before submitting payments"
+      );
       setSubmitting(false);
       return;
     }
 
-    // Prepare payment data
-    const paymentsToSubmit = rawList.map((student) => {
-      const payment = studentPayments[student.id];
-      return {
-        userId: student.id, // Use student primaryId as userId
-        amount: parseFloat(payment.amount),
-        extra_amount: payment.extra_amount ? parseFloat(payment.extra_amount) : 0,
-        month: month,
-        year: year,
-        tenant: selectedTenant,
-        note: payment.note || "",
-        meta: {
+    // Prepare payment data - only for selected students
+    const paymentsToSubmit = rawList
+      .filter((student) => selectedStudents.has(student.id))
+      .map((student) => {
+        const payment = studentPayments[student.id];
+        return {
+          userId: student.id, // Use student primaryId as userId
+          amount: parseFloat(payment.amount),
+          extra_amount: payment.extra_amount
+            ? parseFloat(payment.extra_amount)
+            : 0,
+          month: month,
+          year: year,
+          tenant: selectedTenant,
           note: payment.note || "",
-          studentId: student.id,
-          studentUid: student.uid,
-          studentName: student.name,
+          meta: {
+            note: payment.note || "",
+            studentId: student.id,
+            studentUid: student.uid,
+            studentName: student.name,
+            gradeId: finalGradeId,
+            shiftId: finalShiftId,
+            batchId: finalBatchId,
+            gradeName: currentGrade?.name,
+            shiftName: currentShift?.name,
+            batchName: currentBatch?.name,
+          },
           gradeId: finalGradeId,
           shiftId: finalShiftId,
           batchId: finalBatchId,
-          gradeName: currentGrade?.name,
-          shiftName: currentShift?.name,
-          batchName: currentBatch?.name,
-        },
-        gradeId: finalGradeId,
-        shiftId: finalShiftId,
-        batchId: finalBatchId,
-      };
-    });
+        };
+      });
 
     // Submit payments
     const results = await createPayments(paymentsToSubmit);
 
     setSubmitting(false);
 
-    // Update payment status for each student
-    const newStatus = {};
-    rawList.forEach((student) => {
-      const status = results.statusMap[student.id];
-      if (status) {
-        newStatus[student.id] = status;
-      }
-    });
+    // Update payment status for each student (only for selected ones)
+    const newStatus = { ...paymentStatus };
+    rawList
+      .filter((student) => selectedStudents.has(student.id))
+      .forEach((student) => {
+        const status = results.statusMap[student.id];
+        if (status) {
+          newStatus[student.id] = status;
+        }
+      });
     setPaymentStatus(newStatus);
 
     // Show results with created/updated breakdown
-    const createdCount = results.successful.filter((r) => r.status === "created").length;
-    const updatedCount = results.successful.filter((r) => r.status === "updated").length;
-    
+    const createdCount = results.successful.filter(
+      (r) => r.status === "created"
+    ).length;
+    const updatedCount = results.successful.filter(
+      (r) => r.status === "updated"
+    ).length;
+
     if (results.successful.length > 0) {
       const messageParts = [];
       if (createdCount > 0) messageParts.push(`${createdCount} created`);
       if (updatedCount > 0) messageParts.push(`${updatedCount} updated`);
       toast.success(
-        `Successfully processed ${results.successful.length} payment(s): ${messageParts.join(", ")}`
+        `Successfully processed ${
+          results.successful.length
+        } payment(s): ${messageParts.join(", ")}`
       );
     }
 
@@ -491,7 +574,7 @@ const PaymentEntry = ({
       {rawList.length > 0 && (
         <Card bg="light" text="dark" className="shadow mb-4">
           <Card.Body>
-            <h5 className="mb-3">Bulk Fill (Apply to All Students)</h5>
+            <h5 className="mb-3">Bulk Fill (Apply to Selected Students)</h5>
             <Row>
               <Col md={4} className="py-2">
                 <label htmlFor="bulkAmount" className="d-block pb-1">
@@ -564,28 +647,94 @@ const PaymentEntry = ({
             <>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                  <h5 className="mb-1">Student Payment Entry ({rawList.length} students)</h5>
-                  <h6 className="text-muted mb-0">{month} {year}</h6>
+                  <h5 className="mb-1">
+                    Student Payment Entry ({rawList.length} students)
+                  </h5>
+                  <h6 className="text-muted mb-0">
+                    {month} {year}
+                  </h6>
+                  <small className="text-muted">
+                    {selectedStudents.size} of {rawList.length} selected
+                  </small>
                 </div>
-                <Button
-                  variant="primary"
-                  onClick={submitPayments}
-                  disabled={submitting}
-                  size="lg"
-                >
-                  {submitting ? "Submitting..." : "Submit All Payments"}
-                </Button>
+                <div className="d-flex gap-2 align-items-center">
+                  <ButtonGroup>
+                    <Button
+                      variant="outline-secondary"
+                      onClick={handleSelectAll}
+                      size="sm"
+                    >
+                      Check All
+                    </Button>
+                    <Button
+                      variant="outline-secondary"
+                      onClick={handleUnselectAll}
+                      size="sm"
+                    >
+                      Uncheck All
+                    </Button>
+                  </ButtonGroup>
+                  <Button
+                    variant="primary"
+                    onClick={submitPayments}
+                    disabled={submitting || selectedStudents.size === 0}
+                    size="lg"
+                  >
+                    {submitting
+                      ? "Submitting..."
+                      : `Submit Selected (${selectedStudents.size})`}
+                  </Button>
+                </div>
               </div>
               <div style={{ overflowX: "auto" }}>
-                <Table striped bordered hover responsive size="sm" style={{ fontSize: "0.875rem" }}>
+                <Table
+                  striped
+                  bordered
+                  hover
+                  responsive
+                  size="sm"
+                  style={{ fontSize: "0.875rem" }}
+                >
                   <thead>
                     <tr>
+                      <th
+                        style={{
+                          width: "3%",
+                          padding: "0.5rem",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Form.Check
+                          type="checkbox"
+                          checked={
+                            selectedStudents.size === rawList.length &&
+                            rawList.length > 0
+                          }
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              handleSelectAll();
+                            } else {
+                              handleUnselectAll();
+                            }
+                          }}
+                        />
+                      </th>
                       <th style={{ width: "5%", padding: "0.5rem" }}>Roll</th>
                       <th style={{ width: "15%", padding: "0.5rem" }}>Name</th>
-                      <th style={{ width: "12%", padding: "0.5rem" }}>Amount *</th>
+                      <th style={{ width: "12%", padding: "0.5rem" }}>
+                        Amount *
+                      </th>
                       <th style={{ width: "12%", padding: "0.5rem" }}>Extra</th>
                       <th style={{ width: "25%", padding: "0.5rem" }}>Note</th>
-                      <th style={{ width: "10%", padding: "0.5rem", textAlign: "center" }}>Status</th>
+                      <th
+                        style={{
+                          width: "10%",
+                          padding: "0.5rem",
+                          textAlign: "center",
+                        }}
+                      >
+                        Status
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -605,22 +754,87 @@ const PaymentEntry = ({
                         const getStatusBadge = () => {
                           if (!status) return null;
                           if (status === "existing") {
-                            return <span className="badge bg-info" style={{ fontSize: "0.7rem" }}>Existing</span>;
+                            return (
+                              <span
+                                className="badge bg-info"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                Existing
+                              </span>
+                            );
                           } else if (status === "new") {
-                            return <span className="badge bg-secondary" style={{ fontSize: "0.7rem" }}>New</span>;
+                            return (
+                              <span
+                                className="badge bg-secondary"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                New
+                              </span>
+                            );
                           } else if (status === "created") {
-                            return <span className="badge bg-success" style={{ fontSize: "0.7rem" }}>New Entry</span>;
+                            return (
+                              <span
+                                className="badge bg-success"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                New Entry
+                              </span>
+                            );
                           } else if (status === "updated") {
-                            return <span className="badge bg-warning text-dark" style={{ fontSize: "0.7rem" }}>Updated</span>;
+                            return (
+                              <span
+                                className="badge bg-warning text-dark"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                Updated
+                              </span>
+                            );
                           } else if (status === "failed") {
-                            return <span className="badge bg-danger" style={{ fontSize: "0.7rem" }}>Failed</span>;
+                            return (
+                              <span
+                                className="badge bg-danger"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                Failed
+                              </span>
+                            );
                           }
                           return null;
                         };
                         return (
                           <tr key={student.id}>
-                            <td style={{ padding: "0.5rem", verticalAlign: "middle" }}>{student.uid}</td>
-                            <td style={{ padding: "0.5rem", verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "150px" }} title={student.name}>
+                            <td
+                              style={{
+                                padding: "0.5rem",
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <Form.Check
+                                type="checkbox"
+                                checked={selectedStudents.has(student.id)}
+                                onChange={() => handleStudentSelect(student.id)}
+                              />
+                            </td>
+                            <td
+                              style={{
+                                padding: "0.5rem",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              {student.uid}
+                            </td>
+                            <td
+                              style={{
+                                padding: "0.5rem",
+                                verticalAlign: "middle",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: "150px",
+                              }}
+                              title={student.name}
+                            >
                               {student.name}
                             </td>
                             <td style={{ padding: "0.5rem" }}>
@@ -639,7 +853,10 @@ const PaymentEntry = ({
                                 }
                                 required
                                 size="sm"
-                                style={{ fontSize: "0.875rem", padding: "0.25rem 0.5rem" }}
+                                style={{
+                                  fontSize: "0.875rem",
+                                  padding: "0.25rem 0.5rem",
+                                }}
                               />
                             </td>
                             <td style={{ padding: "0.5rem" }}>
@@ -657,7 +874,10 @@ const PaymentEntry = ({
                                   )
                                 }
                                 size="sm"
-                                style={{ fontSize: "0.875rem", padding: "0.25rem 0.5rem" }}
+                                style={{
+                                  fontSize: "0.875rem",
+                                  padding: "0.25rem 0.5rem",
+                                }}
                               />
                             </td>
                             <td style={{ padding: "0.5rem" }}>
@@ -673,10 +893,19 @@ const PaymentEntry = ({
                                   )
                                 }
                                 size="sm"
-                                style={{ fontSize: "0.875rem", padding: "0.25rem 0.5rem" }}
+                                style={{
+                                  fontSize: "0.875rem",
+                                  padding: "0.25rem 0.5rem",
+                                }}
                               />
                             </td>
-                            <td style={{ padding: "0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                            <td
+                              style={{
+                                padding: "0.5rem",
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
                               {getStatusBadge()}
                             </td>
                           </tr>
@@ -687,7 +916,8 @@ const PaymentEntry = ({
               </div>
               <div className="mt-3">
                 <small className="text-muted">
-                  * Required fields. Click "Submit All Payments" to create payments in the payment system.
+                  * Required fields. Click "Submit All Payments" to create
+                  payments in the payment system.
                 </small>
               </div>
             </>
@@ -711,4 +941,3 @@ const PaymentEntryConnected = connect(mapStateToProps, {
 
 export { PaymentEntry };
 export default PaymentEntryConnected;
-

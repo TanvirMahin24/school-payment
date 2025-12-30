@@ -28,3 +28,5 @@ const getExpenseCategories = async (req, res) => {
 module.exports = { getExpenseCategories };
 
 
+
+

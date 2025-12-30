@@ -25,3 +25,5 @@ const RevenueCategory = sequelize.define("revenue_category", {
 module.exports = RevenueCategory;
 
 
+
+

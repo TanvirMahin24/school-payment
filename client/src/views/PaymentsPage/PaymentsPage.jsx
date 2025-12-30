@@ -6,11 +6,13 @@ import { getPayments } from "../../actions/Payment.action";
 import { getGradeList } from "../../actions/Grade.action";
 import { useNavigate } from "react-router-dom";
 import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
+import { months } from "../../constants/MonthsAndYears";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
 const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, selectedTenant }) => {
   const navigate = useNavigate();
   const [year, setYear] = useState(`${new Date().getFullYear()}`);
+  const [month, setMonth] = useState("");
   const [grade, setGrade] = useState("");
   const [shift, setShift] = useState("");
   const [batch, setBatch] = useState("");
@@ -24,6 +26,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
     setGrade("");
     setShift("");
     setBatch("");
+    setMonth("");
     // Clear payments when tenant changes (dispatch empty array)
     getPayments({ clear: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,6 +36,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
     const filters = {
       tenant: selectedTenant,
       ...(year && { year }),
+      ...(month && { month }),
       ...(grade && { gradeId: grade }),
       ...(shift && { shiftId: shift }),
       ...(batch && { batchId: batch }),
@@ -171,7 +175,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
         <Card bg="white" text="dark" className="shadow mb-4">
           <Card.Body>
             <Row>
-              <Col md={6} className="py-3">
+              <Col md={3} className="py-3">
                 <div className="d-flex justify-content-between align-items-center pb-2">
                   <label htmlFor="year" className="d-block">
                     Year
@@ -191,6 +195,26 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
                         {item}
                       </option>
                     ))}
+                </Form.Select>
+              </Col>
+              <Col md={3} className="py-3">
+                <div className="d-flex justify-content-between align-items-center pb-2">
+                  <label htmlFor="month" className="d-block">
+                    Month
+                  </label>
+                </div>
+                <Form.Select
+                  onChange={(e) => setMonth(e.target.value)}
+                  id="month"
+                  name="month"
+                  value={month}
+                >
+                  <option value={""}>Select Month</option>
+                  {months.map((m, i) => (
+                    <option key={i} value={m}>
+                      {m}
+                    </option>
+                  ))}
                 </Form.Select>
               </Col>
               <Col md={6} className="d-flex justify-content-end align-items-end py-3">
@@ -400,8 +424,8 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
               <div className="text-center py-5">
                 <p>
                   No payments found. 
-                  {(year || grade || shift || batch) && " Try adjusting your filters."}
-                  {!year && !grade && !shift && !batch && " Select filters and click 'Select' to search for payments."}
+                  {(year || month || grade || shift || batch) && " Try adjusting your filters."}
+                  {!year && !month && !grade && !shift && !batch && " Select filters and click 'Select' to search for payments."}
                 </p>
               </div>
             )}

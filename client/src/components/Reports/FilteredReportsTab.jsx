@@ -32,7 +32,18 @@ const FilteredReportsTab = ({
     if (selectedTenant) {
       getGradeList(selectedTenant);
     }
-  }, [selectedTenant, getGradeList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTenant]);
+
+  // Don't clear on mount - ReportsPage handles clearing on tab change
+
+  // Clear filtered stats when grade, shift, or batch changes
+  useEffect(() => {
+    if (filteredStats !== null && filteredStats !== undefined) {
+      getFilteredStats({ clear: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grade, shift, batch]);
 
   const handleFilter = () => {
     const filters = {
@@ -199,7 +210,7 @@ const FilteredReportsTab = ({
           <Spinner animation="border" variant="primary" />
         </div>
       ) : filteredStats && filteredStats.length > 0 ? (
-        <FilteredChart data={filteredStats} />
+        <FilteredChart data={filteredStats} hasFilter={!!(grade || shift || batch)} />
       ) : filteredStats && filteredStats.length === 0 ? (
         <Card>
           <Card.Body>
@@ -212,7 +223,7 @@ const FilteredReportsTab = ({
         <Card>
           <Card.Body>
             <div className="text-center py-5">
-              <p className="text-muted">Select filters and click "Generate Report" to view data</p>
+              <p className="text-muted">Click generate report to view data</p>
             </div>
           </Card.Body>
         </Card>
