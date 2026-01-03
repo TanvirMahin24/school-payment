@@ -1,7 +1,6 @@
-export const PROD = false;
+export const PROD = true;
 
 export let BASE_URL =
   PROD === true
-    ? `https://primary.notunkurifoundation.com`
+    ? `https://accounts.notunkurifoundation.com`
     : `http://localhost:5002`;
-

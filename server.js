@@ -4,8 +4,20 @@ const cors = require("cors");
 var morgan = require("morgan");
 const sequelize = require("./Utils/database");
 const path = require("path");
+const fs = require("fs");
 const passport = require("passport");
-const { Payment, User, Grade, Shift, Batch, Student, Expense, Revenue, ExpenseCategory, RevenueCategory } = require("./Model");
+const {
+  Payment,
+  User,
+  Grade,
+  Shift,
+  Batch,
+  Student,
+  Expense,
+  Revenue,
+  ExpenseCategory,
+  RevenueCategory,
+} = require("./Model");
 const { Op } = require("sequelize");
 require("./Utils/passport");
 
@@ -56,7 +68,32 @@ app.use(
 );
 app.use(passport.initialize());
 
-app.use(express.static(path.join(__dirname, "./client/dist")));
+// Serve static files with case-insensitive path handling for assets
+const staticOptions = {
+  setHeaders: (res, filePath) => {
+    // Ensure JavaScript modules are served with correct MIME type
+    if (filePath.endsWith(".js")) {
+      res.setHeader("Content-Type", "application/javascript; charset=utf-8");
+    }
+  },
+};
+
+app.use(express.static(path.join(__dirname, "./client/dist"), staticOptions));
+
+// Handle case-insensitive asset directory requests (assets vs Assets)
+app.use((req, res, next) => {
+  if (
+    req.path.toLowerCase().startsWith("/assets/") &&
+    !req.path.startsWith("/Assets/")
+  ) {
+    const correctedPath = req.path.replace(/^\/assets\//i, "/Assets/");
+    const filePath = path.join(__dirname, "./client/dist", correctedPath);
+    if (fs.existsSync(filePath)) {
+      return res.sendFile(filePath);
+    }
+  }
+  next();
+});
 
 app.use("/api", require("./Routes/Auth"));
 app.use("/api/payment", require("./Routes/Payment"));
@@ -69,7 +106,28 @@ app.use("/api/expense-category", require("./Routes/ExpenseCategory"));
 app.use("/api/revenue-category", require("./Routes/RevenueCategory"));
 app.use("/api/report", require("./Routes/Report"));
 
-app.get("/*", (req, res) => {
+// Catch-all handler: serve index.html for non-API routes that don't match static files
+// Static files are already handled by the express.static middleware above
+app.get("/*", (req, res, next) => {
+  // Skip if it's an API route
+  if (req.path.startsWith("/api")) {
+    return next();
+  }
+
+  // Skip if it's a request for a file with an extension (static asset)
+  // This ensures static files (js, css, images, etc.) are not served as HTML
+  const ext = path.extname(req.path);
+  if (ext) {
+    // Let Express handle 404 for missing static files instead of serving HTML
+    return next();
+  }
+
+  // Also skip common asset directories to avoid serving HTML for asset requests
+  if (req.path.startsWith("/assets") || req.path.startsWith("/Assets")) {
+    return next();
+  }
+
+  // Serve index.html for all other routes (SPA routing)
   return res.sendFile(path.join(__dirname, "./client/dist", "index.html"));
 });
 
@@ -80,46 +138,46 @@ app.get("/*", (req, res) => {
 // Payment belongs to Student (composite foreign key)
 // Note: Due to composite keys, constraints are disabled and relationships may need manual handling in queries
 Payment.belongsTo(Student, {
-  foreignKey: 'userId',
-  targetKey: 'primaryId',
+  foreignKey: "userId",
+  targetKey: "primaryId",
   constraints: false, // Disable foreign key constraint
-  as: 'student',
+  as: "student",
 });
 
 // Payment belongs to Grade (composite foreign key)
 Payment.belongsTo(Grade, {
-  foreignKey: 'gradePrimaryId',
-  targetKey: 'primaryId',
+  foreignKey: "gradePrimaryId",
+  targetKey: "primaryId",
   constraints: false,
-  as: 'grade',
+  as: "grade",
 });
 
 // Payment belongs to Shift (composite foreign key)
 Payment.belongsTo(Shift, {
-  foreignKey: 'shiftPrimaryId',
-  targetKey: 'primaryId',
+  foreignKey: "shiftPrimaryId",
+  targetKey: "primaryId",
   constraints: false,
-  as: 'shift',
+  as: "shift",
 });
 
 // Payment belongs to Batch (composite foreign key)
 Payment.belongsTo(Batch, {
-  foreignKey: 'batchPrimaryId',
-  targetKey: 'primaryId',
+  foreignKey: "batchPrimaryId",
+  targetKey: "primaryId",
   constraints: false,
-  as: 'batch',
+  as: "batch",
 });
 
 // Expense belongs to ExpenseCategory
 Expense.belongsTo(ExpenseCategory, {
-  foreignKey: 'categoryId',
-  as: 'category',
+  foreignKey: "categoryId",
+  as: "category",
 });
 
 // Revenue belongs to RevenueCategory
 Revenue.belongsTo(RevenueCategory, {
-  foreignKey: 'categoryId',
-  as: 'category',
+  foreignKey: "categoryId",
+  as: "category",
 });
 
 // Note: Grade, Shift, Batch use composite primary keys (tenant, primaryId)
@@ -136,9 +194,11 @@ sequelize
     // Start CRON job for syncing grades, shifts, and batches
     const { startSyncCron } = require("./Jobs/syncGradesCron");
     startSyncCron();
-    
+
     // Start CRON job for syncing students
-    const { startSyncCron: startStudentSyncCron } = require("./Jobs/syncStudentsCron");
+    const {
+      startSyncCron: startStudentSyncCron,
+    } = require("./Jobs/syncStudentsCron");
     startStudentSyncCron();
 
     app.listen(port, () => {
