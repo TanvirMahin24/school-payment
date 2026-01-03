@@ -202,7 +202,9 @@ sequelize
     startStudentSyncCron();
 
     // Start CRON job for syncing school grades, shifts, and batches
-    const { startSyncCron: startSchoolGradesSyncCron } = require("./Jobs/syncSchoolGradesCron");
+    const {
+      startSyncCron: startSchoolGradesSyncCron,
+    } = require("./Jobs/syncSchoolGradesCron");
     startSchoolGradesSyncCron();
 
     // Start CRON job for syncing school students
