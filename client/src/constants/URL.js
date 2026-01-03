@@ -1,4 +1,4 @@
-export const PROD = true;
+export const PROD = false;
 
 export let BASE_URL =
   PROD === true

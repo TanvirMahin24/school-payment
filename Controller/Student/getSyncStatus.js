@@ -27,7 +27,7 @@ const getSyncStatus = async (req, res) => {
     }
 
     // Otherwise, get status for all tenants
-    const tenants = ["primary", "coaching"]; // Support for future coaching tenant
+    const tenants = ["primary", "coaching", "school"];
     const statusMap = {};
 
     for (const t of tenants) {

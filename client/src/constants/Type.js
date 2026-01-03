@@ -21,6 +21,7 @@ export const GET_PAYMENT = "GET_PAYMENT";
 
 // GRADE REDUCER
 export const GET_GRADE = "GET_GRADE";
+export const SYNC_GRADES = "SYNC_GRADES";
 
 // STUDENT REDUCER
 export const SYNC_ALL_STUDENTS = "SYNC_ALL_STUDENTS";

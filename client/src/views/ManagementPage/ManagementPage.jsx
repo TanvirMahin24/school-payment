@@ -7,6 +7,7 @@ import {
   syncRecentStudents,
   getSyncStatus,
 } from "../../actions/Student.action";
+import { syncGrades } from "../../actions/Grade.action";
 import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
 
 const ManagementPage = ({
@@ -14,11 +15,13 @@ const ManagementPage = ({
   syncAllStudents,
   syncRecentStudents,
   getSyncStatus,
+  syncGrades,
   selectedTenant,
 }) => {
   const [loading, setLoading] = useState({
     syncAll: false,
     syncRecent: false,
+    syncGrades: false,
   });
 
   // Fetch sync status on mount and when tenant changes
@@ -51,6 +54,15 @@ const ManagementPage = ({
       setLoading({ ...loading, syncRecent: false });
       // Refresh sync status after sync
       getSyncStatus(selectedTenant);
+    }
+  };
+
+  const handleSyncGrades = async () => {
+    setLoading({ ...loading, syncGrades: true });
+    try {
+      await syncGrades(selectedTenant);
+    } finally {
+      setLoading({ ...loading, syncGrades: false });
     }
   };
 
@@ -167,6 +179,61 @@ const ManagementPage = ({
             </Row>
           </Card.Body>
         </Card>
+
+        <Card bg="white" text="dark" className="shadow mb-4">
+          <Card.Header>
+            <h5 className="mb-0">Grade Data Synchronization</h5>
+          </Card.Header>
+          <Card.Body>
+            <Row>
+              <Col md={12} className="mb-4">
+                <p className="text-muted mb-0">
+                  Synchronize grades, shifts, and batches from {getTenantLabel(selectedTenant)} site
+                </p>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={12} className="mb-3">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-100"
+                  onClick={handleSyncGrades}
+                  disabled={loading.syncGrades || loading.syncAll || loading.syncRecent}
+                >
+                  {loading.syncGrades ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                        className="me-2"
+                      />
+                      Syncing...
+                    </>
+                  ) : (
+                    "Sync Grades, Shifts & Batches"
+                  )}
+                </Button>
+                <p className="text-muted small mt-2 mb-0">
+                  Synchronize all grade, shift, and batch data from {getTenantLabel(selectedTenant)} site
+                </p>
+              </Col>
+            </Row>
+
+            <Row className="mt-4">
+              <Col>
+                <div className="alert alert-info mb-0">
+                  <strong>Note:</strong> The CRON job automatically syncs grades, shifts, and batches
+                  every hour. Use this button to manually trigger a sync.
+                </div>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
       </Container>
     </Layout>
   );
@@ -184,6 +251,7 @@ export default connect(mapStateToProps, {
   syncAllStudents,
   syncRecentStudents,
   getSyncStatus,
+  syncGrades,
 })(ManagementPage);
 
 

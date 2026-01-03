@@ -6,16 +6,19 @@
 export const TENANTS = {
   COACHING: "coaching",
   PRIMARY: "primary",
+  SCHOOL: "school",
 };
 
 export const TENANT_LABELS = {
   [TENANTS.COACHING]: "Coaching",
   [TENANTS.PRIMARY]: "Primary",
+  [TENANTS.SCHOOL]: "School",
 };
 
 export const TENANT_LIST = [
   { value: TENANTS.COACHING, label: TENANT_LABELS[TENANTS.COACHING] },
   { value: TENANTS.PRIMARY, label: TENANT_LABELS[TENANTS.PRIMARY] },
+  { value: TENANTS.SCHOOL, label: TENANT_LABELS[TENANTS.SCHOOL] },
 ];
 
 export const DEFAULT_TENANT = TENANTS.COACHING;

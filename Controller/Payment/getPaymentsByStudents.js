@@ -37,11 +37,18 @@ const getPaymentsByStudents = async (req, res) => {
     if (gradeId) {
       // For composite key, we need to find the grade first to get tenant
       const { Grade } = require("../../Model");
+      const gradeWhere = {
+        primaryId: parseInt(gradeId),
+        del: false,
+      };
+      
+      // If tenant is provided, filter by tenant to get the correct grade
+      if (tenant) {
+        gradeWhere.tenant = tenant;
+      }
+      
       const grade = await Grade.findOne({
-        where: {
-          primaryId: parseInt(gradeId),
-          del: false,
-        },
+        where: gradeWhere,
       });
 
       if (grade) {
@@ -52,11 +59,18 @@ const getPaymentsByStudents = async (req, res) => {
 
     if (shiftId) {
       const { Shift } = require("../../Model");
+      const shiftWhere = {
+        primaryId: parseInt(shiftId),
+        del: false,
+      };
+      
+      // If tenant is provided, filter by tenant to get the correct shift
+      if (tenant) {
+        shiftWhere.tenant = tenant;
+      }
+      
       const shift = await Shift.findOne({
-        where: {
-          primaryId: parseInt(shiftId),
-          del: false,
-        },
+        where: shiftWhere,
       });
 
       if (shift) {
@@ -67,11 +81,18 @@ const getPaymentsByStudents = async (req, res) => {
 
     if (batchId) {
       const { Batch } = require("../../Model");
+      const batchWhere = {
+        primaryId: parseInt(batchId),
+        del: false,
+      };
+      
+      // If tenant is provided, filter by tenant to get the correct batch
+      if (tenant) {
+        batchWhere.tenant = tenant;
+      }
+      
       const batch = await Batch.findOne({
-        where: {
-          primaryId: parseInt(batchId),
-          del: false,
-        },
+        where: batchWhere,
       });
 
       if (batch) {

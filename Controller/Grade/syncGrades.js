@@ -1,7 +1,6 @@
-const { syncStudents } = require("../../Services/syncStudents");
-const { syncSchoolStudents } = require("../../Services/syncSchoolStudents");
+const { syncGrades } = require("../../Services/syncGrades");
 
-const syncRecentStudents = async (req, res) => {
+const syncGradesController = async (req, res) => {
   try {
     const { tenant } = req.body;
 
@@ -22,34 +21,30 @@ const syncRecentStudents = async (req, res) => {
       });
     }
 
-    // Calculate date for last 48 hours
-    const updatedSince = new Date(Date.now() - 48 * 60 * 60 * 1000);
-
     // Use appropriate sync service based on tenant
     let result;
     if (tenant === "school") {
-      // Sync students updated in last 48 hours
-      result = await syncSchoolStudents(updatedSince);
+      const { syncSchoolGrades } = require("../../Services/syncSchoolGrades");
+      result = await syncSchoolGrades(tenant);
     } else {
-      // Sync students updated in last 48 hours
-      result = await syncStudents(updatedSince);
+      result = await syncGrades(tenant);
     }
 
     if (result.success) {
       return res.status(200).json({
         success: true,
-        message: "Recent students synced successfully",
+        message: "Grades, shifts, and batches synced successfully",
         data: result.stats,
       });
     } else {
       return res.status(500).json({
         success: false,
-        message: "Failed to sync recent students",
+        message: "Failed to sync grades",
         error: result.error,
       });
     }
   } catch (error) {
-    console.error("Error in syncRecentStudents controller:", error);
+    console.error("Error in syncGrades controller:", error);
     return res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -58,10 +53,5 @@ const syncRecentStudents = async (req, res) => {
   }
 };
 
-module.exports = { syncRecentStudents };
-
-
-
-
-
+module.exports = { syncGradesController };
 

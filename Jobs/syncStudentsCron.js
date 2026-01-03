@@ -6,7 +6,7 @@ let cronJob = null;
 const startSyncCron = () => {
   // Run every minute for development (* * * * *)
   // Change to hourly (0 * * * *) for production
-  cronJob = cron.schedule("* * * * *", async () => {
+  cronJob = cron.schedule("10 0 * * *", async () => {
     console.log("Starting scheduled sync of students (last 48 hours)...");
     const updatedSince = new Date(Date.now() - 48 * 60 * 60 * 1000);
     const result = await syncStudents(updatedSince);
@@ -40,10 +40,3 @@ module.exports = {
   stopSyncCron,
   triggerSync,
 };
-
-
-
-
-
-
-

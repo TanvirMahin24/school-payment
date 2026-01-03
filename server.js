@@ -191,15 +191,25 @@ sequelize
   .sync({ force: false, alter: true })
   .then(() => {
     console.log("Database synced successfully");
-    // Start CRON job for syncing grades, shifts, and batches
+    // Start CRON job for syncing grades, shifts, and batches (primary)
     const { startSyncCron } = require("./Jobs/syncGradesCron");
     startSyncCron();
 
-    // Start CRON job for syncing students
+    // Start CRON job for syncing students (primary)
     const {
       startSyncCron: startStudentSyncCron,
     } = require("./Jobs/syncStudentsCron");
     startStudentSyncCron();
+
+    // Start CRON job for syncing school grades, shifts, and batches
+    const { startSyncCron: startSchoolGradesSyncCron } = require("./Jobs/syncSchoolGradesCron");
+    startSchoolGradesSyncCron();
+
+    // Start CRON job for syncing school students
+    const {
+      startSyncCron: startSchoolStudentSyncCron,
+    } = require("./Jobs/syncSchoolStudentsCron");
+    startSchoolStudentSyncCron();
 
     app.listen(port, () => {
       console.log(`Listening on port ${port}`);

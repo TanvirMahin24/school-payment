@@ -1,9 +1,36 @@
 const { syncStudents } = require("../../Services/syncStudents");
+const { syncSchoolStudents } = require("../../Services/syncSchoolStudents");
 
 const syncAllStudents = async (req, res) => {
   try {
-    // Sync all students (no updatedSince filter)
-    const result = await syncStudents();
+    const { tenant } = req.body;
+
+    // Validate tenant parameter
+    if (!tenant) {
+      return res.status(400).json({
+        success: false,
+        message: "Tenant parameter is required",
+      });
+    }
+
+    // Validate tenant value
+    const validTenants = ["primary", "coaching", "school"];
+    if (!validTenants.includes(tenant)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid tenant. Must be one of: ${validTenants.join(", ")}`,
+      });
+    }
+
+    // Use appropriate sync service based on tenant
+    let result;
+    if (tenant === "school") {
+      // Sync all students (no updatedSince filter)
+      result = await syncSchoolStudents();
+    } else {
+      // Sync all students (no updatedSince filter)
+      result = await syncStudents();
+    }
 
     if (result.success) {
       return res.status(200).json({

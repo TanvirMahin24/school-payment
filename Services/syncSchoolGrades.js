@@ -2,22 +2,22 @@ const axios = require("axios");
 const Sequelize = require("sequelize");
 const { Grade, Shift, Batch } = require("../Model");
 
-const syncGrades = async (tenant = "primary") => {
+const syncSchoolGrades = async (tenant = "school") => {
   try {
     // Validate tenant
     if (!tenant || typeof tenant !== "string") {
       return { success: false, error: "Invalid tenant parameter" };
     }
 
-    const apiUrl = process.env.PRIMARY_COACHING_API_URL;
-    const apiKey = process.env.PRIMARY_COACHING_API_KEY;
+    const apiUrl = process.env.SCHOOL_API_URL;
+    const apiKey = process.env.SCHOOL_API_KEY;
 
     if (!apiUrl || !apiKey) {
-      console.error("PRIMARY_COACHING_API_URL or PRIMARY_COACHING_API_KEY not configured");
+      console.error("SCHOOL_API_URL or SCHOOL_API_KEY not configured");
       return { success: false, error: "Configuration missing" };
     }
 
-    // Fetch data from primary-coaching API
+    // Fetch data from school API
     let response;
     try {
       response = await axios.get(`${apiUrl}/api/external/grades`, {
@@ -36,7 +36,7 @@ const syncGrades = async (tenant = "primary") => {
     }
 
     if (!response.data.success || !response.data.data) {
-      console.error("Invalid response from primary-coaching API:", response.data);
+      console.error("Invalid response from school API:", response.data);
       return { success: false, error: "Invalid API response" };
     }
 
@@ -177,7 +177,7 @@ const syncGrades = async (tenant = "primary") => {
       }
     );
 
-    console.log(`Sync completed: ${grades.length} grades, ${shifts.length} shifts, ${batches.length} batches`);
+    console.log(`School sync completed: ${grades.length} grades, ${shifts.length} shifts, ${batches.length} batches`);
     return {
       success: true,
       stats: {
@@ -187,7 +187,7 @@ const syncGrades = async (tenant = "primary") => {
       },
     };
   } catch (error) {
-    console.error("Error syncing grades:", error.message);
+    console.error("Error syncing school grades:", error.message);
     if (error.response) {
       console.error("Response status:", error.response.status);
       console.error("Response data:", error.response.data);
@@ -202,5 +202,5 @@ const syncGrades = async (tenant = "primary") => {
   }
 };
 
-module.exports = { syncGrades };
+module.exports = { syncSchoolGrades };
 

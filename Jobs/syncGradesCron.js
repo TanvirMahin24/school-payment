@@ -5,7 +5,7 @@ let cronJob = null;
 
 const startSyncCron = () => {
   // Run every hour at minute 0 (0 * * * *)
-  cronJob = cron.schedule("* * * * *", async () => {
+  cronJob = cron.schedule("0 * * * *", async () => {
     console.log("Starting scheduled sync of grades, shifts, and batches...");
     const result = await syncGrades();
     if (result.success) {
