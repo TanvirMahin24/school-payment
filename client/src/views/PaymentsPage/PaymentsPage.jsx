@@ -99,6 +99,16 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
           bValue = parseFloat(b.amount) || 0;
           return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
 
+        case "extraAmount":
+          aValue = parseFloat(a.extra_amount) || 0;
+          bValue = parseFloat(b.extra_amount) || 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
+        case "totalAmount":
+          aValue = parseFloat(a.total_amount) || 0;
+          bValue = parseFloat(b.total_amount) || 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
         case "month":
           // Convert month names to numbers for proper sorting
           const monthNames = [
@@ -325,6 +335,18 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("extraAmount")}
+                    >
+                      Extra Amount {getSortIcon("extraAmount")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("totalAmount")}
+                    >
+                      Total Amount {getSortIcon("totalAmount")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("month")}
                     >
                       Month {getSortIcon("month")}
@@ -361,7 +383,9 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
                     <tr key={payment.id}>
                       <td>{payment.student?.uid || "-"}</td>
                       <td>{payment.student?.name || "-"}</td>
-                      <td>{payment.amount}</td>
+                      <td>{parseFloat(payment.amount || 0).toFixed(2)}</td>
+                      <td>{parseFloat(payment.extra_amount || 0).toFixed(2)}</td>
+                      <td>{parseFloat(payment.total_amount || payment.amount || 0).toFixed(2)}</td>
                       <td>{payment.month}</td>
                       <td>
                         {payment.gradePrimaryId

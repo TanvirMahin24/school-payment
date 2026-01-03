@@ -26,6 +26,9 @@ const syncGradesController = async (req, res) => {
     if (tenant === "school") {
       const { syncSchoolGrades } = require("../../Services/syncSchoolGrades");
       result = await syncSchoolGrades(tenant);
+    } else if (tenant === "coaching") {
+      const { syncCoachingGrades } = require("../../Services/syncCoachingGrades");
+      result = await syncCoachingGrades(tenant);
     } else {
       result = await syncGrades(tenant);
     }

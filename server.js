@@ -213,6 +213,18 @@ sequelize
     } = require("./Jobs/syncSchoolStudentsCron");
     startSchoolStudentSyncCron();
 
+    // Start CRON job for syncing coaching grades, shifts, and batches
+    const {
+      startSyncCron: startCoachingGradesSyncCron,
+    } = require("./Jobs/syncCoachingGradesCron");
+    startCoachingGradesSyncCron();
+
+    // Start CRON job for syncing coaching students
+    const {
+      startSyncCron: startCoachingStudentSyncCron,
+    } = require("./Jobs/syncCoachingStudentsCron");
+    startCoachingStudentSyncCron();
+
     app.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });

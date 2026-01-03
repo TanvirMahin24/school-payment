@@ -1,5 +1,6 @@
 const { syncStudents } = require("../../Services/syncStudents");
 const { syncSchoolStudents } = require("../../Services/syncSchoolStudents");
+const { syncCoachingStudents } = require("../../Services/syncCoachingStudents");
 
 const syncAllStudents = async (req, res) => {
   try {
@@ -27,6 +28,9 @@ const syncAllStudents = async (req, res) => {
     if (tenant === "school") {
       // Sync all students (no updatedSince filter)
       result = await syncSchoolStudents();
+    } else if (tenant === "coaching") {
+      // Sync all students (no updatedSince filter)
+      result = await syncCoachingStudents();
     } else {
       // Sync all students (no updatedSince filter)
       result = await syncStudents();

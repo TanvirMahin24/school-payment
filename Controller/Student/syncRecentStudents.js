@@ -1,5 +1,6 @@
 const { syncStudents } = require("../../Services/syncStudents");
 const { syncSchoolStudents } = require("../../Services/syncSchoolStudents");
+const { syncCoachingStudents } = require("../../Services/syncCoachingStudents");
 
 const syncRecentStudents = async (req, res) => {
   try {
@@ -30,6 +31,9 @@ const syncRecentStudents = async (req, res) => {
     if (tenant === "school") {
       // Sync students updated in last 48 hours
       result = await syncSchoolStudents(updatedSince);
+    } else if (tenant === "coaching") {
+      // Sync students updated in last 48 hours
+      result = await syncCoachingStudents(updatedSince);
     } else {
       // Sync students updated in last 48 hours
       result = await syncStudents(updatedSince);
