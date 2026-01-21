@@ -3,10 +3,13 @@ const { Op, Sequelize } = require("sequelize");
 
 const getDashboard = async (req, res) => {
   try {
-    const { tenant } = req.query;
+    const { tenant, month, year, yearly } = req.query;
     const d = new Date();
     const currentMonth = d.toLocaleString("default", { month: "long" });
     const currentYear = d.getFullYear();
+    const monthFilter = month || currentMonth;
+    const yearFilter = year ? parseInt(year, 10) : currentYear;
+    const yearlyFilter = yearly ? parseInt(yearly, 10) : (year ? parseInt(year, 10) : currentYear);
 
     // Build where clause with tenant if provided
     const paymentWhere = tenant ? { tenant } : {};
@@ -17,19 +20,19 @@ const getDashboard = async (req, res) => {
     const paymentCount = await Payment.count({ where: paymentWhere });
     const totalPaymentAmount = await Payment.sum("total_amount", { where: paymentWhere }) || 0;
 
-    // Current Month Payments
+    // Monthly Payments (month + year)
     const thisMonthPaymentWhere = {
       ...paymentWhere,
-      month: currentMonth,
-      year: currentYear,
+      month: monthFilter,
+      year: yearFilter,
     };
     const thisMonthPayments = await Payment.count({ where: thisMonthPaymentWhere });
     const thisMonthPaymentAmount = await Payment.sum("total_amount", { where: thisMonthPaymentWhere }) || 0;
 
-    // Current Year Payments
+    // Yearly Payments (year only)
     const thisYearPaymentWhere = {
       ...paymentWhere,
-      year: currentYear,
+      year: yearlyFilter,
     };
     const thisYearPayments = await Payment.count({ where: thisYearPaymentWhere });
     const thisYearPaymentAmount = await Payment.sum("total_amount", { where: thisYearPaymentWhere }) || 0;
@@ -38,19 +41,19 @@ const getDashboard = async (req, res) => {
     const expenseCount = await Expense.count({ where: expenseWhere });
     const totalExpenseAmount = await Expense.sum("amount", { where: expenseWhere }) || 0;
 
-    // Current Month Expenses
+    // Monthly Expenses (month + year)
     const thisMonthExpenseWhere = {
       ...expenseWhere,
-      month: currentMonth,
-      year: currentYear,
+      month: monthFilter,
+      year: yearFilter,
     };
     const thisMonthExpenses = await Expense.count({ where: thisMonthExpenseWhere });
     const thisMonthExpenseAmount = await Expense.sum("amount", { where: thisMonthExpenseWhere }) || 0;
 
-    // Current Year Expenses
+    // Yearly Expenses (year only)
     const thisYearExpenseWhere = {
       ...expenseWhere,
-      year: currentYear,
+      year: yearlyFilter,
     };
     const thisYearExpenseAmount = await Expense.sum("amount", { where: thisYearExpenseWhere }) || 0;
 
@@ -58,19 +61,19 @@ const getDashboard = async (req, res) => {
     const revenueCount = await Revenue.count({ where: revenueWhere });
     const totalRevenueAmount = await Revenue.sum("amount", { where: revenueWhere }) || 0;
 
-    // Current Month Revenues
+    // Monthly Revenues (month + year)
     const thisMonthRevenueWhere = {
       ...revenueWhere,
-      month: currentMonth,
-      year: currentYear,
+      month: monthFilter,
+      year: yearFilter,
     };
     const thisMonthRevenues = await Revenue.count({ where: thisMonthRevenueWhere });
     const thisMonthRevenueAmount = await Revenue.sum("amount", { where: thisMonthRevenueWhere }) || 0;
 
-    // Current Year Revenues
+    // Yearly Revenues (year only)
     const thisYearRevenueWhere = {
       ...revenueWhere,
-      year: currentYear,
+      year: yearlyFilter,
     };
     const thisYearRevenueAmount = await Revenue.sum("amount", { where: thisYearRevenueWhere }) || 0;
 

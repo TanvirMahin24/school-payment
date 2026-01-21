@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
-import { Col, Row, Card, Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Col, Row, Card, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 import {
   MdPayment,
   MdTrendingUp,
@@ -14,13 +16,52 @@ import { connect } from "react-redux";
 import { getDashboardData } from "../../actions/Dashboard.action";
 import Layout from "../../components/shared/Layout/Layout";
 import StatCard from "../../components/shared/StatCard/StatCard";
+import MonthDetailModal from "../../components/Reports/MonthDetailModal";
+import { months } from "../../constants/MonthsAndYears";
+import { BASE_URL } from "../../constants/URL";
+
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from({ length: 12 }, (_, i) => currentYear - 10 + i);
+
+const INITIAL_MODAL_STATE = { show: false, type: null, variant: null, periodLabel: "", month: null, year: null, items: [], loading: false };
 
 const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
   const navigate = useNavigate();
+  const [selectedMonth, setSelectedMonth] = useState(months[new Date().getMonth()]);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYearly, setSelectedYearly] = useState(new Date().getFullYear());
+  const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
 
   useEffect(() => {
-    getDashboardData(selectedTenant);
-  }, [selectedTenant, getDashboardData]);
+    if (selectedTenant) {
+      getDashboardData(selectedTenant, { month: selectedMonth, year: selectedYear, yearly: selectedYearly });
+    }
+  }, [selectedTenant, selectedMonth, selectedYear, selectedYearly, getDashboardData]);
+
+  const handleOpenModal = async (type, variant, month, year, periodLabel) => {
+    if (!selectedTenant) {
+      toast.error("Please select a tenant");
+      return;
+    }
+    setModalState({ show: true, type, variant, periodLabel, month, year, items: [], loading: true });
+    const url = type === "expense" ? `${BASE_URL}/api/expense` : `${BASE_URL}/api/revenue`;
+    const params = { tenant: selectedTenant };
+    if (variant === "monthly" && month && year) {
+      params.month = month;
+      params.year = year;
+    } else if (variant === "yearly" && year) {
+      params.year = year;
+    }
+    try {
+      const res = await axios.get(url, { params });
+      setModalState((s) => ({ ...s, items: res.data.data, loading: false }));
+    } catch (err) {
+      toast.error(err.response?.data?.message || `Error fetching ${type}s`);
+      setModalState((s) => ({ ...s, loading: false }));
+    }
+  };
+
+  const handleCloseModal = () => setModalState(INITIAL_MODAL_STATE);
 
   const quickLinks = [
     { title: "Payment Entry", link: "/payment-entry", icon: <MdAddCircle />, color: "primary" },
@@ -67,12 +108,30 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
             </Col>
           </Row>
 
-          {/* Current Month Stats */}
+          {/* Monthly Stats */}
           <Row>
             <Col md={12} className="py-3">
               <Card className="shadow">
-                <Card.Header>
-                  <h5 className="mb-0">Current Month ({new Date().toLocaleString("default", { month: "long", year: "numeric" })})</h5>
+                <Card.Header className="d-flex flex-wrap align-items-center gap-2">
+                  <h5 className="mb-0 me-2">Month</h5>
+                  <Form.Select
+                    style={{ width: "auto" }}
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                  >
+                    {months.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Select
+                    style={{ width: "auto" }}
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  >
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </Form.Select>
                 </Card.Header>
                 <Card.Body>
                   <Row>
@@ -86,7 +145,16 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     <Col md={3} className="py-2">
                       <div className="text-center">
                         <div className="text-muted small">Revenue</div>
-                        <div className="h4 mb-0 text-success">{data.thisMonthTotalRevenue || "0.00"}</div>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className="h4 mb-0 text-success"
+                          style={{ cursor: "pointer", textDecoration: "underline" }}
+                          onClick={() => handleOpenModal("revenue", "monthly", selectedMonth, selectedYear, `${selectedMonth} ${selectedYear}`)}
+                          onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", "monthly", selectedMonth, selectedYear, `${selectedMonth} ${selectedYear}`)}
+                        >
+                          {data.thisMonthTotalRevenue || "0.00"}
+                        </span>
                         <div className="text-muted small">
                           Payments: {data.thisMonthPaymentAmount || "0.00"} + Revenue: {data.thisMonthRevenueAmount || "0.00"}
                         </div>
@@ -95,7 +163,16 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     <Col md={3} className="py-2">
                       <div className="text-center">
                         <div className="text-muted small">Expenses</div>
-                        <div className="h4 mb-0 text-danger">{data.thisMonthExpenseAmount || "0.00"}</div>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className="h4 mb-0 text-danger"
+                          style={{ cursor: "pointer", textDecoration: "underline" }}
+                          onClick={() => handleOpenModal("expense", "monthly", selectedMonth, selectedYear, `${selectedMonth} ${selectedYear}`)}
+                          onKeyDown={(e) => e.key === "Enter" && handleOpenModal("expense", "monthly", selectedMonth, selectedYear, `${selectedMonth} ${selectedYear}`)}
+                        >
+                          {data.thisMonthExpenseAmount || "0.00"}
+                        </span>
                         <div className="text-muted small">{data.thisMonthExpenses || 0} entries</div>
                       </div>
                     </Col>
@@ -114,12 +191,21 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
             </Col>
           </Row>
 
-          {/* Current Year Stats */}
+          {/* Yearly Stats */}
           <Row>
             <Col md={12} className="py-3">
               <Card className="shadow">
-                <Card.Header>
-                  <h5 className="mb-0">Current Year ({new Date().getFullYear()})</h5>
+                <Card.Header className="d-flex flex-wrap align-items-center gap-2">
+                  <h5 className="mb-0 me-2">Year</h5>
+                  <Form.Select
+                    style={{ width: "auto" }}
+                    value={selectedYearly}
+                    onChange={(e) => setSelectedYearly(Number(e.target.value))}
+                  >
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </Form.Select>
                 </Card.Header>
                 <Card.Body>
                   <Row>
@@ -133,7 +219,16 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     <Col md={3} className="py-2">
                       <div className="text-center">
                         <div className="text-muted small">Total Revenue</div>
-                        <div className="h4 mb-0 text-success">{data.thisYearTotalRevenue || "0.00"}</div>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className="h4 mb-0 text-success"
+                          style={{ cursor: "pointer", textDecoration: "underline" }}
+                          onClick={() => handleOpenModal("revenue", "yearly", null, selectedYearly, String(selectedYearly))}
+                          onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", "yearly", null, selectedYearly, String(selectedYearly))}
+                        >
+                          {data.thisYearTotalRevenue || "0.00"}
+                        </span>
                         <div className="text-muted small">
                           Payments: {data.thisYearPaymentAmount || "0.00"} + Revenue: {data.thisYearRevenueAmount || "0.00"}
                         </div>
@@ -142,7 +237,16 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     <Col md={3} className="py-2">
                       <div className="text-center">
                         <div className="text-muted small">Total Expenses</div>
-                        <div className="h4 mb-0 text-danger">{data.thisYearExpenseAmount || "0.00"}</div>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className="h4 mb-0 text-danger"
+                          style={{ cursor: "pointer", textDecoration: "underline" }}
+                          onClick={() => handleOpenModal("expense", "yearly", null, selectedYearly, String(selectedYearly))}
+                          onKeyDown={(e) => e.key === "Enter" && handleOpenModal("expense", "yearly", null, selectedYearly, String(selectedYearly))}
+                        >
+                          {data.thisYearExpenseAmount || "0.00"}
+                        </span>
                         <div className="text-muted small">All entries this year</div>
                       </div>
                     </Col>
@@ -190,6 +294,16 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
               </Card>
             </Col>
           </Row>
+
+          <MonthDetailModal
+            show={modalState.show}
+            onHide={handleCloseModal}
+            type={modalState.type}
+            monthLabel={modalState.periodLabel}
+            items={modalState.items}
+            loading={modalState.loading}
+            showMonthColumn={modalState.variant === "yearly"}
+          />
         </>
       ) : (
         <div className="text-center py-5">

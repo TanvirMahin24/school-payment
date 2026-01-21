@@ -14,10 +14,13 @@ import { BASE_URL } from "../constants/URL";
 import setAuthToken from "../utils/setAuthToken";
 
 //GET DASHBOARD DATA
-export const getDashboardData = (tenant) => async (dispatch) => {
+export const getDashboardData = (tenant, filters = {}) => async (dispatch) => {
   try {
     const queryParams = new URLSearchParams();
     if (tenant) queryParams.append("tenant", tenant);
+    if (filters.month) queryParams.append("month", filters.month);
+    if (filters.year != null && filters.year !== "") queryParams.append("year", filters.year);
+    if (filters.yearly != null && filters.yearly !== "") queryParams.append("yearly", filters.yearly);
 
     const queryString = queryParams.toString();
     const url = queryString

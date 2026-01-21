@@ -45,7 +45,7 @@ const ReportsPage = ({ monthlyStats, getMonthlyStats, selectedTenant, loading, g
             ) : (
               <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4">
                 <Tab eventKey="profit" title="Profit (Last 12 Months)">
-                  <ProfitChart data={monthlyStats} />
+                  <ProfitChart data={monthlyStats} selectedTenant={selectedTenant} />
                 </Tab>
                 <Tab eventKey="payments" title="Payments (Last 12 Months)">
                   <PaymentsChart data={monthlyStats} />
