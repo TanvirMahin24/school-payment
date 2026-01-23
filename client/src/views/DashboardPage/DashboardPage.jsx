@@ -26,7 +26,7 @@ const yearOptions = Array.from({ length: 12 }, (_, i) => currentYear - 10 + i);
 const INITIAL_MODAL_STATE = { show: false, type: null, variant: null, periodLabel: "", month: null, year: null, items: [], loading: false };
 
 const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
-  const navigate = useNavigate();
+  
   const [selectedMonth, setSelectedMonth] = useState(months[new Date().getMonth()]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedYearly, setSelectedYearly] = useState(new Date().getFullYear());
@@ -62,52 +62,10 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
   };
 
   const handleCloseModal = () => setModalState(INITIAL_MODAL_STATE);
-
-  const quickLinks = [
-    { title: "Payment Entry", link: "/payment-entry", icon: <MdAddCircle />, color: "primary" },
-    { title: "Payments", link: "/payments", icon: <MdPayment />, color: "info" },
-    { title: "Expenses", link: "/expenses", icon: <MdTrendingDown />, color: "danger" },
-    { title: "Revenues", link: "/revenues", icon: <MdTrendingUp />, color: "success" },
-    { title: "Reports", link: "/reports", icon: <MdBarChart />, color: "warning" },
-    { title: "Categories", link: "/categories", icon: <MdSettings />, color: "secondary" },
-  ];
-
   return (
     <Layout>
       {data ? (
         <>
-          {/* Summary Cards */}
-          <Row className="pt-0">
-            <Col md={3} className="py-3">
-              <StatCard
-                title="Total Payments"
-                icon={<MdPayment />}
-                count={data.payments || 0}
-              />
-            </Col>
-            <Col md={3} className="py-3">
-              <StatCard
-                title="Total Revenue"
-                icon={<MdTrendingUp />}
-                count={data.totalRevenue || "0.00"}
-              />
-            </Col>
-            <Col md={3} className="py-3">
-              <StatCard
-                title="Total Expenses"
-                icon={<MdTrendingDown />}
-                count={data.totalExpenseAmount || "0.00"}
-              />
-            </Col>
-            <Col md={3} className="py-3">
-              <StatCard
-                title="Total Profit"
-                icon={<MdAccountBalance />}
-                count={data.totalProfit || "0.00"}
-              />
-            </Col>
-          </Row>
-
           {/* Monthly Stats */}
           <Row>
             <Col md={12} className="py-3">
@@ -138,8 +96,8 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     <Col md={3} className="py-2">
                       <div className="text-center">
                         <div className="text-muted small">Payments</div>
-                        <div className="h4 mb-0">{data.thisMonthPayments || 0}</div>
-                        <div className="text-muted small">{data.thisMonthPaymentAmount || "0.00"}</div>
+                        <div className="h4 mb-0">{data.thisMonthPaymentAmount || "0.00"}</div>
+                        <div className="text-muted small">{data.thisMonthPayments || 0} entries</div>
                       </div>
                     </Col>
                     <Col md={3} className="py-2">
@@ -153,11 +111,9 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                           onClick={() => handleOpenModal("revenue", "monthly", selectedMonth, selectedYear, `${selectedMonth} ${selectedYear}`)}
                           onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", "monthly", selectedMonth, selectedYear, `${selectedMonth} ${selectedYear}`)}
                         >
-                          {data.thisMonthTotalRevenue || "0.00"}
+                          {data.thisMonthRevenueAmount || "0.00"}
                         </span>
-                        <div className="text-muted small">
-                          Payments: {data.thisMonthPaymentAmount || "0.00"} + Revenue: {data.thisMonthRevenueAmount || "0.00"}
-                        </div>
+                        <div className="text-muted small">{data.thisMonthRevenues || 0} entries</div>
                       </div>
                     </Col>
                     <Col md={3} className="py-2">
@@ -212,8 +168,8 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     <Col md={3} className="py-2">
                       <div className="text-center">
                         <div className="text-muted small">Total Payments</div>
-                        <div className="h4 mb-0">{data.thisYearPayments || 0}</div>
-                        <div className="text-muted small">{data.thisYearPaymentAmount || "0.00"}</div>
+                        <div className="h4 mb-0">{data.thisYearPaymentAmount || "0.00"}</div>
+                        <div className="text-muted small">{data.thisYearPayments || 0} entries</div>
                       </div>
                     </Col>
                     <Col md={3} className="py-2">
@@ -227,11 +183,9 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                           onClick={() => handleOpenModal("revenue", "yearly", null, selectedYearly, String(selectedYearly))}
                           onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", "yearly", null, selectedYearly, String(selectedYearly))}
                         >
-                          {data.thisYearTotalRevenue || "0.00"}
+                          {data.thisYearRevenueAmount || "0.00"}
                         </span>
-                        <div className="text-muted small">
-                          Payments: {data.thisYearPaymentAmount || "0.00"} + Revenue: {data.thisYearRevenueAmount || "0.00"}
-                        </div>
+                        <div className="text-muted small">{data.thisYearRevenues || 0} entries</div>
                       </div>
                     </Col>
                     <Col md={3} className="py-2">
@@ -247,7 +201,7 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                         >
                           {data.thisYearExpenseAmount || "0.00"}
                         </span>
-                        <div className="text-muted small">All entries this year</div>
+                        <div className="text-muted small">{data.thisYearExpenses || 0} entries</div>
                       </div>
                     </Col>
                     <Col md={3} className="py-2">
@@ -265,35 +219,7 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
             </Col>
           </Row>
 
-          {/* Quick Links */}
-          <Row>
-            <Col md={12} className="py-3">
-              <Card className="shadow">
-                <Card.Header>
-                  <h5 className="mb-0">Quick Links</h5>
-                </Card.Header>
-                <Card.Body>
-                  <Row>
-                    {quickLinks.map((link, index) => (
-                      <Col md={4} sm={6} key={index} className="mb-3">
-                        <Button
-                          variant={link.color}
-                          className="w-100 d-flex align-items-center justify-content-start"
-                          onClick={() => navigate(link.link)}
-                          style={{ height: "60px" }}
-                        >
-                          <div className="me-3" style={{ fontSize: "24px" }}>
-                            {link.icon}
-                          </div>
-                          <div className="fw-bold">{link.title}</div>
-                        </Button>
-                      </Col>
-                    ))}
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+          
 
           <MonthDetailModal
             show={modalState.show}

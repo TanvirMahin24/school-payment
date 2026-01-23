@@ -22,6 +22,20 @@
   transition: 0.3s all ease-in-out;
 }
 
+.crdSuccess {
+  border-left: 4px solid #28a745 !important;
+}
+.crdSuccess .icon {
+  color: #28a745 !important;
+}
+
+.crdDanger {
+  border-left: 4px solid #dc3545 !important;
+}
+.crdDanger .icon {
+  color: #dc3545 !important;
+}
+
 .icon {
   display: flex;
   align-items: center;

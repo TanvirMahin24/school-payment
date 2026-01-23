@@ -55,6 +55,7 @@ const getDashboard = async (req, res) => {
       ...expenseWhere,
       year: yearlyFilter,
     };
+    const thisYearExpenses = await Expense.count({ where: thisYearExpenseWhere });
     const thisYearExpenseAmount = await Expense.sum("amount", { where: thisYearExpenseWhere }) || 0;
 
     // Total Revenues
@@ -75,6 +76,7 @@ const getDashboard = async (req, res) => {
       ...revenueWhere,
       year: yearlyFilter,
     };
+    const thisYearRevenues = await Revenue.count({ where: thisYearRevenueWhere });
     const thisYearRevenueAmount = await Revenue.sum("amount", { where: thisYearRevenueWhere }) || 0;
 
     // Calculate totals (Payments + Revenues)
@@ -103,6 +105,7 @@ const getDashboard = async (req, res) => {
         totalExpenseAmount: parseFloat(totalExpenseAmount).toFixed(2),
         thisMonthExpenses,
         thisMonthExpenseAmount: parseFloat(thisMonthExpenseAmount).toFixed(2),
+        thisYearExpenses,
         thisYearExpenseAmount: parseFloat(thisYearExpenseAmount).toFixed(2),
         
         // Revenue stats
@@ -110,6 +113,7 @@ const getDashboard = async (req, res) => {
         totalRevenueAmount: parseFloat(totalRevenueAmount).toFixed(2),
         thisMonthRevenues,
         thisMonthRevenueAmount: parseFloat(thisMonthRevenueAmount).toFixed(2),
+        thisYearRevenues,
         thisYearRevenueAmount: parseFloat(thisYearRevenueAmount).toFixed(2),
         
         // Combined stats
