@@ -18,7 +18,9 @@ const getDashboard = async (req, res) => {
 
     // Total Payments
     const paymentCount = await Payment.count({ where: paymentWhere });
-    const totalPaymentAmount = await Payment.sum("total_amount", { where: paymentWhere }) || 0;
+    const totalPaymentAmount = await Payment.sum("amount", { where: paymentWhere }) || 0;
+    const totalExtraPaymentAmount = await Payment.sum("extra_amount", { where: paymentWhere }) || 0;
+    const totalCombinedPaymentAmount = await Payment.sum("total_amount", { where: paymentWhere }) || 0;
 
     // Monthly Payments (month + year)
     const thisMonthPaymentWhere = {
@@ -27,7 +29,9 @@ const getDashboard = async (req, res) => {
       year: yearFilter,
     };
     const thisMonthPayments = await Payment.count({ where: thisMonthPaymentWhere });
-    const thisMonthPaymentAmount = await Payment.sum("total_amount", { where: thisMonthPaymentWhere }) || 0;
+    const thisMonthPaymentAmount = await Payment.sum("amount", { where: thisMonthPaymentWhere }) || 0;
+    const thisMonthExtraPaymentAmount = await Payment.sum("extra_amount", { where: thisMonthPaymentWhere }) || 0;
+    const thisMonthCombinedPaymentAmount = await Payment.sum("total_amount", { where: thisMonthPaymentWhere }) || 0;
 
     // Yearly Payments (year only)
     const thisYearPaymentWhere = {
@@ -35,7 +39,9 @@ const getDashboard = async (req, res) => {
       year: yearlyFilter,
     };
     const thisYearPayments = await Payment.count({ where: thisYearPaymentWhere });
-    const thisYearPaymentAmount = await Payment.sum("total_amount", { where: thisYearPaymentWhere }) || 0;
+    const thisYearPaymentAmount = await Payment.sum("amount", { where: thisYearPaymentWhere }) || 0;
+    const thisYearExtraPaymentAmount = await Payment.sum("extra_amount", { where: thisYearPaymentWhere }) || 0;
+    const thisYearCombinedPaymentAmount = await Payment.sum("total_amount", { where: thisYearPaymentWhere }) || 0;
 
     // Total Expenses
     const expenseCount = await Expense.count({ where: expenseWhere });
@@ -79,10 +85,10 @@ const getDashboard = async (req, res) => {
     const thisYearRevenues = await Revenue.count({ where: thisYearRevenueWhere });
     const thisYearRevenueAmount = await Revenue.sum("amount", { where: thisYearRevenueWhere }) || 0;
 
-    // Calculate totals (Payments + Revenues)
-    const totalRevenue = parseFloat(totalPaymentAmount) + parseFloat(totalRevenueAmount);
-    const thisMonthTotalRevenue = parseFloat(thisMonthPaymentAmount) + parseFloat(thisMonthRevenueAmount);
-    const thisYearTotalRevenue = parseFloat(thisYearPaymentAmount) + parseFloat(thisYearRevenueAmount);
+    // Calculate totals (Payments + Extra Payments + Revenues)
+    const totalRevenue = parseFloat(totalCombinedPaymentAmount) + parseFloat(totalRevenueAmount);
+    const thisMonthTotalRevenue = parseFloat(thisMonthCombinedPaymentAmount) + parseFloat(thisMonthRevenueAmount);
+    const thisYearTotalRevenue = parseFloat(thisYearCombinedPaymentAmount) + parseFloat(thisYearRevenueAmount);
 
     // Calculate Profit
     const totalProfit = totalRevenue - parseFloat(totalExpenseAmount);
@@ -95,10 +101,16 @@ const getDashboard = async (req, res) => {
         // Payment stats
         payments: paymentCount,
         totalPaymentAmount: parseFloat(totalPaymentAmount).toFixed(2),
+        totalExtraPaymentAmount: parseFloat(totalExtraPaymentAmount).toFixed(2),
+        totalCombinedPaymentAmount: parseFloat(totalCombinedPaymentAmount).toFixed(2),
         thisMonthPayments,
         thisMonthPaymentAmount: parseFloat(thisMonthPaymentAmount).toFixed(2),
+        thisMonthExtraPaymentAmount: parseFloat(thisMonthExtraPaymentAmount).toFixed(2),
+        thisMonthCombinedPaymentAmount: parseFloat(thisMonthCombinedPaymentAmount).toFixed(2),
         thisYearPayments,
         thisYearPaymentAmount: parseFloat(thisYearPaymentAmount).toFixed(2),
+        thisYearExtraPaymentAmount: parseFloat(thisYearExtraPaymentAmount).toFixed(2),
+        thisYearCombinedPaymentAmount: parseFloat(thisYearCombinedPaymentAmount).toFixed(2),
         
         // Expense stats
         expenses: expenseCount,
