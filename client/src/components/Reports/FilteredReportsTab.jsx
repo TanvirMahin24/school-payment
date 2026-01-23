@@ -75,21 +75,6 @@ const FilteredReportsTab = ({
           <Row>
             <Col md={3}>
               <Form.Group className="mb-3">
-                <Form.Label>Start Month</Form.Label>
-                <Form.Select
-                  value={startMonth}
-                  onChange={(e) => setStartMonth(e.target.value)}
-                >
-                  {months.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group className="mb-3">
                 <Form.Label>Start Year</Form.Label>
                 <Form.Select
                   value={startYear}
@@ -105,10 +90,10 @@ const FilteredReportsTab = ({
             </Col>
             <Col md={3}>
               <Form.Group className="mb-3">
-                <Form.Label>End Month</Form.Label>
+                <Form.Label>Start Month</Form.Label>
                 <Form.Select
-                  value={endMonth}
-                  onChange={(e) => setEndMonth(e.target.value)}
+                  value={startMonth}
+                  onChange={(e) => setStartMonth(e.target.value)}
                 >
                   {months.map((m) => (
                     <option key={m} value={m}>
@@ -128,6 +113,21 @@ const FilteredReportsTab = ({
                   {years.map((y) => (
                     <option key={y} value={y}>
                       {y}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group className="mb-3">
+                <Form.Label>End Month</Form.Label>
+                <Form.Select
+                  value={endMonth}
+                  onChange={(e) => setEndMonth(e.target.value)}
+                >
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
                     </option>
                   ))}
                 </Form.Select>

@@ -82,29 +82,34 @@ const getGradeBreakdown = async (req, res) => {
     const totalExpense = parseFloat(expenses[0]?.total || 0);
     const totalRevenue = parseFloat(revenues[0]?.total || 0);
 
-    // Get payments grouped by grade
+    // Get payments grouped by grade - separate amount and extra_amount
     const payments = await Payment.findAll({
       where: paymentWhere,
       attributes: [
         "gradePrimaryId",
-        [Sequelize.fn("SUM", Sequelize.col("total_amount")), "total"],
+        [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
+        [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
       ],
       group: ["gradePrimaryId"],
       raw: true,
     });
 
-    // Create a map for payments by grade
+    // Create maps for payments by grade
     const paymentMap = new Map();
+    const extraPaymentMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId) {
-        paymentMap.set(p.gradePrimaryId, parseFloat(p.total || 0));
+        paymentMap.set(p.gradePrimaryId, parseFloat(p.payment || 0));
+        extraPaymentMap.set(p.gradePrimaryId, parseFloat(p.extraPayment || 0));
       }
     });
 
     // Build result array
     const result = grades.map((grade) => {
       const payment = paymentMap.get(grade.primaryId) || 0;
-      const totalRevenueForGrade = payment + totalRevenue; // Revenue is shared across all grades
+      const extraPayment = extraPaymentMap.get(grade.primaryId) || 0;
+      const totalPayment = payment + extraPayment;
+      const totalRevenueForGrade = totalPayment + totalRevenue; // Revenue is shared across all grades
       const expenseForGrade = (totalExpense / grades.length); // Distribute expense equally (or you can change this logic)
       const profit = totalRevenueForGrade - expenseForGrade;
 
@@ -113,6 +118,7 @@ const getGradeBreakdown = async (req, res) => {
         gradeName: grade.name,
         revenue: totalRevenue,
         payment: payment,
+        extraPayment: extraPayment,
         expense: expenseForGrade,
         totalRevenue: totalRevenueForGrade,
         profit: profit,

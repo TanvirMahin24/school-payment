@@ -63,11 +63,11 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
             <Row className="mb-3">
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Month</Form.Label>
-                  <Form.Select value={month} onChange={(e) => setMonth(e.target.value)}>
-                    {months.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
+                  <Form.Label>Year</Form.Label>
+                  <Form.Select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
+                    {years.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
                       </option>
                     ))}
                   </Form.Select>
@@ -75,11 +75,11 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Year</Form.Label>
-                  <Form.Select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
-                    {years.map((y) => (
-                      <option key={y} value={y}>
-                        {y}
+                  <Form.Label>Month</Form.Label>
+                  <Form.Select value={month} onChange={(e) => setMonth(e.target.value)}>
+                    {months.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
                       </option>
                     ))}
                   </Form.Select>

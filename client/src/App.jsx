@@ -12,6 +12,7 @@ import LandingPage from "./views/LandingPage/LandingPage.jsx";
 import PaymentsPage from "./views/PaymentsPage/PaymentsPage.jsx";
 import ManagementPage from "./views/ManagementPage/ManagementPage.jsx";
 import PaymentEntryPage from "./views/PaymentEntryPage/PaymentEntryPage.jsx";
+import PaymentEditPage from "./views/PaymentEditPage/PaymentEditPage.jsx";
 import ExpensePage from "./views/ExpensePage/ExpensePage.jsx";
 import RevenuePage from "./views/RevenuePage/RevenuePage.jsx";
 import CategoryManagementPage from "./views/CategoryManagementPage/CategoryManagementPage.jsx";
@@ -56,6 +57,7 @@ function App() {
               {/* PRIVATE ROUTES */}
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="payments" element={<PaymentsPage />} />
+              <Route path="payments/:id/edit" element={<PaymentEditPage />} />
               <Route path="payment-entry" element={<PaymentEntryPage />} />
               <Route path="management" element={<ManagementPage />} />
               <Route path="expenses" element={<ExpensePage />} />

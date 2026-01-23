@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
 import { getMonthlyStats, getFilteredStats, getGradeBreakdown, getShiftBreakdown, getBatchBreakdown } from "../../actions/Report.action";
 import ProfitChart from "../../components/Reports/ProfitChart";
-import PaymentsChart from "../../components/Reports/PaymentsChart";
 import FilteredReportsTab from "../../components/Reports/FilteredReportsTab";
 import GradeBreakdown from "../../components/Reports/GradeBreakdown";
 import ShiftBreakdown from "../../components/Reports/ShiftBreakdown";
@@ -47,10 +46,7 @@ const ReportsPage = ({ monthlyStats, getMonthlyStats, selectedTenant, loading, g
                 <Tab eventKey="profit" title="Profit (Last 12 Months)">
                   <ProfitChart data={monthlyStats} selectedTenant={selectedTenant} />
                 </Tab>
-                <Tab eventKey="payments" title="Payments (Last 12 Months)">
-                  <PaymentsChart data={monthlyStats} />
-                </Tab>
-                <Tab eventKey="grade" title="Grade Breakdown">
+                <Tab eventKey="grade" title="Class Breakdown">
                   <GradeBreakdown selectedTenant={selectedTenant} />
                 </Tab>
                 <Tab eventKey="shift" title="Shift Breakdown">

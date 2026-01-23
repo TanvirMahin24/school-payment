@@ -124,23 +124,6 @@ const ExpenseEntry = ({
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Month *</Form.Label>
-                <Form.Select
-                  name="month"
-                  value={formData.month}
-                  onChange={handleChange}
-                  required
-                >
-                  {months.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
                 <Form.Label>Year *</Form.Label>
                 <Form.Select
                   name="year"
@@ -151,6 +134,23 @@ const ExpenseEntry = ({
                   {years.map((year) => (
                     <option key={year} value={year}>
                       {year}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Month *</Form.Label>
+                <Form.Select
+                  name="month"
+                  value={formData.month}
+                  onChange={handleChange}
+                  required
+                >
+                  {months.map((month) => (
+                    <option key={month} value={month}>
+                      {month}
                     </option>
                   ))}
                 </Form.Select>

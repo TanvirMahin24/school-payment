@@ -96,21 +96,21 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                   <h5 className="mb-0 me-2">Period</h5>
                   <Form.Select
                     style={{ width: "auto" }}
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  >
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Select
+                    style={{ width: "auto" }}
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
                   >
                     <option value="All Months">All Months</option>
                     {months.map((m) => (
                       <option key={m} value={m}>{m}</option>
-                    ))}
-                  </Form.Select>
-                  <Form.Select
-                    style={{ width: "auto" }}
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  >
-                    {yearOptions.map((y) => (
-                      <option key={y} value={y}>{y}</option>
                     ))}
                   </Form.Select>
                 </Card.Header>

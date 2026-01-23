@@ -30,10 +30,13 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
   };
 
   const totalPayment = useMemo(() => {
-    if (!batchBreakdown || batchBreakdown === null || batchBreakdown.length === 0) return 0;
+    if (!batchBreakdown || batchBreakdown === null || batchBreakdown.length === 0) return { payment: 0, extraPayment: 0 };
     return batchBreakdown.reduce(
-      (acc, d) => acc + parseFloat(d.payment || 0),
-      0
+      (acc, d) => ({
+        payment: acc.payment + parseFloat(d.payment || 0),
+        extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
+      }),
+      { payment: 0, extraPayment: 0 }
     );
   }, [batchBreakdown]);
 
@@ -45,21 +48,6 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
         </Card.Header>
         <Card.Body>
           <Row>
-            <Col md={3}>
-              <Form.Group className="mb-3">
-                <Form.Label>Start Month</Form.Label>
-                <Form.Select
-                  value={startMonth}
-                  onChange={(e) => setStartMonth(e.target.value)}
-                >
-                  {months.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Start Year</Form.Label>
@@ -77,10 +65,10 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
             </Col>
             <Col md={3}>
               <Form.Group className="mb-3">
-                <Form.Label>End Month</Form.Label>
+                <Form.Label>Start Month</Form.Label>
                 <Form.Select
-                  value={endMonth}
-                  onChange={(e) => setEndMonth(e.target.value)}
+                  value={startMonth}
+                  onChange={(e) => setStartMonth(e.target.value)}
                 >
                   {months.map((m) => (
                     <option key={m} value={m}>
@@ -100,6 +88,21 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
                   {years.map((y) => (
                     <option key={y} value={y}>
                       {y}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group className="mb-3">
+                <Form.Label>End Month</Form.Label>
+                <Form.Select
+                  value={endMonth}
+                  onChange={(e) => setEndMonth(e.target.value)}
+                >
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
                     </option>
                   ))}
                 </Form.Select>
@@ -127,10 +130,11 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
-                  <th>Grade</th>
+                  <th>Class</th>
                   <th>Shift</th>
                   <th>Batch</th>
-                  <th className="text-end">Payment Amount</th>
+                  <th className="text-end">Payment</th>
+                  <th className="text-end">Extra Payment</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,11 +144,13 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
                     <td>{d.shiftName}</td>
                     <td>{d.batchName}</td>
                     <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
+                    <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
                   </tr>
                 ))}
                 <tr className="table-info fw-bold">
                   <td colSpan="3">Total</td>
-                  <td className="text-end">{totalPayment.toFixed(2)}</td>
+                  <td className="text-end">{totalPayment.payment.toFixed(2)}</td>
+                  <td className="text-end">{totalPayment.extraPayment.toFixed(2)}</td>
                 </tr>
               </tbody>
             </Table>

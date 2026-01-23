@@ -9,11 +9,12 @@ const FilteredChart = ({ data, hasFilter = false }) => {
       (acc, d) => ({
         revenue: acc.revenue + parseFloat(d.revenue || 0),
         payment: acc.payment + parseFloat(d.payment || 0),
+        extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
         expense: acc.expense + parseFloat(d.expense || 0),
         totalRevenue: acc.totalRevenue + parseFloat(d.totalRevenue || 0),
         profit: acc.profit + parseFloat(d.profit || 0),
       }),
-      { revenue: 0, payment: 0, expense: 0, totalRevenue: 0, profit: 0 }
+      { revenue: 0, payment: 0, extraPayment: 0, expense: 0, totalRevenue: 0, profit: 0 }
     );
   }, [data]);
 
@@ -165,8 +166,9 @@ const FilteredChart = ({ data, hasFilter = false }) => {
                 <thead>
                   <tr>
                     <th>Month</th>
+                    <th className="text-end">Payment</th>
+                    <th className="text-end">Extra Payment</th>
                     {!hasFilter && <th className="text-end">Revenue</th>}
-                    <th className="text-end">Payments</th>
                     {!hasFilter && <th className="text-end">Expense</th>}
                     <th className="text-end">Profit</th>
                   </tr>
@@ -175,14 +177,17 @@ const FilteredChart = ({ data, hasFilter = false }) => {
                   {data.map((d, index) => (
                     <tr key={index}>
                       <td>{d.monthLabel}</td>
+                      <td className="text-end">
+                        {parseFloat(d.payment || 0).toFixed(2)}
+                      </td>
+                      <td className="text-end">
+                        {parseFloat(d.extraPayment || 0).toFixed(2)}
+                      </td>
                       {!hasFilter && (
                         <td className="text-end">
                           {parseFloat(d.revenue || 0).toFixed(2)}
                         </td>
                       )}
-                      <td className="text-end">
-                        {parseFloat(d.payment || 0).toFixed(2)}
-                      </td>
                       {!hasFilter && (
                         <td className="text-end">
                           {parseFloat(d.expense || 0).toFixed(2)}
@@ -202,14 +207,17 @@ const FilteredChart = ({ data, hasFilter = false }) => {
                   {totalStats && (
                     <tr className="table-info fw-bold">
                       <td>Total</td>
+                      <td className="text-end">
+                        {totalStats.payment.toFixed(2)}
+                      </td>
+                      <td className="text-end">
+                        {totalStats.extraPayment.toFixed(2)}
+                      </td>
                       {!hasFilter && (
                         <td className="text-end">
                           {totalStats.revenue.toFixed(2)}
                         </td>
                       )}
-                      <td className="text-end">
-                        {totalStats.payment.toFixed(2)}
-                      </td>
                       {!hasFilter && (
                         <td className="text-end">
                           {totalStats.expense.toFixed(2)}

@@ -59,7 +59,7 @@ const getMonthlyStats = async (req, res) => {
       raw: true,
     });
 
-    // Fetch payments for last 12 months
+    // Fetch payments for last 12 months - separate amount and extra_amount
     const payments = await Payment.findAll({
       where: {
         tenant,
@@ -68,7 +68,8 @@ const getMonthlyStats = async (req, res) => {
       attributes: [
         "month",
         "year",
-        [Sequelize.fn("SUM", Sequelize.col("total_amount")), "total"],
+        [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
+        [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
       ],
       group: ["month", "year"],
       raw: true,
@@ -88,9 +89,11 @@ const getMonthlyStats = async (req, res) => {
     });
 
     const paymentMap = new Map();
+    const extraPaymentMap = new Map();
     payments.forEach((p) => {
       const key = `${p.month}_${p.year}`;
-      paymentMap.set(key, parseFloat(p.total || 0));
+      paymentMap.set(key, parseFloat(p.payment || 0));
+      extraPaymentMap.set(key, parseFloat(p.extraPayment || 0));
     });
 
     // Build result array
@@ -99,7 +102,9 @@ const getMonthlyStats = async (req, res) => {
       const expense = expenseMap.get(key) || 0;
       const revenue = revenueMap.get(key) || 0;
       const payment = paymentMap.get(key) || 0;
-      const totalRevenue = revenue + payment;
+      const extraPayment = extraPaymentMap.get(key) || 0;
+      const totalPayment = payment + extraPayment;
+      const totalRevenue = revenue + totalPayment;
       const profit = totalRevenue - expense;
 
       return {
@@ -109,6 +114,7 @@ const getMonthlyStats = async (req, res) => {
         expense,
         revenue,
         payment,
+        extraPayment,
         totalRevenue,
         profit,
       };

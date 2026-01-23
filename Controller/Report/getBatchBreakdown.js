@@ -121,25 +121,28 @@ const getBatchBreakdown = async (req, res) => {
     const totalExpense = parseFloat(expenses[0]?.total || 0);
     const totalRevenue = parseFloat(revenues[0]?.total || 0);
 
-    // Get payments grouped by grade, shift, and batch
+    // Get payments grouped by grade, shift, and batch - separate amount and extra_amount
     const payments = await Payment.findAll({
       where: paymentWhere,
       attributes: [
         "gradePrimaryId",
         "shiftPrimaryId",
         "batchPrimaryId",
-        [Sequelize.fn("SUM", Sequelize.col("total_amount")), "total"],
+        [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
+        [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
       ],
       group: ["gradePrimaryId", "shiftPrimaryId", "batchPrimaryId"],
       raw: true,
     });
 
-    // Create a map for payments by grade-shift-batch
+    // Create maps for payments by grade-shift-batch
     const paymentMap = new Map();
+    const extraPaymentMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId && p.shiftPrimaryId && p.batchPrimaryId) {
         const key = `${p.gradePrimaryId}_${p.shiftPrimaryId}_${p.batchPrimaryId}`;
-        paymentMap.set(key, parseFloat(p.total || 0));
+        paymentMap.set(key, parseFloat(p.payment || 0));
+        extraPaymentMap.set(key, parseFloat(p.extraPayment || 0));
       }
     });
 
@@ -164,7 +167,9 @@ const getBatchBreakdown = async (req, res) => {
         shiftBatches.forEach((batch) => {
           const batchKey = `${grade.primaryId}_${shift.primaryId}_${batch.primaryId}`;
           const payment = paymentMap.get(batchKey) || 0;
-          const totalRevenueForBatch = payment + (totalRevenue / totalBatches); // Distribute revenue
+          const extraPayment = extraPaymentMap.get(batchKey) || 0;
+          const totalPayment = payment + extraPayment;
+          const totalRevenueForBatch = totalPayment + (totalRevenue / totalBatches); // Distribute revenue
           const expenseForBatch = totalExpense / totalBatches; // Distribute expense equally
           const profit = totalRevenueForBatch - expenseForBatch;
 
@@ -177,6 +182,7 @@ const getBatchBreakdown = async (req, res) => {
             batchName: batch.name,
             revenue: totalRevenue / totalBatches,
             payment: payment,
+            extraPayment: extraPayment,
             expense: expenseForBatch,
             totalRevenue: totalRevenueForBatch,
             profit: profit,

@@ -30,10 +30,13 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
   };
 
   const totalPayment = useMemo(() => {
-    if (!gradeBreakdown || !Array.isArray(gradeBreakdown) || gradeBreakdown.length === 0) return 0;
+    if (!gradeBreakdown || !Array.isArray(gradeBreakdown) || gradeBreakdown.length === 0) return { payment: 0, extraPayment: 0 };
     return gradeBreakdown.reduce(
-      (acc, d) => acc + parseFloat(d.payment || 0),
-      0
+      (acc, d) => ({
+        payment: acc.payment + parseFloat(d.payment || 0),
+        extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
+      }),
+      { payment: 0, extraPayment: 0 }
     );
   }, [gradeBreakdown]);
 
@@ -45,21 +48,6 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
         </Card.Header>
         <Card.Body>
           <Row>
-            <Col md={3}>
-              <Form.Group className="mb-3">
-                <Form.Label>Start Month</Form.Label>
-                <Form.Select
-                  value={startMonth}
-                  onChange={(e) => setStartMonth(e.target.value)}
-                >
-                  {months.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
             <Col md={3}>
               <Form.Group className="mb-3">
                 <Form.Label>Start Year</Form.Label>
@@ -77,10 +65,10 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
             </Col>
             <Col md={3}>
               <Form.Group className="mb-3">
-                <Form.Label>End Month</Form.Label>
+                <Form.Label>Start Month</Form.Label>
                 <Form.Select
-                  value={endMonth}
-                  onChange={(e) => setEndMonth(e.target.value)}
+                  value={startMonth}
+                  onChange={(e) => setStartMonth(e.target.value)}
                 >
                   {months.map((m) => (
                     <option key={m} value={m}>
@@ -105,6 +93,21 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
                 </Form.Select>
               </Form.Group>
             </Col>
+            <Col md={3}>
+              <Form.Group className="mb-3">
+                <Form.Label>End Month</Form.Label>
+                <Form.Select
+                  value={endMonth}
+                  onChange={(e) => setEndMonth(e.target.value)}
+                >
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
           </Row>
           <Row>
             <Col>
@@ -123,12 +126,13 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
       ) : gradeBreakdown && Array.isArray(gradeBreakdown) && gradeBreakdown.length > 0 ? (
         <Card className="border-0">
           <Card.Body>
-            <h5 className="mb-3">Grade-wise Payment Breakdown</h5>
+            <h5 className="mb-3">Class-wise Payment Breakdown</h5>
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
-                  <th>Grade</th>
-                  <th className="text-end">Payment Amount</th>
+                  <th>Class</th>
+                  <th className="text-end">Payment</th>
+                  <th className="text-end">Extra Payment</th>
                 </tr>
               </thead>
               <tbody>
@@ -136,11 +140,13 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
                   <tr key={index}>
                     <td>{d.gradeName}</td>
                     <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
+                    <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
                   </tr>
                 ))}
                 <tr className="table-info fw-bold">
                   <td>Total</td>
-                  <td className="text-end">{totalPayment.toFixed(2)}</td>
+                  <td className="text-end">{totalPayment.payment.toFixed(2)}</td>
+                  <td className="text-end">{totalPayment.extraPayment.toFixed(2)}</td>
                 </tr>
               </tbody>
             </Table>

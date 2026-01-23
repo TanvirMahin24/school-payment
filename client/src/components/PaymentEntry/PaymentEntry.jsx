@@ -444,28 +444,6 @@ const PaymentEntry = ({
           <Row>
             <Col md={3} className="py-3">
               <div className="d-flex justify-content-between align-items-center pb-2">
-                <label htmlFor="month" className="d-block">
-                  Month
-                </label>
-              </div>
-              <Form.Select
-                onChange={(e) => {
-                  setMonth(e.target.value);
-                }}
-                id="month"
-                name="month"
-                value={month}
-              >
-                <option value={""}>Select Month</option>
-                {months.map((m, i) => (
-                  <option key={i} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </Form.Select>
-            </Col>
-            <Col md={3} className="py-3">
-              <div className="d-flex justify-content-between align-items-center pb-2">
                 <label htmlFor="year" className="d-block">
                   Year
                 </label>
@@ -482,6 +460,28 @@ const PaymentEntry = ({
                 {years.map((y, i) => (
                   <option key={i} value={y}>
                     {y}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+            <Col md={3} className="py-3">
+              <div className="d-flex justify-content-between align-items-center pb-2">
+                <label htmlFor="month" className="d-block">
+                  Month
+                </label>
+              </div>
+              <Form.Select
+                onChange={(e) => {
+                  setMonth(e.target.value);
+                }}
+                id="month"
+                name="month"
+                value={month}
+              >
+                <option value={""}>Select Month</option>
+                {months.map((m, i) => (
+                  <option key={i} value={m}>
+                    {m}
                   </option>
                 ))}
               </Form.Select>
