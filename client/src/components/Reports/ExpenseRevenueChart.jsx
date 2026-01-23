@@ -1,8 +1,34 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, Table } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { BASE_URL } from "../../constants/URL";
+import MonthDetailModal from "./MonthDetailModal";
 // import Chart from "react-apexcharts";
 
-const ExpenseRevenueChart = ({ data }) => {
+const INITIAL_MODAL_STATE = { show: false, type: null, monthLabel: "", items: [], loading: false };
+
+const ExpenseRevenueChart = ({ data, selectedTenant }) => {
+  const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
+
+  const handleOpenModal = async (type, row) => {
+    if (!selectedTenant) {
+      toast.error("Please select a tenant");
+      return;
+    }
+    setModalState({ show: true, type, monthLabel: row.monthLabel, items: [], loading: true });
+    const url = type === "expense" ? `${BASE_URL}/api/expense` : `${BASE_URL}/api/revenue`;
+    try {
+      const res = await axios.get(url, { params: { tenant: selectedTenant, month: row.month, year: row.year } });
+      setModalState((s) => ({ ...s, items: res.data.data, loading: false }));
+    } catch (err) {
+      toast.error(err.response?.data?.message || `Error fetching ${type}s`);
+      setModalState((s) => ({ ...s, loading: false }));
+    }
+  };
+
+  const handleCloseModal = () => setModalState(INITIAL_MODAL_STATE);
+
   const totalStats = useMemo(() => {
     if (!data || data.length === 0) return null;
     return data.reduce(
@@ -120,8 +146,30 @@ const ExpenseRevenueChart = ({ data }) => {
             {data.map((d, index) => (
               <tr key={index}>
                 <td>{d.monthLabel}</td>
-                <td className="text-end text-danger">{parseFloat(d.expense || 0).toFixed(2)}</td>
-                <td className="text-end text-success">{parseFloat(d.totalRevenue || 0).toFixed(2)}</td>
+                <td className="text-end text-danger">
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="text-primary"
+                    style={{ cursor: "pointer", textDecoration: "underline" }}
+                    onClick={() => handleOpenModal("expense", d)}
+                    onKeyDown={(e) => e.key === "Enter" && handleOpenModal("expense", d)}
+                  >
+                    {parseFloat(d.expense || 0).toFixed(2)}
+                  </span>
+                </td>
+                <td className="text-end text-success">
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="text-primary"
+                    style={{ cursor: "pointer", textDecoration: "underline" }}
+                    onClick={() => handleOpenModal("revenue", d)}
+                    onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", d)}
+                  >
+                    {parseFloat(d.totalRevenue || 0).toFixed(2)}
+                  </span>
+                </td>
               </tr>
             ))}
             {totalStats && (
@@ -134,6 +182,14 @@ const ExpenseRevenueChart = ({ data }) => {
           </tbody>
         </Table>
       </Card.Body>
+      <MonthDetailModal
+        show={modalState.show}
+        onHide={handleCloseModal}
+        type={modalState.type}
+        monthLabel={modalState.monthLabel}
+        items={modalState.items}
+        loading={modalState.loading}
+      />
     </Card>
   );
 };

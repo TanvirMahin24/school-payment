@@ -210,7 +210,7 @@ const FilteredReportsTab = ({
           <Spinner animation="border" variant="primary" />
         </div>
       ) : filteredStats && filteredStats.length > 0 ? (
-        <FilteredChart data={filteredStats} hasFilter={!!(grade || shift || batch)} />
+        <FilteredChart data={filteredStats} hasFilter={!!(grade || shift || batch)} selectedTenant={selectedTenant} />
       ) : filteredStats && filteredStats.length === 0 ? (
         <Card>
           <Card.Body>
