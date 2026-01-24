@@ -110,35 +110,7 @@ const ManagementPage = ({
             </Row>
 
             <Row>
-              <Col md={6} className="mb-3">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-100"
-                  onClick={handleSyncAll}
-                  disabled={loading.syncAll || loading.syncRecent}
-                >
-                  {loading.syncAll ? (
-                    <>
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
-                        className="me-2"
-                      />
-                      Syncing...
-                    </>
-                  ) : (
-                    "Sync All Students"
-                  )}
-                </Button>
-                <p className="text-muted small mt-2 mb-0">
-                  Synchronize all student data from {getTenantLabel(selectedTenant)} site
-                </p>
-              </Col>
-              <Col md={6} className="mb-3">
+              <Col md={12} className="mb-3">
                 <Button
                   variant="outline-primary"
                   size="lg"
@@ -173,7 +145,7 @@ const ManagementPage = ({
                 <div className="alert alert-info mb-0">
                   <strong>Note:</strong> The CRON job automatically syncs students
                   updated in the last 48 hours every minute (for development). Use
-                  "Sync All Students" to perform a full synchronization.
+                  "Sync Recent (Last 48h)" to manually trigger a sync for recent updates.
                 </div>
               </Col>
             </Row>
@@ -230,6 +202,51 @@ const ManagementPage = ({
                   <strong>Note:</strong> The CRON job automatically syncs grades, shifts, and batches
                   every hour. Use this button to manually trigger a sync.
                 </div>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+
+        <Card bg="danger" text="white" className="shadow mb-4">
+          <Card.Header>
+            <h5 className="mb-0">Developer Management Commands</h5>
+          </Card.Header>
+          <Card.Body>
+            <Row>
+              <Col md={12} className="mb-3">
+                <div className="alert alert-warning mb-4" role="alert">
+                  <strong>⚠️ WARNING:</strong> This section is only for developers. Please do not click on the button if you are not the developer.
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={12} className="mb-3">
+                <Button
+                  variant="light"
+                  size="lg"
+                  className="w-100"
+                  onClick={handleSyncAll}
+                  disabled={loading.syncAll || loading.syncRecent}
+                >
+                  {loading.syncAll ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                        className="me-2"
+                      />
+                      Syncing...
+                    </>
+                  ) : (
+                    "Sync All Students"
+                  )}
+                </Button>
+                <p className="text-light small mt-2 mb-0">
+                  Synchronize all student data from {getTenantLabel(selectedTenant)} site
+                </p>
               </Col>
             </Row>
           </Card.Body>

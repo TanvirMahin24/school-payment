@@ -768,7 +768,7 @@ const PaymentEntry = ({
                                 className="badge bg-secondary"
                                 style={{ fontSize: "0.7rem" }}
                               >
-                                New
+                                Not Paid Yet
                               </span>
                             );
                           } else if (status === "created") {
@@ -777,7 +777,7 @@ const PaymentEntry = ({
                                 className="badge bg-success"
                                 style={{ fontSize: "0.7rem" }}
                               >
-                                New Entry
+                                Paid
                               </span>
                             );
                           } else if (status === "updated") {
@@ -786,7 +786,7 @@ const PaymentEntry = ({
                                 className="badge bg-warning text-dark"
                                 style={{ fontSize: "0.7rem" }}
                               >
-                                Updated
+                                Paid
                               </span>
                             );
                           } else if (status === "failed") {

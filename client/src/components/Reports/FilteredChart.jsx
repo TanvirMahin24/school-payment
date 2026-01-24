@@ -196,7 +196,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                     <th className="text-end">Extra Payment</th>
                     {!hasFilter && <th className="text-end">Revenue</th>}
                     {!hasFilter && <th className="text-end">Expense</th>}
-                    <th className="text-end">Profit</th>
+                    {!hasFilter && <th className="text-end">Profit</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -237,7 +237,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                           </span>
                         </td>
                       )}
-                      <td
+                      {!hasFilter && <td
                         className={`text-end ${
                           parseFloat(d.profit || 0) >= 0
                             ? "text-success"
@@ -245,7 +245,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                         }`}
                       >
                         {parseFloat(d.profit || 0).toFixed(2)}
-                      </td>
+                      </td>}
                     </tr>
                   ))}
                   {totalStats && (
@@ -267,7 +267,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                           {totalStats.expense.toFixed(2)}
                         </td>
                       )}
-                      <td
+                      {!hasFilter && <td
                         className={`text-end ${
                           totalStats.profit >= 0
                             ? "text-success"
@@ -275,7 +275,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                         }`}
                       >
                         {totalStats.profit.toFixed(2)}
-                      </td>
+                      </td>}
                     </tr>
                   )}
                 </tbody>

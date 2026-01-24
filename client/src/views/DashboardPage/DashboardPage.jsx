@@ -123,14 +123,14 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                           <div className="text-center">
                             <div className="text-muted small">{isAllMonths ? "Total Payment" : "Payment"}</div>
                             <div className="h4 mb-0">{displayData.paymentAmount}</div>
-                            <div className="text-muted small">{displayData.payments} entries</div>
+                            <div className="text-muted small">Paid Students {displayData.payments}</div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
                           <div className="text-center">
                             <div className="text-muted small">{isAllMonths ? "Total Extra Payment" : "Extra Payment"}</div>
                             <div className="h4 mb-0">{displayData.extraPaymentAmount}</div>
-                            <div className="text-muted small">{displayData.payments} entries</div>
+                            <div className="text-muted small">Paid Students {displayData.payments}</div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
