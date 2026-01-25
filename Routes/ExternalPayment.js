@@ -4,6 +4,7 @@ const apiKeyAuth = require("../Utils/apiKeyAuth");
 const { createExternalPayment } = require("../Controller/Payment/createExternalPayment");
 const { createBulkExternalPayment } = require("../Controller/Payment/createBulkExternalPayment");
 const { getExternalPaymentsByStudents } = require("../Controller/Payment/getExternalPaymentsByStudents");
+const { getStudentMonthlyFees } = require("../Controller/Payment/getStudentMonthlyFees");
 
 const router = express.Router();
 
@@ -65,6 +66,13 @@ router.get(
   "/by-students",
   apiKeyAuth,
   getExternalPaymentsByStudents
+);
+
+// External Payment API Route (3rd party access) - Get student monthly fees
+router.get(
+  "/student-monthly-fees",
+  apiKeyAuth,
+  getStudentMonthlyFees
 );
 
 module.exports = router;
