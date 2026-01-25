@@ -46,7 +46,33 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
   };
   return (
     <div>
-      <Container fluid>
+      {/* Fixed Tenant Selector Header */}
+      <div className={styles.tenant_header}>
+        <Container fluid>
+          <div className={styles.tenant_header_content}>
+            {/* <span className={styles.tenant_label}>Select Tenant:</span> */}
+            <ButtonGroup className={styles.tenant_buttons}>
+              {TENANT_LIST.map((tenant) => (
+                <Button
+                  key={tenant.value}
+                  variant={
+                    selectedTenant === tenant.value
+                      ? "primary"
+                      : "outline-primary"
+                  }
+                  size="sm"
+                  onClick={() => handleTenantChange(tenant.value)}
+                  className={styles.tenant_button}
+                >
+                  {tenant.label}
+                </Button>
+              ))}
+            </ButtonGroup>
+          </div>
+        </Container>
+      </div>
+
+      <Container fluid className={styles.main_container}>
         <Row className="position-relative">
           <Col
             md={2}
@@ -64,28 +90,6 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
                 onClick={() => setShow(!show)}
               >
                 <HiMenu />
-              </div>
-            </div>
-
-            <div className={styles.nav}>
-              <div className={styles.tenant_selector}>
-                <ButtonGroup className={styles.tenant_buttons}>
-                  {TENANT_LIST.map((tenant) => (
-                    <Button
-                      key={tenant.value}
-                      variant={
-                        selectedTenant === tenant.value
-                          ? "primary"
-                          : "outline-primary"
-                      }
-                      size="sm"
-                      onClick={() => handleTenantChange(tenant.value)}
-                      className={styles.tenant_button}
-                    >
-                      {tenant.label}
-                    </Button>
-                  ))}
-                </ButtonGroup>
               </div>
             </div>
 

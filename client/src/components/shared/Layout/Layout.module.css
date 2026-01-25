@@ -1,6 +1,29 @@
+.tenant_header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--white);
+  padding: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tenant_header_content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.main_container {
+  margin-top: 50px;
+}
+
 .wrapper {
   background: var(--white) !important;
-  min-height: 100vh;
+  min-height: calc(100vh - 50px);
 }
 
 .logo {
@@ -71,54 +94,53 @@
   transition: 0.3s all ease-in-out;
 }
 
-.tenant_selector {
-  padding: 0.4rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
 .tenant_label {
   font-weight: 600;
-  color: var(--secondary);
+  color: var(--dark);
   font-size: 14px;
-  margin-bottom: 0.25rem;
+  white-space: nowrap;
 }
 
 .tenant_buttons {
-  width: 100%;
   display: flex;
-  gap: 0.15rem;
+  gap: 0.25rem;
   flex-wrap: wrap;
 }
 
 .tenant_button {
-  flex: 1;
-  font-size: 11px;
-  padding: 0.2rem 0.4rem;
-  min-width: 0;
+  font-size: 12px;
+  padding: 0.25rem 0.75rem;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  border-radius: 4px;
 }
 
 @media screen and (max-width: 768px) {
-  .tenant_buttons {
-    gap: 0.1rem;
+  .tenant_header_content {
+    gap: 0.5rem;
+  }
+
+  .tenant_label {
+    font-size: 12px;
   }
 
   .tenant_button {
     font-size: 10px;
-    padding: 0.15rem 0.3rem;
-    flex: 1 1 calc(50% - 0.1rem);
-    min-width: calc(50% - 0.1rem);
+    padding: 0.2rem 0.5rem;
   }
 }
 
 @media screen and (max-width: 480px) {
+  .tenant_header {
+    padding: 0.4rem 0;
+  }
+
+  .tenant_label {
+    font-size: 11px;
+  }
+
   .tenant_button {
     font-size: 9px;
-    padding: 0.1rem 0.25rem;
+    padding: 0.15rem 0.4rem;
   }
 }
 
@@ -130,10 +152,11 @@
   .wrapper {
     display: block;
     position: fixed;
-    z-index: 9;
+    z-index: 999;
     width: 100%;
     left: -105%;
-    min-height: 100vh !important;
+    top: 50px;
+    min-height: calc(100vh - 50px) !important;
     transition: 0.3s all ease-in-out;
   }
 
