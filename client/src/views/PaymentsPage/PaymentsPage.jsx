@@ -2,14 +2,15 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Col, Container, Row, Table, Button, ButtonGroup, Form, Card } from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
-import { getPayments } from "../../actions/Payment.action";
+import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
+import { getPayments, deletePayment } from "../../actions/Payment.action";
 import { getGradeList } from "../../actions/Grade.action";
 import { useNavigate } from "react-router-dom";
 import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
 import { months } from "../../constants/MonthsAndYears";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
-const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, selectedTenant }) => {
+const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, getGradeList, selectedTenant }) => {
   const navigate = useNavigate();
   const [year, setYear] = useState(`${new Date().getFullYear()}`);
   const [month, setMonth] = useState("");
@@ -18,6 +19,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
   const [batch, setBatch] = useState("");
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc"); // 'asc' or 'desc'
+  const [paymentToDelete, setPaymentToDelete] = useState(null);
 
   // Fetch grades when tenant changes and clear payments
   useEffect(() => {
@@ -31,6 +33,12 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
     getPayments({ clear: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTenant]);
+
+  const handleDeleteClick = (payment) => setPaymentToDelete(payment);
+  const handleDeleteClose = () => setPaymentToDelete(null);
+  const handleDeleteConfirm = () => {
+    if (paymentToDelete) deletePayment(paymentToDelete.id);
+  };
 
   const selectHandler = () => {
     const filters = {
@@ -102,6 +110,11 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
         case "extraAmount":
           aValue = parseFloat(a.extra_amount) || 0;
           bValue = parseFloat(b.extra_amount) || 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
+        case "examFee":
+          aValue = parseFloat(a.exam_fee) || 0;
+          bValue = parseFloat(b.exam_fee) || 0;
           return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
 
         case "totalAmount":
@@ -341,6 +354,12 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("examFee")}
+                    >
+                      Exam Fee {getSortIcon("examFee")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("totalAmount")}
                     >
                       Total Amount {getSortIcon("totalAmount")}
@@ -385,6 +404,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
                       <td>{payment.student?.name || "-"}</td>
                       <td>{parseFloat(payment.amount || 0).toFixed(2)}</td>
                       <td>{parseFloat(payment.extra_amount || 0).toFixed(2)}</td>
+                      <td>{parseFloat(payment.exam_fee || 0).toFixed(2)}</td>
                       <td>{parseFloat(payment.total_amount || payment.amount || 0).toFixed(2)}</td>
                       <td>{payment.month}</td>
                       <td>
@@ -429,9 +449,7 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
                         <Button
                           variant="outline-danger"
                           size="sm"
-                          onClick={() => {
-                            // Handle delete
-                          }}
+                          onClick={() => handleDeleteClick(payment)}
                         >
                           Delete
                         </Button>
@@ -455,6 +473,21 @@ const PaymentsPage = ({ payments, getPayments, loading, grades, getGradeList, se
             )}
           </Col>
         </Row>
+
+        <ConfirmModal
+          show={!!paymentToDelete}
+          onHide={handleDeleteClose}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Payment"
+        >
+          {paymentToDelete && (
+            <p className="mb-0">
+              Are you sure you want to delete this payment for{" "}
+              <strong>{paymentToDelete.student?.name || "student"}</strong> ({paymentToDelete.month}{" "}
+              {paymentToDelete.year})? This action cannot be undone.
+            </p>
+          )}
+        </ConfirmModal>
       </Container>
     </Layout>
   );
@@ -467,6 +500,6 @@ const mapStateToProps = (state) => ({
   selectedTenant: state.tenant?.selectedTenant,
 });
 
-export default connect(mapStateToProps, { getPayments, getGradeList })(PaymentsPage);
+export default connect(mapStateToProps, { getPayments, deletePayment, getGradeList })(PaymentsPage);
 
 

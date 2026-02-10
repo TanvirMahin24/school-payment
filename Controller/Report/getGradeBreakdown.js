@@ -82,13 +82,14 @@ const getGradeBreakdown = async (req, res) => {
     const totalExpense = parseFloat(expenses[0]?.total || 0);
     const totalRevenue = parseFloat(revenues[0]?.total || 0);
 
-    // Get payments grouped by grade - separate amount and extra_amount
+    // Get payments grouped by grade - separate amount, extra_amount, and exam_fee
     const payments = await Payment.findAll({
       where: paymentWhere,
       attributes: [
         "gradePrimaryId",
         [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
         [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
+        [Sequelize.fn("SUM", Sequelize.col("exam_fee")), "examPayment"],
       ],
       group: ["gradePrimaryId"],
       raw: true,
@@ -97,10 +98,12 @@ const getGradeBreakdown = async (req, res) => {
     // Create maps for payments by grade
     const paymentMap = new Map();
     const extraPaymentMap = new Map();
+    const examPaymentMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId) {
         paymentMap.set(p.gradePrimaryId, parseFloat(p.payment || 0));
         extraPaymentMap.set(p.gradePrimaryId, parseFloat(p.extraPayment || 0));
+        examPaymentMap.set(p.gradePrimaryId, parseFloat(p.examPayment || 0));
       }
     });
 
@@ -108,6 +111,7 @@ const getGradeBreakdown = async (req, res) => {
     const result = grades.map((grade) => {
       const payment = paymentMap.get(grade.primaryId) || 0;
       const extraPayment = extraPaymentMap.get(grade.primaryId) || 0;
+      const examPayment = examPaymentMap.get(grade.primaryId) || 0;
       const totalPayment = payment + extraPayment;
       const totalRevenueForGrade = totalPayment + totalRevenue; // Revenue is shared across all grades
       const expenseForGrade = (totalExpense / grades.length); // Distribute expense equally (or you can change this logic)
@@ -119,6 +123,7 @@ const getGradeBreakdown = async (req, res) => {
         revenue: totalRevenue,
         payment: payment,
         extraPayment: extraPayment,
+        examPayment: examPayment,
         expense: expenseForGrade,
         totalRevenue: totalRevenueForGrade,
         profit: profit,

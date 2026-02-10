@@ -41,6 +41,11 @@ const Payment = sequelize.define("payment", {
     allowNull: true,
     defaultValue: 0,
   },
+  exam_fee: {
+    type: Sequelize.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0,
+  },
   total_amount: {
     type: Sequelize.DECIMAL(10, 2),
     allowNull: true,

@@ -23,13 +23,14 @@ const createExternalPayment = async (req, res) => {
       meta,
       note,
       extra_amount,
+      exam_fee,
       total_amount,
     } = req.body;
 
     // Calculate total_amount if not provided
     const calculatedTotalAmount =
       total_amount ||
-      (parseFloat(amount || 0) + parseFloat(extra_amount || 0));
+      (parseFloat(amount || 0) + parseFloat(extra_amount || 0) + parseFloat(exam_fee || 0));
 
     // Create payment entry
     const newPayment = await Payment.create({
@@ -41,6 +42,7 @@ const createExternalPayment = async (req, res) => {
       meta: meta || null,
       note: note || null,
       extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
+      exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
       total_amount: parseFloat(calculatedTotalAmount),
     });
 
@@ -57,6 +59,7 @@ const createExternalPayment = async (req, res) => {
         meta: newPayment.meta,
         note: newPayment.note,
         extra_amount: newPayment.extra_amount,
+        exam_fee: newPayment.exam_fee,
         total_amount: newPayment.total_amount,
         createdAt: newPayment.createdAt,
         updatedAt: newPayment.updatedAt,

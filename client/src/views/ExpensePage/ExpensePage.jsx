@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table, Button, Form, Card } from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
+import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
 import { getExpenses, deleteExpense } from "../../actions/Expense.action";
 import ExpenseEntry from "../../components/ExpenseEntry/ExpenseEntry";
 import { months, years } from "../../constants/MonthsAndYears";
@@ -10,6 +11,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) => {
   const [showEntry, setShowEntry] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [expenseToDelete, setExpenseToDelete] = useState(null);
   const [month, setMonth] = useState(months[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -38,13 +40,11 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
     setShowEntry(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this expense?")) {
-      const success = await deleteExpense(id);
-      if (success) {
-        loadExpenses();
-      }
-    }
+  const handleDeleteClick = (id) => setExpenseToDelete(id);
+  const handleDeleteConfirm = async () => {
+    if (expenseToDelete == null) return;
+    const success = await deleteExpense(expenseToDelete);
+    if (success) loadExpenses();
   };
 
   const handleClose = () => {
@@ -132,7 +132,7 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
                         <Button
                           variant="outline-danger"
                           size="sm"
-                          onClick={() => handleDelete(expense.id)}
+                          onClick={() => handleDeleteClick(expense.id)}
                         >
                           <FaTrash />
                         </Button>
@@ -156,6 +156,14 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
           handleClose={handleClose}
           expense={editingExpense}
           selectedTenant={selectedTenant}
+        />
+
+        <ConfirmModal
+          show={expenseToDelete != null}
+          onHide={() => setExpenseToDelete(null)}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Expense"
+          message="Are you sure you want to delete this expense? This action cannot be undone."
         />
       </Container>
     </Layout>

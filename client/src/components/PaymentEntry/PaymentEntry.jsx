@@ -19,7 +19,6 @@ import {
   getPaymentsByStudents,
 } from "../../actions/Payment.action";
 import { months, years } from "../../constants/MonthsAndYears";
-import { TENANT_LIST, DEFAULT_TENANT } from "../../constants/Tenant";
 
 const PaymentEntry = ({
   list,
@@ -40,6 +39,7 @@ const PaymentEntry = ({
   // Bulk fill values
   const [bulkAmount, setBulkAmount] = useState("");
   const [bulkExtraAmount, setBulkExtraAmount] = useState("");
+  const [bulkExamFee, setBulkExamFee] = useState("");
   const [bulkNote, setBulkNote] = useState("");
 
   // Student payment data
@@ -79,6 +79,7 @@ const PaymentEntry = ({
               initialPayments[student.id] = {
                 amount: existingPayment.amount?.toString() || "",
                 extra_amount: existingPayment.extra_amount?.toString() || "",
+                exam_fee: existingPayment.exam_fee?.toString() || "",
                 note: existingPayment.note || "",
               };
               initialStatus[student.id] = "existing";
@@ -87,6 +88,7 @@ const PaymentEntry = ({
               initialPayments[student.id] = {
                 amount: "",
                 extra_amount: "",
+                exam_fee: "",
                 note: "",
               };
               initialStatus[student.id] = "new";
@@ -104,6 +106,7 @@ const PaymentEntry = ({
             initialPayments[student.id] = {
               amount: "",
               extra_amount: "",
+              exam_fee: "",
               note: "",
             };
           });
@@ -136,7 +139,7 @@ const PaymentEntry = ({
       grade,
       shift,
       batch,
-      selectedTenant
+      selectedTenant,
     );
 
     if (result && result.length > 0) {
@@ -165,6 +168,7 @@ const PaymentEntry = ({
           initialPayments[student.id] = {
             amount: existingPayment.amount?.toString() || "",
             extra_amount: existingPayment.extra_amount?.toString() || "",
+            exam_fee: existingPayment.exam_fee?.toString() || "",
             note: existingPayment.note || "",
           };
           initialStatus[student.id] = "existing";
@@ -173,6 +177,7 @@ const PaymentEntry = ({
           initialPayments[student.id] = {
             amount: "",
             extra_amount: "",
+            exam_fee: "",
             note: "",
           };
           initialStatus[student.id] = "new";
@@ -207,12 +212,13 @@ const PaymentEntry = ({
           amount: bulkAmount || updatedPayments[student.id]?.amount || "",
           extra_amount:
             bulkExtraAmount || updatedPayments[student.id]?.extra_amount || "",
+          exam_fee: bulkExamFee || updatedPayments[student.id]?.exam_fee || "",
           note: bulkNote || updatedPayments[student.id]?.note || "",
         };
       });
     setStudentPayments(updatedPayments);
     toast.success(
-      `Bulk values applied to ${selectedStudents.size} selected student(s)`
+      `Bulk values applied to ${selectedStudents.size} selected student(s)`,
     );
   };
 
@@ -269,14 +275,22 @@ const PaymentEntry = ({
       errors.push("Please select at least one student to submit");
     }
 
-    // Only validate selected students
+    // Only validate selected students - amount can be empty or 0 (treated as 0); only reject negative or invalid numbers
     rawList.forEach((student) => {
       if (selectedStudents.has(student.id)) {
         const payment = studentPayments[student.id];
-        if (!payment || !payment.amount || parseFloat(payment.amount) <= 0) {
-          errors.push(
-            `Student ${student.uid} (${student.name}): Amount is required`
-          );
+        if (!payment) {
+          errors.push(`Student ${student.uid} (${student.name}): Payment data missing`);
+          return;
+        }
+        const amountStr = payment.amount;
+        if (amountStr !== "" && amountStr !== undefined && amountStr !== null) {
+          const amountNum = parseFloat(amountStr);
+          if (Number.isNaN(amountNum) || amountNum < 0) {
+            errors.push(
+              `Student ${student.uid} (${student.name}): Amount must be a number >= 0`,
+            );
+          }
         }
       }
     });
@@ -315,7 +329,7 @@ const PaymentEntry = ({
     const currentBatch =
       currentGrade && batchNum && shiftNum
         ? currentGrade.batches?.find(
-            (b) => b.id === batchNum && b.shiftId === shiftNum
+            (b) => b.id === batchNum && b.shiftId === shiftNum,
           )
         : null;
 
@@ -328,7 +342,7 @@ const PaymentEntry = ({
 
     if (!finalGradeId || !finalShiftId || !finalBatchId) {
       toast.error(
-        "Grade, Shift, and Batch must be selected before submitting payments"
+        "Grade, Shift, and Batch must be selected before submitting payments",
       );
       setSubmitting(false);
       return;
@@ -341,10 +355,11 @@ const PaymentEntry = ({
         const payment = studentPayments[student.id];
         return {
           userId: student.id, // Use student primaryId as userId
-          amount: parseFloat(payment.amount),
+          amount: parseFloat(payment.amount || 0),
           extra_amount: payment.extra_amount
             ? parseFloat(payment.extra_amount)
             : 0,
+          exam_fee: payment.exam_fee ? parseFloat(payment.exam_fee) : 0,
           month: month,
           year: year,
           tenant: selectedTenant,
@@ -386,10 +401,10 @@ const PaymentEntry = ({
 
     // Show results with created/updated breakdown
     const createdCount = results.successful.filter(
-      (r) => r.status === "created"
+      (r) => r.status === "created",
     ).length;
     const updatedCount = results.successful.filter(
-      (r) => r.status === "updated"
+      (r) => r.status === "updated",
     ).length;
 
     if (results.successful.length > 0) {
@@ -399,7 +414,7 @@ const PaymentEntry = ({
       toast.success(
         `Successfully processed ${
           results.successful.length
-        } payment(s): ${messageParts.join(", ")}`
+        } payment(s): ${messageParts.join(", ")}`,
       );
     }
 
@@ -408,7 +423,7 @@ const PaymentEntry = ({
         .map((f) => f.studentName || `Student ${f.studentId}`)
         .join(", ");
       toast.error(
-        `Failed to process ${results.failed.length} payment(s): ${failedNames}`
+        `Failed to process ${results.failed.length} payment(s): ${failedNames}`,
       );
     }
 
@@ -420,6 +435,7 @@ const PaymentEntry = ({
         clearedPayments[student.id] = {
           amount: "",
           extra_amount: "",
+          exam_fee: "",
           note: "",
         };
       });
@@ -427,6 +443,7 @@ const PaymentEntry = ({
       // Clear bulk fill
       setBulkAmount("");
       setBulkExtraAmount("");
+      setBulkExamFee("");
       setBulkNote("");
     }
   };
@@ -576,7 +593,7 @@ const PaymentEntry = ({
           <Card.Body>
             <h5 className="mb-3">Bulk Fill (Apply to Selected Students)</h5>
             <Row>
-              <Col md={4} className="py-2">
+              <Col md={2} className="py-2">
                 <label htmlFor="bulkAmount" className="d-block pb-1">
                   Amount
                 </label>
@@ -590,7 +607,7 @@ const PaymentEntry = ({
                   onChange={(e) => setBulkAmount(e.target.value)}
                 />
               </Col>
-              <Col md={4} className="py-2">
+              <Col md={2} className="py-2">
                 <label htmlFor="bulkExtraAmount" className="d-block pb-1">
                   Extra Amount
                 </label>
@@ -604,7 +621,21 @@ const PaymentEntry = ({
                   onChange={(e) => setBulkExtraAmount(e.target.value)}
                 />
               </Col>
-              <Col md={3} className="py-2">
+              <Col md={2} className="py-2">
+                <label htmlFor="bulkExamFee" className="d-block pb-1">
+                  Exam Fee
+                </label>
+                <Form.Control
+                  type="number"
+                  id="bulkExamFee"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  value={bulkExamFee}
+                  onChange={(e) => setBulkExamFee(e.target.value)}
+                />
+              </Col>
+              <Col md={2} className="py-2">
                 <label htmlFor="bulkNote" className="d-block pb-1">
                   Note
                 </label>
@@ -616,7 +647,7 @@ const PaymentEntry = ({
                   onChange={(e) => setBulkNote(e.target.value)}
                 />
               </Col>
-              <Col md={1} className="py-2 d-flex align-items-end">
+              <Col md={2} className="py-2 d-flex align-items-end">
                 <Button
                   variant="success"
                   onClick={applyBulkFill}
@@ -721,11 +752,14 @@ const PaymentEntry = ({
                       </th>
                       <th style={{ width: "5%", padding: "0.5rem" }}>Roll</th>
                       <th style={{ width: "15%", padding: "0.5rem" }}>Name</th>
-                      <th style={{ width: "12%", padding: "0.5rem" }}>
+                      <th style={{ width: "10%", padding: "0.5rem" }}>
                         Amount *
                       </th>
-                      <th style={{ width: "12%", padding: "0.5rem" }}>Extra</th>
-                      <th style={{ width: "25%", padding: "0.5rem" }}>Note</th>
+                      <th style={{ width: "10%", padding: "0.5rem" }}>Extra</th>
+                      <th style={{ width: "10%", padding: "0.5rem" }}>
+                        Exam Fee
+                      </th>
+                      <th style={{ width: "22%", padding: "0.5rem" }}>Note</th>
                       <th
                         style={{
                           width: "10%",
@@ -748,6 +782,7 @@ const PaymentEntry = ({
                         const payment = studentPayments[student.id] || {
                           amount: "",
                           extra_amount: "",
+                          exam_fee: "",
                           note: "",
                         };
                         const status = paymentStatus[student.id];
@@ -848,10 +883,9 @@ const PaymentEntry = ({
                                   updateStudentPayment(
                                     student.id,
                                     "amount",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
-                                required
                                 size="sm"
                                 style={{
                                   fontSize: "0.875rem",
@@ -870,7 +904,28 @@ const PaymentEntry = ({
                                   updateStudentPayment(
                                     student.id,
                                     "extra_amount",
-                                    e.target.value
+                                    e.target.value,
+                                  )
+                                }
+                                size="sm"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  padding: "0.25rem 0.5rem",
+                                }}
+                              />
+                            </td>
+                            <td style={{ padding: "0.5rem" }}>
+                              <Form.Control
+                                type="number"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                value={payment.exam_fee}
+                                onChange={(e) =>
+                                  updateStudentPayment(
+                                    student.id,
+                                    "exam_fee",
+                                    e.target.value,
                                   )
                                 }
                                 size="sm"
@@ -889,7 +944,7 @@ const PaymentEntry = ({
                                   updateStudentPayment(
                                     student.id,
                                     "note",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 size="sm"

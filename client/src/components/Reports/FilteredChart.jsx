@@ -36,11 +36,12 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
         revenue: acc.revenue + parseFloat(d.revenue || 0),
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
+        examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
         expense: acc.expense + parseFloat(d.expense || 0),
         totalRevenue: acc.totalRevenue + parseFloat(d.totalRevenue || 0),
         profit: acc.profit + parseFloat(d.profit || 0),
       }),
-      { revenue: 0, payment: 0, extraPayment: 0, expense: 0, totalRevenue: 0, profit: 0 }
+      { revenue: 0, payment: 0, extraPayment: 0, examPayment: 0, expense: 0, totalRevenue: 0, profit: 0 }
     );
   }, [data]);
 
@@ -194,6 +195,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                     <th>Month</th>
                     <th className="text-end">Payment</th>
                     <th className="text-end">Extra Payment</th>
+                    <th className="text-end">Exam Fee</th>
                     {!hasFilter && <th className="text-end">Revenue</th>}
                     {!hasFilter && <th className="text-end">Expense</th>}
                     {!hasFilter && <th className="text-end">Profit</th>}
@@ -208,6 +210,9 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                       </td>
                       <td className="text-end">
                         {parseFloat(d.extraPayment || 0).toFixed(2)}
+                      </td>
+                      <td className="text-end">
+                        {parseFloat(d.examPayment || 0).toFixed(2)}
                       </td>
                       {!hasFilter && (
                         <td className="text-end">
@@ -256,6 +261,9 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                       </td>
                       <td className="text-end">
                         {totalStats.extraPayment.toFixed(2)}
+                      </td>
+                      <td className="text-end">
+                        {totalStats.examPayment.toFixed(2)}
                       </td>
                       {!hasFilter && (
                         <td className="text-end">

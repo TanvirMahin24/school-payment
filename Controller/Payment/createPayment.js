@@ -19,6 +19,7 @@ const createPayment = async (req, res) => {
       meta,
       note,
       extra_amount,
+      exam_fee,
       total_amount,
       gradeId,
       shiftId,
@@ -128,7 +129,7 @@ const createPayment = async (req, res) => {
     // Calculate total_amount if not provided
     const calculatedTotalAmount =
       total_amount ||
-      (parseFloat(amount || 0) + parseFloat(extra_amount || 0));
+      (parseFloat(amount || 0) + parseFloat(extra_amount || 0) + parseFloat(exam_fee || 0));
 
     // Create new payment
     const newPayment = await Payment.create({
@@ -140,6 +141,7 @@ const createPayment = async (req, res) => {
       meta: meta || null,
       note: note || null,
       extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
+      exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
       total_amount: parseFloat(calculatedTotalAmount),
       gradeTenant,
       gradePrimaryId,

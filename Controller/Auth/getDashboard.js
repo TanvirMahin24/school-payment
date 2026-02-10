@@ -31,6 +31,7 @@ const getDashboard = async (req, res) => {
     const thisMonthPayments = await Payment.count({ where: thisMonthPaymentWhere });
     const thisMonthPaymentAmount = await Payment.sum("amount", { where: thisMonthPaymentWhere }) || 0;
     const thisMonthExtraPaymentAmount = await Payment.sum("extra_amount", { where: thisMonthPaymentWhere }) || 0;
+    const thisMonthExamFeeAmount = await Payment.sum("exam_fee", { where: thisMonthPaymentWhere }) || 0;
     const thisMonthCombinedPaymentAmount = await Payment.sum("total_amount", { where: thisMonthPaymentWhere }) || 0;
 
     // Yearly Payments (year only)
@@ -41,6 +42,7 @@ const getDashboard = async (req, res) => {
     const thisYearPayments = await Payment.count({ where: thisYearPaymentWhere });
     const thisYearPaymentAmount = await Payment.sum("amount", { where: thisYearPaymentWhere }) || 0;
     const thisYearExtraPaymentAmount = await Payment.sum("extra_amount", { where: thisYearPaymentWhere }) || 0;
+    const thisYearExamFeeAmount = await Payment.sum("exam_fee", { where: thisYearPaymentWhere }) || 0;
     const thisYearCombinedPaymentAmount = await Payment.sum("total_amount", { where: thisYearPaymentWhere }) || 0;
 
     // Total Expenses
@@ -106,10 +108,12 @@ const getDashboard = async (req, res) => {
         thisMonthPayments,
         thisMonthPaymentAmount: parseFloat(thisMonthPaymentAmount).toFixed(2),
         thisMonthExtraPaymentAmount: parseFloat(thisMonthExtraPaymentAmount).toFixed(2),
+        thisMonthExamFeeAmount: parseFloat(thisMonthExamFeeAmount).toFixed(2),
         thisMonthCombinedPaymentAmount: parseFloat(thisMonthCombinedPaymentAmount).toFixed(2),
         thisYearPayments,
         thisYearPaymentAmount: parseFloat(thisYearPaymentAmount).toFixed(2),
         thisYearExtraPaymentAmount: parseFloat(thisYearExtraPaymentAmount).toFixed(2),
+        thisYearExamFeeAmount: parseFloat(thisYearExamFeeAmount).toFixed(2),
         thisYearCombinedPaymentAmount: parseFloat(thisYearCombinedPaymentAmount).toFixed(2),
         
         // Expense stats

@@ -3,9 +3,17 @@ import { Card, Table } from "react-bootstrap";
 // import Chart from "react-apexcharts";
 
 const PaymentsChart = ({ data }) => {
-  const totalPayments = useMemo(() => {
-    if (!data || data.length === 0) return 0;
-    return data.reduce((acc, d) => acc + parseFloat(d.payment || 0), 0);
+  const totals = useMemo(() => {
+    if (!data || data.length === 0) return { payment: 0, extraPayment: 0, examPayment: 0, total: 0 };
+    return data.reduce(
+      (acc, d) => ({
+        payment: acc.payment + parseFloat(d.payment || 0),
+        extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
+        examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
+        total: acc.total + parseFloat(d.payment || 0) + parseFloat(d.extraPayment || 0) + parseFloat(d.examPayment || 0),
+      }),
+      { payment: 0, extraPayment: 0, examPayment: 0, total: 0 }
+    );
   }, [data]);
 
   if (!data || data.length === 0) {
@@ -98,7 +106,10 @@ const PaymentsChart = ({ data }) => {
           <thead>
             <tr>
               <th>Month</th>
-              <th className="text-end">Payments</th>
+              <th className="text-end">Payment</th>
+              <th className="text-end">Extra Payment</th>
+              <th className="text-end">Exam Fee</th>
+              <th className="text-end">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -106,11 +117,19 @@ const PaymentsChart = ({ data }) => {
               <tr key={index}>
                 <td>{d.monthLabel}</td>
                 <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
+                <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
+                <td className="text-end">{parseFloat(d.examPayment || 0).toFixed(2)}</td>
+                <td className="text-end">
+                  {(parseFloat(d.payment || 0) + parseFloat(d.extraPayment || 0) + parseFloat(d.examPayment || 0)).toFixed(2)}
+                </td>
               </tr>
             ))}
             <tr className="table-info fw-bold">
               <td>Total</td>
-              <td className="text-end">{totalPayments.toFixed(2)}</td>
+              <td className="text-end">{totals.payment.toFixed(2)}</td>
+              <td className="text-end">{totals.extraPayment.toFixed(2)}</td>
+              <td className="text-end">{totals.examPayment.toFixed(2)}</td>
+              <td className="text-end">{totals.total.toFixed(2)}</td>
             </tr>
           </tbody>
         </Table>

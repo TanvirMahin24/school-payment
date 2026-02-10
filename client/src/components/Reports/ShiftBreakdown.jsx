@@ -30,13 +30,14 @@ const ShiftBreakdown = ({ selectedTenant, shiftBreakdown, getShiftBreakdown, loa
   };
 
   const totalPayment = useMemo(() => {
-    if (!shiftBreakdown || shiftBreakdown === null || shiftBreakdown.length === 0) return { payment: 0, extraPayment: 0 };
+    if (!shiftBreakdown || shiftBreakdown === null || shiftBreakdown.length === 0) return { payment: 0, extraPayment: 0, examPayment: 0 };
     return shiftBreakdown.reduce(
       (acc, d) => ({
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
+        examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
       }),
-      { payment: 0, extraPayment: 0 }
+      { payment: 0, extraPayment: 0, examPayment: 0 }
     );
   }, [shiftBreakdown]);
 
@@ -134,6 +135,7 @@ const ShiftBreakdown = ({ selectedTenant, shiftBreakdown, getShiftBreakdown, loa
                   <th>Shift</th>
                   <th className="text-end">Payment</th>
                   <th className="text-end">Extra Payment</th>
+                  <th className="text-end">Exam Fee</th>
                 </tr>
               </thead>
               <tbody>
@@ -143,12 +145,14 @@ const ShiftBreakdown = ({ selectedTenant, shiftBreakdown, getShiftBreakdown, loa
                     <td>{d.shiftName}</td>
                     <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
                     <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
+                    <td className="text-end">{parseFloat(d.examPayment || 0).toFixed(2)}</td>
                   </tr>
                 ))}
                 <tr className="table-info fw-bold">
                   <td colSpan="2">Total</td>
                   <td className="text-end">{totalPayment.payment.toFixed(2)}</td>
                   <td className="text-end">{totalPayment.extraPayment.toFixed(2)}</td>
+                  <td className="text-end">{totalPayment.examPayment.toFixed(2)}</td>
                 </tr>
               </tbody>
             </Table>

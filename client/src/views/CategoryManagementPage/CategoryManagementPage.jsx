@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table, Button, Form, Card, Tabs, Tab } from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
+import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
 import {
   getExpenseCategories,
   createExpenseCategory,
@@ -30,6 +31,7 @@ const CategoryManagementPage = ({
   const [activeTab, setActiveTab] = useState("expense");
   const [editingExpenseCategory, setEditingExpenseCategory] = useState(null);
   const [editingRevenueCategory, setEditingRevenueCategory] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState(null); // { type: 'expense'|'revenue', id }
   const [expenseFormData, setExpenseFormData] = useState({ name: "", description: "" });
   const [revenueFormData, setRevenueFormData] = useState({ name: "", description: "" });
 
@@ -102,22 +104,14 @@ const CategoryManagementPage = ({
     });
   };
 
-  const handleDeleteExpenseCategory = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      const success = await deleteExpenseCategory(id);
-      if (success) {
-        loadCategories();
-      }
-    }
-  };
-
-  const handleDeleteRevenueCategory = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      const success = await deleteRevenueCategory(id);
-      if (success) {
-        loadCategories();
-      }
-    }
+  const handleDeleteExpenseCategoryClick = (id) => setCategoryToDelete({ type: "expense", id });
+  const handleDeleteRevenueCategoryClick = (id) => setCategoryToDelete({ type: "revenue", id });
+  const handleDeleteCategoryConfirm = async () => {
+    if (!categoryToDelete) return;
+    const { type, id } = categoryToDelete;
+    const success =
+      type === "expense" ? await deleteExpenseCategory(id) : await deleteRevenueCategory(id);
+    if (success) loadCategories();
   };
 
   const handleCancel = () => {
@@ -220,7 +214,7 @@ const CategoryManagementPage = ({
                             <Button
                               variant="outline-danger"
                               size="sm"
-                              onClick={() => handleDeleteExpenseCategory(category.id)}
+                              onClick={() => handleDeleteExpenseCategoryClick(category.id)}
                             >
                               <FaTrash />
                             </Button>
@@ -324,7 +318,7 @@ const CategoryManagementPage = ({
                             <Button
                               variant="outline-danger"
                               size="sm"
-                              onClick={() => handleDeleteRevenueCategory(category.id)}
+                              onClick={() => handleDeleteRevenueCategoryClick(category.id)}
                             >
                               <FaTrash />
                             </Button>
@@ -344,6 +338,14 @@ const CategoryManagementPage = ({
             </Tabs>
           </Card.Body>
         </Card>
+
+        <ConfirmModal
+          show={categoryToDelete != null}
+          onHide={() => setCategoryToDelete(null)}
+          onConfirm={handleDeleteCategoryConfirm}
+          title="Delete Category"
+          message="Are you sure you want to delete this category? This action cannot be undone."
+        />
       </Container>
     </Layout>
   );

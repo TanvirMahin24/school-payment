@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table, Button, Form, Card } from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
+import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
 import { getRevenues, deleteRevenue } from "../../actions/Revenue.action";
 import RevenueEntry from "../../components/RevenueEntry/RevenueEntry";
 import { months, years } from "../../constants/MonthsAndYears";
@@ -10,6 +11,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) => {
   const [showEntry, setShowEntry] = useState(false);
   const [editingRevenue, setEditingRevenue] = useState(null);
+  const [revenueToDelete, setRevenueToDelete] = useState(null);
   const [month, setMonth] = useState(months[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -38,13 +40,11 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
     setShowEntry(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this revenue?")) {
-      const success = await deleteRevenue(id);
-      if (success) {
-        loadRevenues();
-      }
-    }
+  const handleDeleteClick = (id) => setRevenueToDelete(id);
+  const handleDeleteConfirm = async () => {
+    if (revenueToDelete == null) return;
+    const success = await deleteRevenue(revenueToDelete);
+    if (success) loadRevenues();
   };
 
   const handleClose = () => {
@@ -132,7 +132,7 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
                         <Button
                           variant="outline-danger"
                           size="sm"
-                          onClick={() => handleDelete(revenue.id)}
+                          onClick={() => handleDeleteClick(revenue.id)}
                         >
                           <FaTrash />
                         </Button>
@@ -156,6 +156,14 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
           handleClose={handleClose}
           revenue={editingRevenue}
           selectedTenant={selectedTenant}
+        />
+
+        <ConfirmModal
+          show={revenueToDelete != null}
+          onHide={() => setRevenueToDelete(null)}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Revenue"
+          message="Are you sure you want to delete this revenue? This action cannot be undone."
         />
       </Container>
     </Layout>

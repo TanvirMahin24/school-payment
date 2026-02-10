@@ -41,6 +41,7 @@ const createBulkExternalPayment = async (req, res) => {
           meta,
           note,
           extra_amount,
+          exam_fee,
           total_amount,
           gradeId,
           shiftId,
@@ -56,7 +57,7 @@ const createBulkExternalPayment = async (req, res) => {
         // Calculate total_amount if not provided
         const calculatedTotalAmount =
           total_amount ||
-          (parseFloat(amount || 0) + parseFloat(extra_amount || 0));
+          (parseFloat(amount || 0) + parseFloat(extra_amount || 0) + parseFloat(exam_fee || 0));
 
         // Build where clause to find existing payment
         const whereClause = {
@@ -89,6 +90,7 @@ const createBulkExternalPayment = async (req, res) => {
           const updateData = {
             amount: parseFloat(amount),
             extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
+            exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
             total_amount: parseFloat(calculatedTotalAmount),
             meta: meta || null,
             note: note || null,
@@ -128,6 +130,7 @@ const createBulkExternalPayment = async (req, res) => {
             meta: meta || null,
             note: note || null,
             extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
+            exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
             total_amount: parseFloat(calculatedTotalAmount),
             gradeTenant: finalGradeId ? (tenant || "primary") : null,
             gradePrimaryId: finalGradeId ? parseInt(finalGradeId) : null,

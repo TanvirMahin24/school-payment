@@ -35,10 +35,11 @@ const ProfitChart = ({ data, selectedTenant }) => {
         revenue: acc.revenue + parseFloat(d.revenue || 0),
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
+        examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
         expense: acc.expense + parseFloat(d.expense || 0),
         profit: acc.profit + parseFloat(d.profit || 0),
       }),
-      { revenue: 0, payment: 0, extraPayment: 0, expense: 0, profit: 0 }
+      { revenue: 0, payment: 0, extraPayment: 0, examPayment: 0, expense: 0, profit: 0 }
     );
   }, [data]);
 
@@ -135,6 +136,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
               <th>Month</th>
               <th className="text-end">Payment</th>
               <th className="text-end">Extra Payment</th>
+              <th className="text-end">Exam Fee</th>
               <th className="text-end">Revenue</th>
               <th className="text-end">Expense</th>
               <th className="text-end">Profit</th>
@@ -146,6 +148,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
                 <td>{d.monthLabel}</td>
                 <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
                 <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
+                <td className="text-end">{parseFloat(d.examPayment || 0).toFixed(2)}</td>
                 <td className="text-end">
                   <span
                     role="button"
@@ -180,6 +183,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
                 <td>Total</td>
                 <td className="text-end">{totalStats.payment.toFixed(2)}</td>
                 <td className="text-end">{totalStats.extraPayment.toFixed(2)}</td>
+                <td className="text-end">{totalStats.examPayment.toFixed(2)}</td>
                 <td className="text-end">{totalStats.revenue.toFixed(2)}</td>
                 <td className="text-end">{totalStats.expense.toFixed(2)}</td>
                 <td className={`text-end ${totalStats.profit >= 0 ? 'text-success' : 'text-danger'}`}>

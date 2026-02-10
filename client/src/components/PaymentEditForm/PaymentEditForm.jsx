@@ -10,6 +10,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
   const [formData, setFormData] = useState({
     amount: "",
     extra_amount: "",
+    exam_fee: "",
     month: months[new Date().getMonth()],
     year: new Date().getFullYear(),
   });
@@ -21,6 +22,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
       setFormData({
         amount: payment.amount?.toString() || "",
         extra_amount: payment.extra_amount?.toString() || "0",
+        exam_fee: payment.exam_fee?.toString() || "0",
         month: payment.month || months[new Date().getMonth()],
         year: payment.year || new Date().getFullYear(),
       });
@@ -41,8 +43,8 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
     setError("");
 
     // Validation
-    if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      setError("Amount is required and must be greater than 0");
+    if (!formData.amount || parseFloat(formData.amount) < 0) {
+      setError("Amount is required and must be greater than or equal to 0");
       return;
     }
 
@@ -60,7 +62,10 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
 
     const updateData = {
       amount: parseFloat(formData.amount),
-      extra_amount: formData.extra_amount ? parseFloat(formData.extra_amount) : 0,
+      extra_amount: formData.extra_amount
+        ? parseFloat(formData.extra_amount)
+        : 0,
+      exam_fee: formData.exam_fee ? parseFloat(formData.exam_fee) : 0,
       month: formData.month,
       year: formData.year,
       userId: payment.userId, // Keep existing userId
@@ -85,7 +90,8 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
   }
 
   // Get student info from meta or display userId
-  const studentName = payment.meta?.studentName || `Student ID: ${payment.userId}`;
+  const studentName =
+    payment.meta?.studentName || `Student ID: ${payment.userId}`;
   const studentUid = payment.meta?.studentUid || "";
   const gradeName = payment.meta?.gradeName || "-";
   const shiftName = payment.meta?.shiftName || "-";
@@ -116,7 +122,11 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
                         <Form.Label>Student</Form.Label>
                         <Form.Control
                           type="text"
-                          value={studentUid ? `${studentUid} - ${studentName}` : studentName}
+                          value={
+                            studentUid
+                              ? `${studentUid} - ${studentName}`
+                              : studentName
+                          }
                           readOnly
                           className="bg-white"
                         />
@@ -176,7 +186,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
 
           {/* Editable Fields */}
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Amount *</Form.Label>
                 <Form.Control
@@ -190,7 +200,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Extra Amount</Form.Label>
                 <Form.Control
@@ -198,6 +208,19 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
                   step="0.01"
                   name="extra_amount"
                   value={formData.extra_amount}
+                  onChange={handleChange}
+                  min="0"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group className="mb-3">
+                <Form.Label>Exam Fee</Form.Label>
+                <Form.Control
+                  type="number"
+                  step="0.01"
+                  name="exam_fee"
+                  value={formData.exam_fee}
                   onChange={handleChange}
                   min="0"
                 />
@@ -242,7 +265,11 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
           </Row>
 
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" onClick={handleCancel} disabled={submitting}>
+            <Button
+              variant="secondary"
+              onClick={handleCancel}
+              disabled={submitting}
+            >
               Cancel
             </Button>
             <Button variant="primary" type="submit" disabled={submitting}>

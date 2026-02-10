@@ -19,6 +19,7 @@ const updatePayment = async (req, res) => {
       meta,
       note,
       extra_amount,
+      exam_fee,
       total_amount,
       gradeId,
       shiftId,
@@ -38,7 +39,8 @@ const updatePayment = async (req, res) => {
       total_amount !== undefined
         ? parseFloat(total_amount)
         : parseFloat(amount || payment.amount) +
-          parseFloat(extra_amount !== undefined ? extra_amount : payment.extra_amount || 0);
+          parseFloat(extra_amount !== undefined ? extra_amount : payment.extra_amount || 0) +
+          parseFloat(exam_fee !== undefined ? exam_fee : payment.exam_fee || 0);
 
     // Prepare update data
     const updateData = {
@@ -151,7 +153,8 @@ const updatePayment = async (req, res) => {
     if (meta !== undefined) updateData.meta = meta || null;
     if (note !== undefined) updateData.note = note || null;
     if (extra_amount !== undefined) updateData.extra_amount = parseFloat(extra_amount) || 0;
-    if (total_amount !== undefined || amount !== undefined || extra_amount !== undefined) {
+    if (exam_fee !== undefined) updateData.exam_fee = parseFloat(exam_fee) || 0;
+    if (total_amount !== undefined || amount !== undefined || extra_amount !== undefined || exam_fee !== undefined) {
       updateData.total_amount = parseFloat(calculatedTotalAmount);
     }
 

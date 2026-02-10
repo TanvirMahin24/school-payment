@@ -35,7 +35,7 @@ const getStudentMonthlyFees = async (req, res) => {
     const payments = await Payment.findAll({
       where: whereClause,
       order: [["month", "ASC"]],
-      attributes: ["id", "month", "year", "amount", "extra_amount", "total_amount", "createdAt"],
+      attributes: ["id", "month", "year", "amount", "extra_amount", "exam_fee", "total_amount", "createdAt"],
     });
 
     // Create a map of month to payment status

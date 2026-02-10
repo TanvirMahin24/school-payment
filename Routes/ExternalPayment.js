@@ -27,6 +27,9 @@ router.post(
     check("extra_amount", "Extra amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    check("exam_fee", "Exam fee should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
     check("total_amount", "Total amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
@@ -52,6 +55,9 @@ router.post(
     body("payments.*.tenant", "Tenant should be a string").optional().isString(),
     body("payments.*.year", "Year should be a valid year").optional().isInt({ min: 2000, max: 2100 }),
     body("payments.*.extra_amount", "Extra amount should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
+    body("payments.*.exam_fee", "Exam fee should be a number")
       .optional()
       .isFloat({ min: 0 }),
     body("payments.*.total_amount", "Total amount should be a number")

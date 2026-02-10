@@ -101,7 +101,7 @@ const getShiftBreakdown = async (req, res) => {
     const totalExpense = parseFloat(expenses[0]?.total || 0);
     const totalRevenue = parseFloat(revenues[0]?.total || 0);
 
-    // Get payments grouped by grade and shift - separate amount and extra_amount
+    // Get payments grouped by grade and shift - separate amount, extra_amount, and exam_fee
     const payments = await Payment.findAll({
       where: paymentWhere,
       attributes: [
@@ -109,6 +109,7 @@ const getShiftBreakdown = async (req, res) => {
         "shiftPrimaryId",
         [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
         [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
+        [Sequelize.fn("SUM", Sequelize.col("exam_fee")), "examPayment"],
       ],
       group: ["gradePrimaryId", "shiftPrimaryId"],
       raw: true,
@@ -117,11 +118,13 @@ const getShiftBreakdown = async (req, res) => {
     // Create maps for payments by grade-shift
     const paymentMap = new Map();
     const extraPaymentMap = new Map();
+    const examPaymentMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId && p.shiftPrimaryId) {
         const key = `${p.gradePrimaryId}_${p.shiftPrimaryId}`;
         paymentMap.set(key, parseFloat(p.payment || 0));
         extraPaymentMap.set(key, parseFloat(p.extraPayment || 0));
+        examPaymentMap.set(key, parseFloat(p.examPayment || 0));
       }
     });
 
@@ -140,6 +143,7 @@ const getShiftBreakdown = async (req, res) => {
         const key = `${grade.primaryId}_${shift.primaryId}`;
         const payment = paymentMap.get(key) || 0;
         const extraPayment = extraPaymentMap.get(key) || 0;
+        const examPayment = examPaymentMap.get(key) || 0;
         const totalPayment = payment + extraPayment;
         const totalRevenueForShift = totalPayment + (totalRevenue / totalShifts); // Distribute revenue
         const expenseForShift = totalExpense / totalShifts; // Distribute expense equally
@@ -153,6 +157,7 @@ const getShiftBreakdown = async (req, res) => {
           revenue: totalRevenue / totalShifts,
           payment: payment,
           extraPayment: extraPayment,
+          examPayment: examPayment,
           expense: expenseForShift,
           totalRevenue: totalRevenueForShift,
           profit: profit,

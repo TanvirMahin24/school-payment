@@ -59,6 +59,7 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
       return {
         paymentAmount: data.thisYearPaymentAmount || "0.00",
         extraPaymentAmount: data.thisYearExtraPaymentAmount || "0.00",
+        examFeeAmount: data.thisYearExamFeeAmount || "0.00",
         payments: data.thisYearPayments || 0,
         revenueAmount: data.thisYearRevenueAmount || "0.00",
         revenues: data.thisYearRevenues || 0,
@@ -72,6 +73,7 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
     return {
       paymentAmount: data.thisMonthPaymentAmount || "0.00",
       extraPaymentAmount: data.thisMonthExtraPaymentAmount || "0.00",
+      examFeeAmount: data.thisMonthExamFeeAmount || "0.00",
       payments: data.thisMonthPayments || 0,
       revenueAmount: data.thisMonthRevenueAmount || "0.00",
       revenues: data.thisMonthRevenues || 0,
@@ -130,6 +132,13 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                           <div className="text-center">
                             <div className="text-muted small">{isAllMonths ? "Total Extra Payment" : "Extra Payment"}</div>
                             <div className="h4 mb-0">{displayData.extraPaymentAmount}</div>
+                            <div className="text-muted small">Paid Students {displayData.payments}</div>
+                          </div>
+                        </Col>
+                        <Col md={2} className="py-2">
+                          <div className="text-center">
+                            <div className="text-muted small">{isAllMonths ? "Total Exam Fee" : "Exam Fee"}</div>
+                            <div className="h4 mb-0">{displayData.examFeeAmount}</div>
                             <div className="text-muted small">Paid Students {displayData.payments}</div>
                           </div>
                         </Col>

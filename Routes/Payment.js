@@ -36,6 +36,9 @@ router.post(
     check("extra_amount", "Extra amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    check("exam_fee", "Exam fee should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
     check("total_amount", "Total amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
@@ -66,6 +69,9 @@ router.post(
       .not()
       .isEmpty()
       .isInt({ min: 1 }),
+    check("payments.*.exam_fee", "Exam fee should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
   ],
   createBulkPayment
 );
@@ -108,6 +114,9 @@ router.patch(
       .optional()
       .isInt({ min: 2000, max: 2100 }),
     check("extra_amount", "Extra amount should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
+    check("exam_fee", "Exam fee should be a number")
       .optional()
       .isFloat({ min: 0 }),
     check("total_amount", "Total amount should be a number")
