@@ -132,8 +132,8 @@ const GradeBreakdown = ({ selectedTenant, gradeBreakdown, getGradeBreakdown, loa
               <thead>
                 <tr>
                   <th>Class</th>
-                  <th className="text-end">Payment</th>
-                  <th className="text-end">Extra Payment</th>
+                  <th className="text-end">Exam Fee / Admission Fee</th>
+                  <th className="text-end">Extra / Service Charge</th>
                   <th className="text-end">Exam Fee</th>
                 </tr>
               </thead>

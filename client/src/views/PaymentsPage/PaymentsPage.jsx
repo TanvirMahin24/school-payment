@@ -182,7 +182,7 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
   }, [payments, sortColumn, sortDirection, grades]);
 
   return (
-    <Layout title="Payments">
+    <Layout title="Payment">
       <Container>
         <Row className="mb-3">
           <Col md={12} className="text-end">
@@ -350,7 +350,7 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                       style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("extraAmount")}
                     >
-                      Extra Amount {getSortIcon("extraAmount")}
+                      Extra / Service Charge {getSortIcon("extraAmount")}
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
@@ -478,7 +478,7 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
           show={!!paymentToDelete}
           onHide={handleDeleteClose}
           onConfirm={handleDeleteConfirm}
-          title="Delete Payment"
+          title="Delete Exam Fee / Admission Fee"
         >
           {paymentToDelete && (
             <p className="mb-0">

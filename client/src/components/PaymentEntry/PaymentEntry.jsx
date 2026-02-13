@@ -280,7 +280,7 @@ const PaymentEntry = ({
       if (selectedStudents.has(student.id)) {
         const payment = studentPayments[student.id];
         if (!payment) {
-          errors.push(`Student ${student.uid} (${student.name}): Payment data missing`);
+          errors.push(`Student ${student.uid} (${student.name}): Exam Fee / Admission Fee data missing`);
           return;
         }
         const amountStr = payment.amount;
@@ -609,7 +609,7 @@ const PaymentEntry = ({
               </Col>
               <Col md={2} className="py-2">
                 <label htmlFor="bulkExtraAmount" className="d-block pb-1">
-                  Extra Amount
+                  Extra / Service Charge
                 </label>
                 <Form.Control
                   type="number"
@@ -642,7 +642,7 @@ const PaymentEntry = ({
                 <Form.Control
                   type="text"
                   id="bulkNote"
-                  placeholder="Payment note..."
+                  placeholder="Note..."
                   value={bulkNote}
                   onChange={(e) => setBulkNote(e.target.value)}
                 />
@@ -679,7 +679,7 @@ const PaymentEntry = ({
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
                   <h5 className="mb-1">
-                    Student Payment Entry ({rawList.length} students)
+                    Payment Entry ({rawList.length} students)
                   </h5>
                   <h6 className="text-muted mb-0">
                     {month} {year}
@@ -755,7 +755,7 @@ const PaymentEntry = ({
                       <th style={{ width: "10%", padding: "0.5rem" }}>
                         Amount *
                       </th>
-                      <th style={{ width: "10%", padding: "0.5rem" }}>Extra</th>
+                      <th style={{ width: "10%", padding: "0.5rem" }}>Extra / Service Charge</th>
                       <th style={{ width: "10%", padding: "0.5rem" }}>
                         Exam Fee
                       </th>
@@ -971,7 +971,7 @@ const PaymentEntry = ({
               </div>
               <div className="mt-3">
                 <small className="text-muted">
-                  * Required fields. Click "Submit All Payments" to create
+                  * Required fields. Click "Submit All Exam Fees / Admission Fees" to create
                   payments in the payment system.
                 </small>
               </div>

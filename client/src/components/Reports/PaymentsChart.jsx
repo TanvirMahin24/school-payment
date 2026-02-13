@@ -95,7 +95,7 @@ const PaymentsChart = ({ data }) => {
   return (
     <Card className="border-0">
       <Card.Body>
-        <h5 className="mb-3">Monthly Payments (Last 12 Months)</h5>
+        <h5 className="mb-3">Monthly Exam Fees / Admission Fees (Last 12 Months)</h5>
         {/* <Chart
           options={chartData.options}
           series={chartData.series}
@@ -106,8 +106,8 @@ const PaymentsChart = ({ data }) => {
           <thead>
             <tr>
               <th>Month</th>
-              <th className="text-end">Payment</th>
-              <th className="text-end">Extra Payment</th>
+              <th className="text-end">Exam Fee / Admission Fee</th>
+              <th className="text-end">Extra / Service Charge</th>
               <th className="text-end">Exam Fee</th>
               <th className="text-end">Total</th>
             </tr>

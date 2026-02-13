@@ -100,7 +100,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
   return (
     <Card className="shadow">
       <Card.Header>
-        <h5 className="mb-0">Edit Payment</h5>
+        <h5 className="mb-0">Edit Exam Fee / Admission Fee</h5>
       </Card.Header>
       <Card.Body>
         {error && (
@@ -115,7 +115,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
             <Col md={12}>
               <Card className="bg-light">
                 <Card.Body>
-                  <h6 className="mb-3">Payment Information (Read-only)</h6>
+                  <h6 className="mb-3">Exam Fee / Admission Fee Information (Read-only)</h6>
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
@@ -202,7 +202,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
             </Col>
             <Col md={4}>
               <Form.Group className="mb-3">
-                <Form.Label>Extra Amount</Form.Label>
+                <Form.Label>Extra / Service Charge</Form.Label>
                 <Form.Control
                   type="number"
                   step="0.01"

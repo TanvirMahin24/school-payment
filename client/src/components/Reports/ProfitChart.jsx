@@ -134,8 +134,8 @@ const ProfitChart = ({ data, selectedTenant }) => {
           <thead>
             <tr>
               <th>Month</th>
-              <th className="text-end">Payment</th>
-              <th className="text-end">Extra Payment</th>
+              <th className="text-end">Exam Fee / Admission Fee</th>
+              <th className="text-end">Extra / Service Charge</th>
               <th className="text-end">Exam Fee</th>
               <th className="text-end">Revenue</th>
               <th className="text-end">Expense</th>

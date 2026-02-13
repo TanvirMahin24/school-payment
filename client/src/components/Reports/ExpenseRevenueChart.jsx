@@ -139,7 +139,7 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
             <tr>
               <th>Month</th>
               <th className="text-end text-danger">Expense</th>
-              <th className="text-end text-success">Revenue (Payments + Revenue)</th>
+              <th className="text-end text-success">Revenue (Exam Fees / Admission Fees + Revenue)</th>
             </tr>
           </thead>
           <tbody>
