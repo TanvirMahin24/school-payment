@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Table, Button, Form, Card } from "react-bootstrap";
+import {
+  Col,
+  Container,
+  Row,
+  Table,
+  Button,
+  Form,
+  Card,
+} from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
 import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
@@ -8,7 +16,12 @@ import RevenueEntry from "../../components/RevenueEntry/RevenueEntry";
 import { months, years } from "../../constants/MonthsAndYears";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) => {
+const RevenuePage = ({
+  revenues,
+  getRevenues,
+  deleteRevenue,
+  selectedTenant,
+}) => {
   const [showEntry, setShowEntry] = useState(false);
   const [editingRevenue, setEditingRevenue] = useState(null);
   const [revenueToDelete, setRevenueToDelete] = useState(null);
@@ -53,7 +66,8 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
     loadRevenues();
   };
 
-  const totalAmount = revenues?.reduce((sum, rev) => sum + parseFloat(rev.amount || 0), 0) || 0;
+  const totalAmount =
+    revenues?.reduce((sum, rev) => sum + parseFloat(rev.amount || 0), 0) || 0;
 
   return (
     <Layout title="Revenue Management">
@@ -64,7 +78,10 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Year</Form.Label>
-                  <Form.Select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
+                  <Form.Select
+                    value={year}
+                    onChange={(e) => setYear(parseInt(e.target.value))}
+                  >
                     {years.map((y) => (
                       <option key={y} value={y}>
                         {y}
@@ -76,7 +93,10 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Month</Form.Label>
-                  <Form.Select value={month} onChange={(e) => setMonth(e.target.value)}>
+                  <Form.Select
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                  >
                     {months.map((m) => (
                       <option key={m} value={m}>
                         {m}
@@ -105,7 +125,7 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
                 <tr>
                   <th>Date</th>
                   <th>Category</th>
-                  <th>Amount</th>
+                  <th>Service Charge</th>
                   <th>Description</th>
                   <th>Note</th>
                   <th>Actions</th>
@@ -115,7 +135,9 @@ const RevenuePage = ({ revenues, getRevenues, deleteRevenue, selectedTenant }) =
                 {revenues && revenues.length > 0 ? (
                   revenues.map((revenue) => (
                     <tr key={revenue.id}>
-                      <td>{revenue.month} {revenue.year}</td>
+                      <td>
+                        {revenue.month} {revenue.year}
+                      </td>
                       <td>{revenue.category?.name || "N/A"}</td>
                       <td>{parseFloat(revenue.amount || 0).toFixed(2)}</td>
                       <td>{revenue.description || "-"}</td>
@@ -175,6 +197,6 @@ const mapStateToProps = (state) => ({
   selectedTenant: state.tenant?.selectedTenant,
 });
 
-export default connect(mapStateToProps, { getRevenues, deleteRevenue })(RevenuePage);
-
-
+export default connect(mapStateToProps, { getRevenues, deleteRevenue })(
+  RevenuePage,
+);

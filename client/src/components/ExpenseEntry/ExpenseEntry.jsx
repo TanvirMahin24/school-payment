@@ -56,7 +56,8 @@ const ExpenseEntry = ({
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "year" || name === "categoryId" ? parseInt(value) : value,
+      [name]:
+        name === "year" || name === "categoryId" ? parseInt(value) : value,
     });
   };
 
@@ -90,7 +91,7 @@ const ExpenseEntry = ({
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Amount *</Form.Label>
+                <Form.Label>Service Charge *</Form.Label>
                 <Form.Control
                   type="number"
                   step="0.01"
@@ -208,7 +209,3 @@ export default connect(mapStateToProps, {
   updateExpense,
   getExpenseCategories,
 })(ExpenseEntry);
-
-
-
-

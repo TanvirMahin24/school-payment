@@ -4,15 +4,20 @@ import { Card, Table } from "react-bootstrap";
 
 const PaymentsChart = ({ data }) => {
   const totals = useMemo(() => {
-    if (!data || data.length === 0) return { payment: 0, extraPayment: 0, examPayment: 0, total: 0 };
+    if (!data || data.length === 0)
+      return { payment: 0, extraPayment: 0, examPayment: 0, total: 0 };
     return data.reduce(
       (acc, d) => ({
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
         examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
-        total: acc.total + parseFloat(d.payment || 0) + parseFloat(d.extraPayment || 0) + parseFloat(d.examPayment || 0),
+        total:
+          acc.total +
+          parseFloat(d.payment || 0) +
+          parseFloat(d.extraPayment || 0) +
+          parseFloat(d.examPayment || 0),
       }),
-      { payment: 0, extraPayment: 0, examPayment: 0, total: 0 }
+      { payment: 0, extraPayment: 0, examPayment: 0, total: 0 },
     );
   }, [data]);
 
@@ -95,7 +100,7 @@ const PaymentsChart = ({ data }) => {
   return (
     <Card className="border-0">
       <Card.Body>
-        <h5 className="mb-3">Monthly Exam Fees / Admission Fees (Last 12 Months)</h5>
+        <h5 className="mb-3">Monthly Payments (Last 12 Months)</h5>
         {/* <Chart
           options={chartData.options}
           series={chartData.series}
@@ -106,9 +111,9 @@ const PaymentsChart = ({ data }) => {
           <thead>
             <tr>
               <th>Month</th>
-              <th className="text-end">Exam Fee / Admission Fee</th>
-              <th className="text-end">Extra / Service Charge</th>
-              <th className="text-end">Exam Fee</th>
+              <th className="text-end">Service Charge</th>
+              <th className="text-end">Session Charge/ Extra Cost</th>
+              <th className="text-end">Admission Fee/ Exam Fee</th>
               <th className="text-end">Total</th>
             </tr>
           </thead>
@@ -116,11 +121,21 @@ const PaymentsChart = ({ data }) => {
             {data.map((d, index) => (
               <tr key={index}>
                 <td>{d.monthLabel}</td>
-                <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
-                <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
-                <td className="text-end">{parseFloat(d.examPayment || 0).toFixed(2)}</td>
                 <td className="text-end">
-                  {(parseFloat(d.payment || 0) + parseFloat(d.extraPayment || 0) + parseFloat(d.examPayment || 0)).toFixed(2)}
+                  {parseFloat(d.payment || 0).toFixed(2)}
+                </td>
+                <td className="text-end">
+                  {parseFloat(d.extraPayment || 0).toFixed(2)}
+                </td>
+                <td className="text-end">
+                  {parseFloat(d.examPayment || 0).toFixed(2)}
+                </td>
+                <td className="text-end">
+                  {(
+                    parseFloat(d.payment || 0) +
+                    parseFloat(d.extraPayment || 0) +
+                    parseFloat(d.examPayment || 0)
+                  ).toFixed(2)}
                 </td>
               </tr>
             ))}
@@ -139,4 +154,3 @@ const PaymentsChart = ({ data }) => {
 };
 
 export default PaymentsChart;
-

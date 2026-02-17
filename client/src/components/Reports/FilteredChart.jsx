@@ -6,7 +6,13 @@ import { BASE_URL } from "../../constants/URL";
 import MonthDetailModal from "./MonthDetailModal";
 // import Chart from "react-apexcharts";
 
-const INITIAL_MODAL_STATE = { show: false, type: null, monthLabel: "", items: [], loading: false };
+const INITIAL_MODAL_STATE = {
+  show: false,
+  type: null,
+  monthLabel: "",
+  items: [],
+  loading: false,
+};
 
 const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
   const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
@@ -16,10 +22,21 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
       toast.error("Please select a tenant");
       return;
     }
-    setModalState({ show: true, type, monthLabel: row.monthLabel, items: [], loading: true });
-    const url = type === "expense" ? `${BASE_URL}/api/expense` : `${BASE_URL}/api/revenue`;
+    setModalState({
+      show: true,
+      type,
+      monthLabel: row.monthLabel,
+      items: [],
+      loading: true,
+    });
+    const url =
+      type === "expense"
+        ? `${BASE_URL}/api/expense`
+        : `${BASE_URL}/api/revenue`;
     try {
-      const res = await axios.get(url, { params: { tenant: selectedTenant, month: row.month, year: row.year } });
+      const res = await axios.get(url, {
+        params: { tenant: selectedTenant, month: row.month, year: row.year },
+      });
       setModalState((s) => ({ ...s, items: res.data.data, loading: false }));
     } catch (err) {
       toast.error(err.response?.data?.message || `Error fetching ${type}s`);
@@ -41,7 +58,15 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
         totalRevenue: acc.totalRevenue + parseFloat(d.totalRevenue || 0),
         profit: acc.profit + parseFloat(d.profit || 0),
       }),
-      { revenue: 0, payment: 0, extraPayment: 0, examPayment: 0, expense: 0, totalRevenue: 0, profit: 0 }
+      {
+        revenue: 0,
+        payment: 0,
+        extraPayment: 0,
+        examPayment: 0,
+        expense: 0,
+        totalRevenue: 0,
+        profit: 0,
+      },
     );
   }, [data]);
 
@@ -193,9 +218,9 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                 <thead>
                   <tr>
                     <th>Month</th>
-                    <th className="text-end">Exam Fee / Admission Fee</th>
-                    <th className="text-end">Extra / Service Charge</th>
-                    <th className="text-end">Exam Fee</th>
+                    <th className="text-end">Service Charge</th>
+                    <th className="text-end">Session Charge/ Extra Cost</th>
+                    <th className="text-end">Admission Fee/ Exam Fee</th>
                     {!hasFilter && <th className="text-end">Revenue</th>}
                     {!hasFilter && <th className="text-end">Expense</th>}
                     {!hasFilter && <th className="text-end">Profit</th>}
@@ -220,9 +245,14 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                             role="button"
                             tabIndex={0}
                             className="text-primary"
-                            style={{ cursor: "pointer", textDecoration: "underline" }}
+                            style={{
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
                             onClick={() => handleOpenModal("revenue", d)}
-                            onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", d)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleOpenModal("revenue", d)
+                            }
                           >
                             {parseFloat(d.revenue || 0).toFixed(2)}
                           </span>
@@ -234,23 +264,30 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                             role="button"
                             tabIndex={0}
                             className="text-primary"
-                            style={{ cursor: "pointer", textDecoration: "underline" }}
+                            style={{
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                            }}
                             onClick={() => handleOpenModal("expense", d)}
-                            onKeyDown={(e) => e.key === "Enter" && handleOpenModal("expense", d)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleOpenModal("expense", d)
+                            }
                           >
                             {parseFloat(d.expense || 0).toFixed(2)}
                           </span>
                         </td>
                       )}
-                      {!hasFilter && <td
-                        className={`text-end ${
-                          parseFloat(d.profit || 0) >= 0
-                            ? "text-success"
-                            : "text-danger"
-                        }`}
-                      >
-                        {parseFloat(d.profit || 0).toFixed(2)}
-                      </td>}
+                      {!hasFilter && (
+                        <td
+                          className={`text-end ${
+                            parseFloat(d.profit || 0) >= 0
+                              ? "text-success"
+                              : "text-danger"
+                          }`}
+                        >
+                          {parseFloat(d.profit || 0).toFixed(2)}
+                        </td>
+                      )}
                     </tr>
                   ))}
                   {totalStats && (
@@ -275,15 +312,17 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                           {totalStats.expense.toFixed(2)}
                         </td>
                       )}
-                      {!hasFilter && <td
-                        className={`text-end ${
-                          totalStats.profit >= 0
-                            ? "text-success"
-                            : "text-danger"
-                        }`}
-                      >
-                        {totalStats.profit.toFixed(2)}
-                      </td>}
+                      {!hasFilter && (
+                        <td
+                          className={`text-end ${
+                            totalStats.profit >= 0
+                              ? "text-success"
+                              : "text-danger"
+                          }`}
+                        >
+                          {totalStats.profit.toFixed(2)}
+                        </td>
+                      )}
                     </tr>
                   )}
                 </tbody>

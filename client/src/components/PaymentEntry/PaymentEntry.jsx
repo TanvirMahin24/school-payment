@@ -280,7 +280,9 @@ const PaymentEntry = ({
       if (selectedStudents.has(student.id)) {
         const payment = studentPayments[student.id];
         if (!payment) {
-          errors.push(`Student ${student.uid} (${student.name}): Exam Fee / Admission Fee data missing`);
+          errors.push(
+            `Student ${student.uid} (${student.name}): payment data missing`,
+          );
           return;
         }
         const amountStr = payment.amount;
@@ -288,7 +290,7 @@ const PaymentEntry = ({
           const amountNum = parseFloat(amountStr);
           if (Number.isNaN(amountNum) || amountNum < 0) {
             errors.push(
-              `Student ${student.uid} (${student.name}): Amount must be a number >= 0`,
+              `Student ${student.uid} (${student.name}): Service Charge must be a number >= 0`,
             );
           }
         }
@@ -595,7 +597,7 @@ const PaymentEntry = ({
             <Row>
               <Col md={2} className="py-2">
                 <label htmlFor="bulkAmount" className="d-block pb-1">
-                  Amount
+                  Service Charge
                 </label>
                 <Form.Control
                   type="number"
@@ -609,7 +611,7 @@ const PaymentEntry = ({
               </Col>
               <Col md={2} className="py-2">
                 <label htmlFor="bulkExtraAmount" className="d-block pb-1">
-                  Extra / Service Charge
+                  Session Charge/ Extra Cost
                 </label>
                 <Form.Control
                   type="number"
@@ -623,7 +625,7 @@ const PaymentEntry = ({
               </Col>
               <Col md={2} className="py-2">
                 <label htmlFor="bulkExamFee" className="d-block pb-1">
-                  Exam Fee
+                  Admission Fee/ Exam Fee
                 </label>
                 <Form.Control
                   type="number"
@@ -753,11 +755,13 @@ const PaymentEntry = ({
                       <th style={{ width: "5%", padding: "0.5rem" }}>Roll</th>
                       <th style={{ width: "15%", padding: "0.5rem" }}>Name</th>
                       <th style={{ width: "10%", padding: "0.5rem" }}>
-                        Amount *
+                        Service Charge *
                       </th>
-                      <th style={{ width: "10%", padding: "0.5rem" }}>Extra / Service Charge</th>
                       <th style={{ width: "10%", padding: "0.5rem" }}>
-                        Exam Fee
+                        Session Charge/ Extra Cost
+                      </th>
+                      <th style={{ width: "10%", padding: "0.5rem" }}>
+                        Admission Fee/ Exam Fee
                       </th>
                       <th style={{ width: "22%", padding: "0.5rem" }}>Note</th>
                       <th
@@ -971,8 +975,9 @@ const PaymentEntry = ({
               </div>
               <div className="mt-3">
                 <small className="text-muted">
-                  * Required fields. Click "Submit All Exam Fees / Admission Fees" to create
-                  payments in the payment system.
+                  * Required fields. Click "Submit All Payments" to create
+                  payments in the payment system. Fees" to create payments in
+                  the payment system.
                 </small>
               </div>
             </>

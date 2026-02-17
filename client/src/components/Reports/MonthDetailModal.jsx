@@ -1,10 +1,21 @@
 import React from "react";
 import { Button, Modal, Spinner, Table } from "react-bootstrap";
 
-const MonthDetailModal = ({ show, onHide, type, monthLabel, items, loading, showMonthColumn = false }) => {
+const MonthDetailModal = ({
+  show,
+  onHide,
+  type,
+  monthLabel,
+  items,
+  loading,
+  showMonthColumn = false,
+}) => {
   const label = type === "expense" ? "Expenses" : "Revenues";
   const title = `${label} for ${monthLabel}`;
-  const total = (items || []).reduce((s, i) => s + parseFloat(i.amount || 0), 0);
+  const total = (items || []).reduce(
+    (s, i) => s + parseFloat(i.amount || 0),
+    0,
+  );
   const isEmpty = !loading && (!items || items.length === 0);
   const totalColSpan = showMonthColumn ? 3 : 2;
 
@@ -20,7 +31,9 @@ const MonthDetailModal = ({ show, onHide, type, monthLabel, items, loading, show
           </div>
         )}
         {!loading && isEmpty && (
-          <p className="text-muted mb-0">No {label.toLowerCase()} for this month.</p>
+          <p className="text-muted mb-0">
+            No {label.toLowerCase()} for this month.
+          </p>
         )}
         {!loading && !isEmpty && (
           <Table striped bordered hover responsive>
@@ -29,7 +42,7 @@ const MonthDetailModal = ({ show, onHide, type, monthLabel, items, loading, show
                 {showMonthColumn && <th>Month</th>}
                 <th>Description</th>
                 <th>Category</th>
-                <th className="text-end">Amount</th>
+                <th className="text-end">Service Charge</th>
               </tr>
             </thead>
             <tbody>
@@ -38,7 +51,9 @@ const MonthDetailModal = ({ show, onHide, type, monthLabel, items, loading, show
                   {showMonthColumn && <td>{item.month || "—"}</td>}
                   <td>{item.description || item.note || "—"}</td>
                   <td>{item.category?.name || "—"}</td>
-                  <td className="text-end">{parseFloat(item.amount || 0).toFixed(2)}</td>
+                  <td className="text-end">
+                    {parseFloat(item.amount || 0).toFixed(2)}
+                  </td>
                 </tr>
               ))}
             </tbody>

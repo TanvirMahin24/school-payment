@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Table, Button, Form, Card } from "react-bootstrap";
+import {
+  Col,
+  Container,
+  Row,
+  Table,
+  Button,
+  Form,
+  Card,
+} from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
 import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
@@ -8,7 +16,12 @@ import ExpenseEntry from "../../components/ExpenseEntry/ExpenseEntry";
 import { months, years } from "../../constants/MonthsAndYears";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) => {
+const ExpensePage = ({
+  expenses,
+  getExpenses,
+  deleteExpense,
+  selectedTenant,
+}) => {
   const [showEntry, setShowEntry] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [expenseToDelete, setExpenseToDelete] = useState(null);
@@ -53,7 +66,8 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
     loadExpenses();
   };
 
-  const totalAmount = expenses?.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0) || 0;
+  const totalAmount =
+    expenses?.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0) || 0;
 
   return (
     <Layout title="Expense Management">
@@ -64,7 +78,10 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Year</Form.Label>
-                  <Form.Select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
+                  <Form.Select
+                    value={year}
+                    onChange={(e) => setYear(parseInt(e.target.value))}
+                  >
                     {years.map((y) => (
                       <option key={y} value={y}>
                         {y}
@@ -76,7 +93,10 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Month</Form.Label>
-                  <Form.Select value={month} onChange={(e) => setMonth(e.target.value)}>
+                  <Form.Select
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                  >
                     {months.map((m) => (
                       <option key={m} value={m}>
                         {m}
@@ -105,7 +125,7 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
                 <tr>
                   <th>Date</th>
                   <th>Category</th>
-                  <th>Amount</th>
+                  <th>Service Charge</th>
                   <th>Description</th>
                   <th>Note</th>
                   <th>Actions</th>
@@ -115,7 +135,9 @@ const ExpensePage = ({ expenses, getExpenses, deleteExpense, selectedTenant }) =
                 {expenses && expenses.length > 0 ? (
                   expenses.map((expense) => (
                     <tr key={expense.id}>
-                      <td>{expense.month} {expense.year}</td>
+                      <td>
+                        {expense.month} {expense.year}
+                      </td>
                       <td>{expense.category?.name || "N/A"}</td>
                       <td>{parseFloat(expense.amount || 0).toFixed(2)}</td>
                       <td>{expense.description || "-"}</td>
@@ -175,6 +197,6 @@ const mapStateToProps = (state) => ({
   selectedTenant: state.tenant?.selectedTenant,
 });
 
-export default connect(mapStateToProps, { getExpenses, deleteExpense })(ExpensePage);
-
-
+export default connect(mapStateToProps, { getExpenses, deleteExpense })(
+  ExpensePage,
+);

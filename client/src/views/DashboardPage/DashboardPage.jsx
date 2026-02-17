@@ -12,11 +12,22 @@ import { BASE_URL } from "../../constants/URL";
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 12 }, (_, i) => currentYear - 10 + i);
 
-const INITIAL_MODAL_STATE = { show: false, type: null, variant: null, periodLabel: "", month: null, year: null, items: [], loading: false };
+const INITIAL_MODAL_STATE = {
+  show: false,
+  type: null,
+  variant: null,
+  periodLabel: "",
+  month: null,
+  year: null,
+  items: [],
+  loading: false,
+};
 
 const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
   const currentDate = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(months[currentDate.getMonth()]);
+  const [selectedMonth, setSelectedMonth] = useState(
+    months[currentDate.getMonth()],
+  );
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
 
@@ -36,8 +47,20 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
       toast.error("Please select a tenant");
       return;
     }
-    setModalState({ show: true, type, variant, periodLabel, month, year, items: [], loading: true });
-    const url = type === "expense" ? `${BASE_URL}/api/expense` : `${BASE_URL}/api/revenue`;
+    setModalState({
+      show: true,
+      type,
+      variant,
+      periodLabel,
+      month,
+      year,
+      items: [],
+      loading: true,
+    });
+    const url =
+      type === "expense"
+        ? `${BASE_URL}/api/expense`
+        : `${BASE_URL}/api/revenue`;
     const params = { tenant: selectedTenant };
     if (variant === "monthly" && month && year) {
       params.month = month;
@@ -102,7 +125,9 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                     onChange={(e) => setSelectedYear(Number(e.target.value))}
                   >
                     {yearOptions.map((y) => (
-                      <option key={y} value={y}>{y}</option>
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
                     ))}
                   </Form.Select>
                   <Form.Select
@@ -112,7 +137,9 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                   >
                     <option value="All Months">All Months</option>
                     {months.map((m) => (
-                      <option key={m} value={m}>{m}</option>
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
                     ))}
                   </Form.Select>
                 </Card.Header>
@@ -123,64 +150,144 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                       <Row>
                         <Col md={2} className="py-2">
                           <div className="text-center">
-                            <div className="text-muted small">{isAllMonths ? "Total Exam Fee / Admission Fee" : "Exam Fee / Admission Fee"}</div>
-                            <div className="h4 mb-0">{displayData.paymentAmount}</div>
-                            <div className="text-muted small">Paid Students {displayData.payments}</div>
+                            <div className="text-muted small">
+                              {isAllMonths
+                                ? "Total Service Charge"
+                                : "Service Charge"}
+                            </div>
+                            <div className="h4 mb-0">
+                              {displayData.paymentAmount}
+                            </div>
+                            <div className="text-muted small">
+                              Paid Students {displayData.payments}
+                            </div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
                           <div className="text-center">
-                            <div className="text-muted small">{isAllMonths ? "Total Extra / Service Charge" : "Extra / Service Charge"}</div>
-                            <div className="h4 mb-0">{displayData.extraPaymentAmount}</div>
-                            <div className="text-muted small">Paid Students {displayData.payments}</div>
+                            <div className="text-muted small">
+                              {isAllMonths
+                                ? "Total Session Charge/ Extra Cost"
+                                : "Session Charge/ Extra Cost"}
+                            </div>
+                            <div className="h4 mb-0">
+                              {displayData.extraPaymentAmount}
+                            </div>
+                            <div className="text-muted small">
+                              Paid Students {displayData.payments}
+                            </div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
                           <div className="text-center">
-                            <div className="text-muted small">{isAllMonths ? "Total Exam Fee" : "Exam Fee"}</div>
-                            <div className="h4 mb-0">{displayData.examFeeAmount}</div>
-                            <div className="text-muted small">Paid Students {displayData.payments}</div>
+                            <div className="text-muted small">
+                              {isAllMonths
+                                ? "Total Admission Fee/ Exam Fee"
+                                : "Admission Fee/ Exam Fee"}
+                            </div>
+                            <div className="h4 mb-0">
+                              {displayData.examFeeAmount}
+                            </div>
+                            <div className="text-muted small">
+                              Paid Students {displayData.payments}
+                            </div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
                           <div className="text-center">
-                            <div className="text-muted small">{isAllMonths ? "Total Revenue" : "Revenue"}</div>
+                            <div className="text-muted small">
+                              {isAllMonths ? "Total Revenue" : "Revenue"}
+                            </div>
                             <span
                               role="button"
                               tabIndex={0}
                               className="h4 mb-0 text-success"
-                              style={{ cursor: "pointer", textDecoration: "underline" }}
-                              onClick={() => handleOpenModal("revenue", displayData.variant, isAllMonths ? null : selectedMonth, selectedYear, displayData.periodLabel)}
-                              onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", displayData.variant, isAllMonths ? null : selectedMonth, selectedYear, displayData.periodLabel)}
+                              style={{
+                                cursor: "pointer",
+                                textDecoration: "underline",
+                              }}
+                              onClick={() =>
+                                handleOpenModal(
+                                  "revenue",
+                                  displayData.variant,
+                                  isAllMonths ? null : selectedMonth,
+                                  selectedYear,
+                                  displayData.periodLabel,
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                e.key === "Enter" &&
+                                handleOpenModal(
+                                  "revenue",
+                                  displayData.variant,
+                                  isAllMonths ? null : selectedMonth,
+                                  selectedYear,
+                                  displayData.periodLabel,
+                                )
+                              }
                             >
                               {displayData.revenueAmount}
                             </span>
-                            <div className="text-muted small">{displayData.revenues} entries</div>
+                            <div className="text-muted small">
+                              {displayData.revenues} entries
+                            </div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
                           <div className="text-center">
-                            <div className="text-muted small">{isAllMonths ? "Total Expenses" : "Expenses"}</div>
+                            <div className="text-muted small">
+                              {isAllMonths ? "Total Expenses" : "Expenses"}
+                            </div>
                             <span
                               role="button"
                               tabIndex={0}
                               className="h4 mb-0 text-danger"
-                              style={{ cursor: "pointer", textDecoration: "underline" }}
-                              onClick={() => handleOpenModal("expense", displayData.variant, isAllMonths ? null : selectedMonth, selectedYear, displayData.periodLabel)}
-                              onKeyDown={(e) => e.key === "Enter" && handleOpenModal("expense", displayData.variant, isAllMonths ? null : selectedMonth, selectedYear, displayData.periodLabel)}
+                              style={{
+                                cursor: "pointer",
+                                textDecoration: "underline",
+                              }}
+                              onClick={() =>
+                                handleOpenModal(
+                                  "expense",
+                                  displayData.variant,
+                                  isAllMonths ? null : selectedMonth,
+                                  selectedYear,
+                                  displayData.periodLabel,
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                e.key === "Enter" &&
+                                handleOpenModal(
+                                  "expense",
+                                  displayData.variant,
+                                  isAllMonths ? null : selectedMonth,
+                                  selectedYear,
+                                  displayData.periodLabel,
+                                )
+                              }
                             >
                               {displayData.expenseAmount}
                             </span>
-                            <div className="text-muted small">{displayData.expenses} entries</div>
+                            <div className="text-muted small">
+                              {displayData.expenses} entries
+                            </div>
                           </div>
                         </Col>
                         <Col md={2} className="py-2">
                           <div className="text-center">
-                            <div className="text-muted small">{isAllMonths ? "Total Profit" : "Profit"}</div>
-                            <div className={`h4 mb-0 ${parseFloat(displayData.profit || 0) >= 0 ? "text-success" : "text-danger"}`}>
+                            <div className="text-muted small">
+                              {isAllMonths ? "Total Profit" : "Profit"}
+                            </div>
+                            <div
+                              className={`h4 mb-0 ${parseFloat(displayData.profit || 0) >= 0 ? "text-success" : "text-danger"}`}
+                            >
                               {displayData.profit}
                             </div>
-                            <div className="text-muted small">{isAllMonths ? "Year-to-date" : "Revenue - Expenses"}</div>
+                            <div className="text-muted small">
+                              {isAllMonths
+                                ? "Year-to-date"
+                                : "Revenue - Expenses"}
+                            </div>
                           </div>
                         </Col>
                       </Row>
@@ -190,8 +297,6 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
               </Card>
             </Col>
           </Row>
-
-          
 
           <MonthDetailModal
             show={modalState.show}

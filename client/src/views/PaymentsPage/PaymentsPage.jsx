@@ -1,16 +1,37 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Col, Container, Row, Table, Button, ButtonGroup, Form, Card } from "react-bootstrap";
+import {
+  Col,
+  Container,
+  Row,
+  Table,
+  Button,
+  ButtonGroup,
+  Form,
+  Card,
+} from "react-bootstrap";
 import { connect } from "react-redux";
 import Layout from "../../components/shared/Layout/Layout";
 import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
 import { getPayments, deletePayment } from "../../actions/Payment.action";
 import { getGradeList } from "../../actions/Grade.action";
 import { useNavigate } from "react-router-dom";
-import { TENANT_LIST, DEFAULT_TENANT, getTenantLabel } from "../../constants/Tenant";
+import {
+  TENANT_LIST,
+  DEFAULT_TENANT,
+  getTenantLabel,
+} from "../../constants/Tenant";
 import { months } from "../../constants/MonthsAndYears";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
-const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, getGradeList, selectedTenant }) => {
+const PaymentsPage = ({
+  payments,
+  getPayments,
+  deletePayment,
+  loading,
+  grades,
+  getGradeList,
+  selectedTenant,
+}) => {
   const navigate = useNavigate();
   const [year, setYear] = useState(`${new Date().getFullYear()}`);
   const [month, setMonth] = useState("");
@@ -125,8 +146,18 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
         case "month":
           // Convert month names to numbers for proper sorting
           const monthNames = [
-            "january", "february", "march", "april", "may", "june",
-            "july", "august", "september", "october", "november", "december"
+            "january",
+            "february",
+            "march",
+            "april",
+            "may",
+            "june",
+            "july",
+            "august",
+            "september",
+            "october",
+            "november",
+            "december",
           ];
           aValue = monthNames.indexOf((a.month || "").toLowerCase());
           bValue = monthNames.indexOf((b.month || "").toLowerCase());
@@ -147,8 +178,12 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
         case "shift":
           const gradeAForShift = grades?.find((g) => g.id === a.gradePrimaryId);
           const gradeBForShift = grades?.find((g) => g.id === b.gradePrimaryId);
-          const shiftA = gradeAForShift?.shifts?.find((s) => s.id === a.shiftPrimaryId);
-          const shiftB = gradeBForShift?.shifts?.find((s) => s.id === b.shiftPrimaryId);
+          const shiftA = gradeAForShift?.shifts?.find(
+            (s) => s.id === a.shiftPrimaryId,
+          );
+          const shiftB = gradeBForShift?.shifts?.find(
+            (s) => s.id === b.shiftPrimaryId,
+          );
           aValue = (shiftA?.name || "").toLowerCase();
           bValue = (shiftB?.name || "").toLowerCase();
           if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -158,10 +193,18 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
         case "batch":
           const gradeAForBatch = grades?.find((g) => g.id === a.gradePrimaryId);
           const gradeBForBatch = grades?.find((g) => g.id === b.gradePrimaryId);
-          const shiftAForBatch = gradeAForBatch?.shifts?.find((s) => s.id === a.shiftPrimaryId);
-          const shiftBForBatch = gradeBForBatch?.shifts?.find((s) => s.id === b.shiftPrimaryId);
-          const batchA = shiftAForBatch?.batches?.find((batch) => batch.id === a.batchPrimaryId);
-          const batchB = shiftBForBatch?.batches?.find((batch) => batch.id === b.batchPrimaryId);
+          const shiftAForBatch = gradeAForBatch?.shifts?.find(
+            (s) => s.id === a.shiftPrimaryId,
+          );
+          const shiftBForBatch = gradeBForBatch?.shifts?.find(
+            (s) => s.id === b.shiftPrimaryId,
+          );
+          const batchA = shiftAForBatch?.batches?.find(
+            (batch) => batch.id === a.batchPrimaryId,
+          );
+          const batchB = shiftBForBatch?.batches?.find(
+            (batch) => batch.id === b.batchPrimaryId,
+          );
           aValue = (batchA?.name || "").toLowerCase();
           bValue = (batchB?.name || "").toLowerCase();
           if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -240,12 +283,11 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                   ))}
                 </Form.Select>
               </Col>
-              <Col md={6} className="d-flex justify-content-end align-items-end py-3">
-                <Button
-                  onClick={selectHandler}
-                  variant="primary"
-                  type="submit"
-                >
+              <Col
+                md={6}
+                className="d-flex justify-content-end align-items-end py-3"
+              >
+                <Button onClick={selectHandler} variant="primary" type="submit">
                   Select
                 </Button>
               </Col>
@@ -344,25 +386,25 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                       style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("amount")}
                     >
-                      Amount {getSortIcon("amount")}
+                      Service Charge {getSortIcon("amount")}
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("extraAmount")}
                     >
-                      Extra / Service Charge {getSortIcon("extraAmount")}
+                      Session Charge/ Extra Cost {getSortIcon("extraAmount")}
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("examFee")}
                     >
-                      Exam Fee {getSortIcon("examFee")}
+                      Admission Fee/ Exam Fee {getSortIcon("examFee")}
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("totalAmount")}
                     >
-                      Total Amount {getSortIcon("totalAmount")}
+                      Total {getSortIcon("totalAmount")}
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
@@ -403,14 +445,22 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                       <td>{payment.student?.uid || "-"}</td>
                       <td>{payment.student?.name || "-"}</td>
                       <td>{parseFloat(payment.amount || 0).toFixed(2)}</td>
-                      <td>{parseFloat(payment.extra_amount || 0).toFixed(2)}</td>
+                      <td>
+                        {parseFloat(payment.extra_amount || 0).toFixed(2)}
+                      </td>
                       <td>{parseFloat(payment.exam_fee || 0).toFixed(2)}</td>
-                      <td>{parseFloat(payment.total_amount || payment.amount || 0).toFixed(2)}</td>
+                      <td>
+                        {parseFloat(
+                          payment.total_amount || payment.amount || 0,
+                        ).toFixed(2)}
+                      </td>
                       <td>{payment.month}</td>
                       <td>
                         {payment.gradePrimaryId
                           ? (() => {
-                              const gradeObj = grades?.find((g) => g.id === payment.gradePrimaryId);
+                              const gradeObj = grades?.find(
+                                (g) => g.id === payment.gradePrimaryId,
+                              );
                               return gradeObj?.name || "-";
                             })()
                           : "-"}
@@ -418,8 +468,12 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                       <td>
                         {payment.shiftPrimaryId
                           ? (() => {
-                              const gradeObj = grades?.find((g) => g.id === payment.gradePrimaryId);
-                              const shiftObj = gradeObj?.shifts?.find((s) => s.id === payment.shiftPrimaryId);
+                              const gradeObj = grades?.find(
+                                (g) => g.id === payment.gradePrimaryId,
+                              );
+                              const shiftObj = gradeObj?.shifts?.find(
+                                (s) => s.id === payment.shiftPrimaryId,
+                              );
                               return shiftObj?.name || "-";
                             })()
                           : "-"}
@@ -427,9 +481,15 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                       <td>
                         {payment.batchPrimaryId
                           ? (() => {
-                              const gradeObj = grades?.find((g) => g.id === payment.gradePrimaryId);
-                              const shiftObj = gradeObj?.shifts?.find((s) => s.id === payment.shiftPrimaryId);
-                              const batchObj = shiftObj?.batches?.find((b) => b.id === payment.batchPrimaryId);
+                              const gradeObj = grades?.find(
+                                (g) => g.id === payment.gradePrimaryId,
+                              );
+                              const shiftObj = gradeObj?.shifts?.find(
+                                (s) => s.id === payment.shiftPrimaryId,
+                              );
+                              const batchObj = shiftObj?.batches?.find(
+                                (b) => b.id === payment.batchPrimaryId,
+                              );
                               return batchObj?.name || "-";
                             })()
                           : "-"}
@@ -441,7 +501,9 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
                         <Button
                           variant="outline-primary"
                           size="sm"
-                          onClick={() => navigate(`/payments/${payment.id}/edit`)}
+                          onClick={() =>
+                            navigate(`/payments/${payment.id}/edit`)
+                          }
                           className="me-2"
                         >
                           Edit
@@ -465,9 +527,15 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
             ) : (
               <div className="text-center py-5">
                 <p>
-                  No payments found. 
-                  {(year || month || grade || shift || batch) && " Try adjusting your filters."}
-                  {!year && !month && !grade && !shift && !batch && " Select filters and click 'Select' to search for payments."}
+                  No payments found.
+                  {(year || month || grade || shift || batch) &&
+                    " Try adjusting your filters."}
+                  {!year &&
+                    !month &&
+                    !grade &&
+                    !shift &&
+                    !batch &&
+                    " Select filters and click 'Select' to search for payments."}
                 </p>
               </div>
             )}
@@ -478,13 +546,14 @@ const PaymentsPage = ({ payments, getPayments, deletePayment, loading, grades, g
           show={!!paymentToDelete}
           onHide={handleDeleteClose}
           onConfirm={handleDeleteConfirm}
-          title="Delete Exam Fee / Admission Fee"
+          title="Delete Payment"
         >
           {paymentToDelete && (
             <p className="mb-0">
               Are you sure you want to delete this payment for{" "}
-              <strong>{paymentToDelete.student?.name || "student"}</strong> ({paymentToDelete.month}{" "}
-              {paymentToDelete.year})? This action cannot be undone.
+              <strong>{paymentToDelete.student?.name || "student"}</strong> (
+              {paymentToDelete.month} {paymentToDelete.year})? This action
+              cannot be undone.
             </p>
           )}
         </ConfirmModal>
@@ -500,6 +569,8 @@ const mapStateToProps = (state) => ({
   selectedTenant: state.tenant?.selectedTenant,
 });
 
-export default connect(mapStateToProps, { getPayments, deletePayment, getGradeList })(PaymentsPage);
-
-
+export default connect(mapStateToProps, {
+  getPayments,
+  deletePayment,
+  getGradeList,
+})(PaymentsPage);

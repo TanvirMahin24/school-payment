@@ -6,7 +6,13 @@ import { BASE_URL } from "../../constants/URL";
 import MonthDetailModal from "./MonthDetailModal";
 // import Chart from "react-apexcharts";
 
-const INITIAL_MODAL_STATE = { show: false, type: null, monthLabel: "", items: [], loading: false };
+const INITIAL_MODAL_STATE = {
+  show: false,
+  type: null,
+  monthLabel: "",
+  items: [],
+  loading: false,
+};
 
 const ExpenseRevenueChart = ({ data, selectedTenant }) => {
   const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
@@ -16,10 +22,21 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
       toast.error("Please select a tenant");
       return;
     }
-    setModalState({ show: true, type, monthLabel: row.monthLabel, items: [], loading: true });
-    const url = type === "expense" ? `${BASE_URL}/api/expense` : `${BASE_URL}/api/revenue`;
+    setModalState({
+      show: true,
+      type,
+      monthLabel: row.monthLabel,
+      items: [],
+      loading: true,
+    });
+    const url =
+      type === "expense"
+        ? `${BASE_URL}/api/expense`
+        : `${BASE_URL}/api/revenue`;
     try {
-      const res = await axios.get(url, { params: { tenant: selectedTenant, month: row.month, year: row.year } });
+      const res = await axios.get(url, {
+        params: { tenant: selectedTenant, month: row.month, year: row.year },
+      });
       setModalState((s) => ({ ...s, items: res.data.data, loading: false }));
     } catch (err) {
       toast.error(err.response?.data?.message || `Error fetching ${type}s`);
@@ -36,7 +53,7 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
         expense: acc.expense + parseFloat(d.expense || 0),
         totalRevenue: acc.totalRevenue + parseFloat(d.totalRevenue || 0),
       }),
-      { expense: 0, totalRevenue: 0 }
+      { expense: 0, totalRevenue: 0 },
     );
   }, [data]);
 
@@ -71,7 +88,7 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
   //     },
   //     yaxis: {
   //       title: {
-  //         text: "Amount",
+  //         text: "Service Charge",
   //       },
   //       labels: {
   //         formatter: (value) => value.toFixed(2),
@@ -139,7 +156,9 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
             <tr>
               <th>Month</th>
               <th className="text-end text-danger">Expense</th>
-              <th className="text-end text-success">Revenue (Exam Fees / Admission Fees + Revenue)</th>
+              <th className="text-end text-success">
+                Revenue (Total + Revenue)
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -153,7 +172,9 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
                     className="text-primary"
                     style={{ cursor: "pointer", textDecoration: "underline" }}
                     onClick={() => handleOpenModal("expense", d)}
-                    onKeyDown={(e) => e.key === "Enter" && handleOpenModal("expense", d)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleOpenModal("expense", d)
+                    }
                   >
                     {parseFloat(d.expense || 0).toFixed(2)}
                   </span>
@@ -165,7 +186,9 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
                     className="text-primary"
                     style={{ cursor: "pointer", textDecoration: "underline" }}
                     onClick={() => handleOpenModal("revenue", d)}
-                    onKeyDown={(e) => e.key === "Enter" && handleOpenModal("revenue", d)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleOpenModal("revenue", d)
+                    }
                   >
                     {parseFloat(d.totalRevenue || 0).toFixed(2)}
                   </span>
@@ -175,8 +198,12 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
             {totalStats && (
               <tr className="table-info fw-bold">
                 <td>Total</td>
-                <td className="text-end text-danger">{totalStats.expense.toFixed(2)}</td>
-                <td className="text-end text-success">{totalStats.totalRevenue.toFixed(2)}</td>
+                <td className="text-end text-danger">
+                  {totalStats.expense.toFixed(2)}
+                </td>
+                <td className="text-end text-success">
+                  {totalStats.totalRevenue.toFixed(2)}
+                </td>
               </tr>
             )}
           </tbody>
@@ -195,4 +222,3 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
 };
 
 export default ExpenseRevenueChart;
-

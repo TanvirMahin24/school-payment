@@ -4,7 +4,12 @@ import { connect } from "react-redux";
 import { getBatchBreakdown } from "../../actions/Report.action";
 import { months, years } from "../../constants/MonthsAndYears";
 
-const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loading }) => {
+const BatchBreakdown = ({
+  selectedTenant,
+  batchBreakdown,
+  getBatchBreakdown,
+  loading,
+}) => {
   const getStartMonth = () => {
     const currentMonth = new Date().getMonth();
     const startMonthIndex = currentMonth - 11;
@@ -30,14 +35,19 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
   };
 
   const totalPayment = useMemo(() => {
-    if (!batchBreakdown || batchBreakdown === null || batchBreakdown.length === 0) return { payment: 0, extraPayment: 0, examPayment: 0 };
+    if (
+      !batchBreakdown ||
+      batchBreakdown === null ||
+      batchBreakdown.length === 0
+    )
+      return { payment: 0, extraPayment: 0, examPayment: 0 };
     return batchBreakdown.reduce(
       (acc, d) => ({
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
         examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
       }),
-      { payment: 0, extraPayment: 0, examPayment: 0 }
+      { payment: 0, extraPayment: 0, examPayment: 0 },
     );
   }, [batchBreakdown]);
 
@@ -112,7 +122,11 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
           </Row>
           <Row>
             <Col>
-              <Button variant="primary" onClick={handleFilter} disabled={loading}>
+              <Button
+                variant="primary"
+                onClick={handleFilter}
+                disabled={loading}
+              >
                 {loading ? "Loading..." : "Generate Report"}
               </Button>
             </Col>
@@ -121,10 +135,15 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
       </Card>
 
       {loading ? (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 400 }}>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: 400 }}
+        >
           <Spinner animation="border" variant="primary" />
         </div>
-      ) : batchBreakdown && Array.isArray(batchBreakdown) && batchBreakdown.length > 0 ? (
+      ) : batchBreakdown &&
+        Array.isArray(batchBreakdown) &&
+        batchBreakdown.length > 0 ? (
         <Card className="border-0">
           <Card.Body>
             <h5 className="mb-3">Batch-wise Payment Breakdown</h5>
@@ -134,9 +153,9 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
                   <th>Class</th>
                   <th>Shift</th>
                   <th>Batch</th>
-                  <th className="text-end">Exam Fee / Admission Fee</th>
-                  <th className="text-end">Extra / Service Charge</th>
-                  <th className="text-end">Exam Fee</th>
+                  <th className="text-end">Service Charge</th>
+                  <th className="text-end">Session Charge/ Extra Cost</th>
+                  <th className="text-end">Admission Fee/ Exam Fee</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,26 +164,42 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
                     <td>{d.gradeName}</td>
                     <td>{d.shiftName}</td>
                     <td>{d.batchName}</td>
-                    <td className="text-end">{parseFloat(d.payment || 0).toFixed(2)}</td>
-                    <td className="text-end">{parseFloat(d.extraPayment || 0).toFixed(2)}</td>
-                    <td className="text-end">{parseFloat(d.examPayment || 0).toFixed(2)}</td>
+                    <td className="text-end">
+                      {parseFloat(d.payment || 0).toFixed(2)}
+                    </td>
+                    <td className="text-end">
+                      {parseFloat(d.extraPayment || 0).toFixed(2)}
+                    </td>
+                    <td className="text-end">
+                      {parseFloat(d.examPayment || 0).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
                 <tr className="table-info fw-bold">
                   <td colSpan="3">Total</td>
-                  <td className="text-end">{totalPayment.payment.toFixed(2)}</td>
-                  <td className="text-end">{totalPayment.extraPayment.toFixed(2)}</td>
-                  <td className="text-end">{totalPayment.examPayment.toFixed(2)}</td>
+                  <td className="text-end">
+                    {totalPayment.payment.toFixed(2)}
+                  </td>
+                  <td className="text-end">
+                    {totalPayment.extraPayment.toFixed(2)}
+                  </td>
+                  <td className="text-end">
+                    {totalPayment.examPayment.toFixed(2)}
+                  </td>
                 </tr>
               </tbody>
             </Table>
           </Card.Body>
         </Card>
-      ) : batchBreakdown && Array.isArray(batchBreakdown) && batchBreakdown.length === 0 ? (
+      ) : batchBreakdown &&
+        Array.isArray(batchBreakdown) &&
+        batchBreakdown.length === 0 ? (
         <Card>
           <Card.Body>
             <div className="text-center py-5">
-              <p className="text-muted">No data found for the selected date range</p>
+              <p className="text-muted">
+                No data found for the selected date range
+              </p>
             </div>
           </Card.Body>
         </Card>
@@ -172,7 +207,9 @@ const BatchBreakdown = ({ selectedTenant, batchBreakdown, getBatchBreakdown, loa
         <Card>
           <Card.Body>
             <div className="text-center py-5">
-              <p className="text-muted">Select date range and click "Generate Report" to view data</p>
+              <p className="text-muted">
+                Select date range and click "Generate Report" to view data
+              </p>
             </div>
           </Card.Body>
         </Card>
@@ -188,4 +225,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getBatchBreakdown })(BatchBreakdown);
-

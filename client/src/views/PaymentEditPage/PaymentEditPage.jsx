@@ -51,9 +51,12 @@ const PaymentEditPage = ({ payment, getPaymentDetails, selectedTenant }) => {
 
   if (loading) {
     return (
-      <Layout title="Edit Exam Fee / Admission Fee">
+      <Layout title="Edit Payment Entry">
         <Container>
-          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 400 }}>
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: 400 }}
+          >
             <Spinner animation="border" variant="primary" />
           </div>
         </Container>
@@ -63,7 +66,7 @@ const PaymentEditPage = ({ payment, getPaymentDetails, selectedTenant }) => {
 
   if (error || !payment) {
     return (
-      <Layout title="Edit Exam Fee / Admission Fee">
+      <Layout title="Edit Payment Entry">
         <Container>
           <Alert variant="danger" className="mt-4">
             {error || "Payment not found. Redirecting to payments page..."}
@@ -74,7 +77,7 @@ const PaymentEditPage = ({ payment, getPaymentDetails, selectedTenant }) => {
   }
 
   return (
-    <Layout title="Edit Exam Fee / Admission Fee">
+    <Layout title="Edit Payment Entry">
       <Container>
         <PaymentEditForm payment={payment} />
       </Container>
