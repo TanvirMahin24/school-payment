@@ -1,4 +1,4 @@
-import { GET_MONTHLY_STATS, GET_FILTERED_STATS, GET_GRADE_BREAKDOWN, GET_SHIFT_BREAKDOWN, GET_BATCH_BREAKDOWN } from "../constants/Type";
+import { GET_MONTHLY_STATS, GET_FILTERED_STATS, GET_GRADE_BREAKDOWN, GET_SHIFT_BREAKDOWN, GET_BATCH_BREAKDOWN, GET_MONTHLY_INCOME_EXPENSE } from "../constants/Type";
 
 const initialState = {
   monthlyStats: [],
@@ -6,6 +6,7 @@ const initialState = {
   gradeBreakdown: null,
   shiftBreakdown: null,
   batchBreakdown: null,
+  monthlyIncomeExpense: null,
   loading: false,
 };
 
@@ -87,6 +88,25 @@ const reportReducer = (state = initialState, action) => {
       return {
         ...state,
         batchBreakdown: batchData,
+        loading: false,
+      };
+    case GET_MONTHLY_INCOME_EXPENSE:
+      if (action.isClearing) {
+        return {
+          ...state,
+          monthlyIncomeExpense: null,
+          loading: false,
+        };
+      }
+      if (action.payload === undefined) {
+        return {
+          ...state,
+          loading: true,
+        };
+      }
+      return {
+        ...state,
+        monthlyIncomeExpense: action.payload,
         loading: false,
       };
     default:

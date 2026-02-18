@@ -125,7 +125,7 @@ const ExpensePage = ({
                 <tr>
                   <th>Date</th>
                   <th>Category</th>
-                  <th>Service Charge</th>
+                  <th>Amount</th>
                   <th>Description</th>
                   <th>Note</th>
                   <th>Actions</th>

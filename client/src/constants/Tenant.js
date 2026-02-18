@@ -15,6 +15,12 @@ export const TENANT_LABELS = {
   [TENANTS.SCHOOL]: "School",
 };
 
+export const TENANT_INSTITUTION_NAMES = {
+  [TENANTS.PRIMARY]: "Notun Kuri English Version School",
+  [TENANTS.COACHING]: "Notun Kuri Coaching Center",
+  [TENANTS.SCHOOL]: "Notun Kuri Residential School",
+};
+
 export const TENANT_LIST = [
   { value: TENANTS.COACHING, label: TENANT_LABELS[TENANTS.COACHING] },
   { value: TENANTS.PRIMARY, label: TENANT_LABELS[TENANTS.PRIMARY] },
@@ -30,6 +36,10 @@ export const DEFAULT_TENANT = TENANTS.COACHING;
  */
 export const getTenantLabel = (tenant) => {
   return TENANT_LABELS[tenant] || tenant;
+};
+
+export const getTenantInstitutionName = (tenant) => {
+  return TENANT_INSTITUTION_NAMES[tenant] || tenant;
 };
 
 /**

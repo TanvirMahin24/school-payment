@@ -18,6 +18,7 @@ import {
   MdTrendingUp,
   MdCategory,
   MdAdminPanelSettings,
+  MdReceipt,
 } from "react-icons/md";
 
 const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
@@ -107,6 +108,14 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
                   <MdBarChart />
                 </span>
                 <span className={styles.nav__item_text}>Reports</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/income-expense" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdReceipt />
+                </span>
+                <span className={styles.nav__item_text}>Income & Expense Statement</span>
               </NavLink>
             </div>
             <div className={styles.nav}>

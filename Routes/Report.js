@@ -5,6 +5,7 @@ const { getFilteredStats } = require("../Controller/Report/getFilteredStats");
 const { getGradeBreakdown } = require("../Controller/Report/getGradeBreakdown");
 const { getShiftBreakdown } = require("../Controller/Report/getShiftBreakdown");
 const { getBatchBreakdown } = require("../Controller/Report/getBatchBreakdown");
+const { getMonthlyIncomeExpense } = require("../Controller/Report/getMonthlyIncomeExpense");
 
 const router = express.Router();
 
@@ -36,6 +37,12 @@ router.get(
   "/batch-breakdown",
   passport.authenticate("jwt", { session: false }),
   getBatchBreakdown
+);
+
+router.get(
+  "/income-expense-statement",
+  passport.authenticate("jwt", { session: false }),
+  getMonthlyIncomeExpense
 );
 
 module.exports = router;

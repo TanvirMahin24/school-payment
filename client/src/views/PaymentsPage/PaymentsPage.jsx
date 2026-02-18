@@ -38,7 +38,7 @@ const PaymentsPage = ({
   const [grade, setGrade] = useState("");
   const [shift, setShift] = useState("");
   const [batch, setBatch] = useState("");
-  const [sortColumn, setSortColumn] = useState(null);
+  const [sortColumn, setSortColumn] = useState("roll");
   const [sortDirection, setSortDirection] = useState("asc"); // 'asc' or 'desc'
   const [paymentToDelete, setPaymentToDelete] = useState(null);
 

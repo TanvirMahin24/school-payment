@@ -17,6 +17,7 @@ import ExpensePage from "./views/ExpensePage/ExpensePage.jsx";
 import RevenuePage from "./views/RevenuePage/RevenuePage.jsx";
 import CategoryManagementPage from "./views/CategoryManagementPage/CategoryManagementPage.jsx";
 import ReportsPage from "./views/ReportsPage/ReportsPage.jsx";
+import MonthlyIncomeExpensePage from "./views/MonthlyIncomeExpensePage/MonthlyIncomeExpensePage.jsx";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -64,6 +65,7 @@ function App() {
               <Route path="revenues" element={<RevenuePage />} />
               <Route path="categories" element={<CategoryManagementPage />} />
               <Route path="reports" element={<ReportsPage />} />
+              <Route path="income-expense" element={<MonthlyIncomeExpensePage />} />
             </>
           </Route>
         </Routes>
