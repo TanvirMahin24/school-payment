@@ -3,7 +3,7 @@ import { Button, Card, Col, Form, Row, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 import { createExpense, updateExpense } from "../../actions/Expense.action";
 import { getExpenseCategories } from "../../actions/Category.action";
-import { months, years } from "../../constants/MonthsAndYears";
+import { months, years, getLastMonthAndYear } from "../../constants/MonthsAndYears";
 
 const ExpenseEntry = ({
   show,
@@ -15,10 +15,11 @@ const ExpenseEntry = ({
   getExpenseCategories,
   expenseCategories,
 }) => {
+  const { month: defaultMonth, year: defaultYear } = getLastMonthAndYear();
   const [formData, setFormData] = useState({
     amount: "",
-    month: months[new Date().getMonth()],
-    year: new Date().getFullYear(),
+    month: defaultMonth,
+    year: defaultYear,
     categoryId: "",
     description: "",
     note: "",
@@ -28,8 +29,8 @@ const ExpenseEntry = ({
     if (expense) {
       setFormData({
         amount: expense.amount || "",
-        month: expense.month || months[new Date().getMonth()],
-        year: expense.year || new Date().getFullYear(),
+        month: expense.month || defaultMonth,
+        year: expense.year || defaultYear,
         categoryId: expense.categoryId || "",
         description: expense.description || "",
         note: expense.note || "",
@@ -37,8 +38,8 @@ const ExpenseEntry = ({
     } else {
       setFormData({
         amount: "",
-        month: months[new Date().getMonth()],
-        year: new Date().getFullYear(),
+        month: defaultMonth,
+        year: defaultYear,
         categoryId: "",
         description: "",
         note: "",

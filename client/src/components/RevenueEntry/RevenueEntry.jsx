@@ -3,7 +3,7 @@ import { Button, Card, Col, Form, Row, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 import { createRevenue, updateRevenue } from "../../actions/Revenue.action";
 import { getRevenueCategories } from "../../actions/Category.action";
-import { months, years } from "../../constants/MonthsAndYears";
+import { months, years, getLastMonthAndYear } from "../../constants/MonthsAndYears";
 
 const RevenueEntry = ({
   show,
@@ -15,10 +15,11 @@ const RevenueEntry = ({
   getRevenueCategories,
   revenueCategories,
 }) => {
+  const { month: defaultMonth, year: defaultYear } = getLastMonthAndYear();
   const [formData, setFormData] = useState({
     amount: "",
-    month: months[new Date().getMonth()],
-    year: new Date().getFullYear(),
+    month: defaultMonth,
+    year: defaultYear,
     categoryId: "",
     description: "",
     note: "",
@@ -28,8 +29,8 @@ const RevenueEntry = ({
     if (revenue) {
       setFormData({
         amount: revenue.amount || "",
-        month: revenue.month || months[new Date().getMonth()],
-        year: revenue.year || new Date().getFullYear(),
+        month: revenue.month || defaultMonth,
+        year: revenue.year || defaultYear,
         categoryId: revenue.categoryId || "",
         description: revenue.description || "",
         note: revenue.note || "",
@@ -37,8 +38,8 @@ const RevenueEntry = ({
     } else {
       setFormData({
         amount: "",
-        month: months[new Date().getMonth()],
-        year: new Date().getFullYear(),
+        month: defaultMonth,
+        year: defaultYear,
         categoryId: "",
         description: "",
         note: "",
@@ -99,7 +100,6 @@ const RevenueEntry = ({
                   value={formData.amount}
                   onChange={handleChange}
                   required
-                  min="0"
                 />
               </Form.Group>
             </Col>

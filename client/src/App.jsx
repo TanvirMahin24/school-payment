@@ -18,6 +18,9 @@ import RevenuePage from "./views/RevenuePage/RevenuePage.jsx";
 import CategoryManagementPage from "./views/CategoryManagementPage/CategoryManagementPage.jsx";
 import ReportsPage from "./views/ReportsPage/ReportsPage.jsx";
 import MonthlyIncomeExpensePage from "./views/MonthlyIncomeExpensePage/MonthlyIncomeExpensePage.jsx";
+import YearlyExpenseReportPage from "./views/YearlyExpenseReportPage/YearlyExpenseReportPage.jsx";
+import YearlyIncomeReportPage from "./views/YearlyIncomeReportPage/YearlyIncomeReportPage.jsx";
+import SchoolPrimaryReportPage from "./views/SchoolPrimaryReportPage/SchoolPrimaryReportPage.jsx";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -66,6 +69,9 @@ function App() {
               <Route path="categories" element={<CategoryManagementPage />} />
               <Route path="reports" element={<ReportsPage />} />
               <Route path="income-expense" element={<MonthlyIncomeExpensePage />} />
+              <Route path="yearly-expense" element={<YearlyExpenseReportPage />} />
+              <Route path="yearly-income" element={<YearlyIncomeReportPage />} />
+              <Route path="school-primary" element={<SchoolPrimaryReportPage />} />
             </>
           </Route>
         </Routes>

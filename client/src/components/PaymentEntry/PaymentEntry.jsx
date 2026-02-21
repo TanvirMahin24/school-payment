@@ -77,9 +77,15 @@ const PaymentEntry = ({
             if (existingPayment) {
               // Pre-fill with existing payment data
               initialPayments[student.id] = {
-                amount: existingPayment.amount?.toString() || "",
-                extra_amount: existingPayment.extra_amount?.toString() || "",
-                exam_fee: existingPayment.exam_fee?.toString() || "",
+                amount: existingPayment.amount
+                  ? parseFloat(existingPayment.amount)
+                  : "",
+                extra_amount: existingPayment.extra_amount
+                  ? parseFloat(existingPayment.extra_amount)
+                  : "",
+                exam_fee: existingPayment.exam_fee
+                  ? parseFloat(existingPayment.exam_fee)
+                  : "",
                 note: existingPayment.note || "",
               };
               initialStatus[student.id] = "existing";
@@ -166,9 +172,15 @@ const PaymentEntry = ({
         if (existingPayment) {
           // Pre-fill with existing payment data
           initialPayments[student.id] = {
-            amount: existingPayment.amount?.toString() || "",
-            extra_amount: existingPayment.extra_amount?.toString() || "",
-            exam_fee: existingPayment.exam_fee?.toString() || "",
+            amount: existingPayment.amount
+              ? parseFloat(existingPayment.amount)
+              : "",
+            extra_amount: existingPayment.extra_amount
+              ? parseFloat(existingPayment.extra_amount)
+              : "",
+            exam_fee: existingPayment.exam_fee
+              ? parseFloat(existingPayment.exam_fee)
+              : "",
             note: existingPayment.note || "",
           };
           initialStatus[student.id] = "existing";
@@ -209,10 +221,15 @@ const PaymentEntry = ({
       .forEach((student) => {
         updatedPayments[student.id] = {
           ...updatedPayments[student.id],
-          amount: bulkAmount || updatedPayments[student.id]?.amount || "",
-          extra_amount:
-            bulkExtraAmount || updatedPayments[student.id]?.extra_amount || "",
-          exam_fee: bulkExamFee || updatedPayments[student.id]?.exam_fee || "",
+          amount: bulkAmount
+            ? parseFloat(bulkAmount)
+            : updatedPayments[student.id]?.amount || "",
+          extra_amount: bulkExtraAmount
+            ? parseFloat(bulkExtraAmount)
+            : updatedPayments[student.id]?.extra_amount || "",
+          exam_fee: bulkExamFee
+            ? parseFloat(bulkExamFee)
+            : updatedPayments[student.id]?.exam_fee || "",
           note: bulkNote || updatedPayments[student.id]?.note || "",
         };
       });
@@ -600,11 +617,9 @@ const PaymentEntry = ({
                   Service Charge
                 </label>
                 <Form.Control
-                  type="number"
+                  type="text"
                   id="bulkAmount"
                   placeholder="0.00"
-                  step="0.01"
-                  min="0"
                   value={bulkAmount}
                   onChange={(e) => setBulkAmount(e.target.value)}
                 />
@@ -614,11 +629,9 @@ const PaymentEntry = ({
                   Session Charge/ Extra Cost
                 </label>
                 <Form.Control
-                  type="number"
+                  type="text"
                   id="bulkExtraAmount"
                   placeholder="0.00"
-                  step="0.01"
-                  min="0"
                   value={bulkExtraAmount}
                   onChange={(e) => setBulkExtraAmount(e.target.value)}
                 />
@@ -628,11 +641,9 @@ const PaymentEntry = ({
                   Admission Fee/ Exam Fee
                 </label>
                 <Form.Control
-                  type="number"
+                  type="text"
                   id="bulkExamFee"
                   placeholder="0.00"
-                  step="0.01"
-                  min="0"
                   value={bulkExamFee}
                   onChange={(e) => setBulkExamFee(e.target.value)}
                 />
@@ -878,10 +889,8 @@ const PaymentEntry = ({
                             </td>
                             <td style={{ padding: "0.5rem" }}>
                               <Form.Control
-                                type="number"
+                                type="text"
                                 placeholder="0.00"
-                                step="0.01"
-                                min="0"
                                 value={payment.amount}
                                 onChange={(e) =>
                                   updateStudentPayment(
@@ -899,10 +908,8 @@ const PaymentEntry = ({
                             </td>
                             <td style={{ padding: "0.5rem" }}>
                               <Form.Control
-                                type="number"
+                                type="text"
                                 placeholder="0.00"
-                                step="0.01"
-                                min="0"
                                 value={payment.extra_amount}
                                 onChange={(e) =>
                                   updateStudentPayment(
@@ -920,10 +927,8 @@ const PaymentEntry = ({
                             </td>
                             <td style={{ padding: "0.5rem" }}>
                               <Form.Control
-                                type="number"
+                                type="text"
                                 placeholder="0.00"
-                                step="0.01"
-                                min="0"
                                 value={payment.exam_fee}
                                 onChange={(e) =>
                                   updateStudentPayment(

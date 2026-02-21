@@ -23,6 +23,8 @@ const MonthlyIncomeExpenseReport = ({ data, month, year, tenant }) => {
   } = data;
 
   const totalIncome = totalPaymentIncome + totalRevenue;
+  const surplusOrDeficit = totalIncome - totalExpense;
+  const isSurplus = surplusOrDeficit >= 0;
 
   const incomeDataRows = 3 * incomeByGrade.length;
   const expenseDataRows = expenses.length;
@@ -187,6 +189,14 @@ const MonthlyIncomeExpenseReport = ({ data, month, year, tenant }) => {
             <span className={styles.totalLabel}>Total Expense</span>
             <span className={styles.totalValue}>
               {formatAmount(totalExpense)}
+            </span>
+          </div>
+          <div className={styles.totalBlock}>
+            <span className={styles.totalLabel}>
+              {isSurplus ? "Surplus Fund" : "Deficit Fund"}
+            </span>
+            <span className={styles.totalValue}>
+              {formatAmount(Math.abs(surplusOrDeficit))}
             </span>
           </div>
         </div>

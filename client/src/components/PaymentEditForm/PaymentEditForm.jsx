@@ -192,13 +192,11 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
               <Form.Group className="mb-3">
                 <Form.Label>Service Charge *</Form.Label>
                 <Form.Control
-                  type="number"
-                  step="0.01"
+                  type="text"
                   name="amount"
                   value={formData.amount}
                   onChange={handleChange}
                   required
-                  min="0"
                 />
               </Form.Group>
             </Col>
@@ -206,12 +204,10 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
               <Form.Group className="mb-3">
                 <Form.Label>Session Charge/ Extra Cost</Form.Label>
                 <Form.Control
-                  type="number"
-                  step="0.01"
+                  type="text"
                   name="extra_amount"
                   value={formData.extra_amount}
                   onChange={handleChange}
-                  min="0"
                 />
               </Form.Group>
             </Col>
@@ -219,12 +215,10 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
               <Form.Group className="mb-3">
                 <Form.Label>Admission Fee/ Exam Fee </Form.Label>
                 <Form.Control
-                  type="number"
-                  step="0.01"
+                  type="text"
                   name="exam_fee"
                   value={formData.exam_fee}
                   onChange={handleChange}
-                  min="0"
                 />
               </Form.Group>
             </Col>

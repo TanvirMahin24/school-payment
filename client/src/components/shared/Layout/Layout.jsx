@@ -19,6 +19,9 @@ import {
   MdCategory,
   MdAdminPanelSettings,
   MdReceipt,
+  MdAssessment,
+  MdSummarize,
+  MdBusiness,
 } from "react-icons/md";
 
 const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
@@ -116,6 +119,30 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
                   <MdReceipt />
                 </span>
                 <span className={styles.nav__item_text}>Income & Expense Statement</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/yearly-expense" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdAssessment />
+                </span>
+                <span className={styles.nav__item_text}>Yearly Expense Report</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/yearly-income" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdSummarize />
+                </span>
+                <span className={styles.nav__item_text}>Yearly Income Report</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/school-primary" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdBusiness />
+                </span>
+                <span className={styles.nav__item_text}>School and Primary Report</span>
               </NavLink>
             </div>
             <div className={styles.nav}>

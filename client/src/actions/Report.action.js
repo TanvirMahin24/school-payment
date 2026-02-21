@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { GET_MONTHLY_STATS, GET_FILTERED_STATS, GET_GRADE_BREAKDOWN, GET_SHIFT_BREAKDOWN, GET_BATCH_BREAKDOWN, GET_MONTHLY_INCOME_EXPENSE } from "../constants/Type";
+import { GET_MONTHLY_STATS, GET_FILTERED_STATS, GET_GRADE_BREAKDOWN, GET_SHIFT_BREAKDOWN, GET_BATCH_BREAKDOWN, GET_MONTHLY_INCOME_EXPENSE, GET_YEARLY_EXPENSE_REPORT, GET_YEARLY_INCOME_REPORT, GET_SCHOOL_PRIMARY_REPORT } from "../constants/Type";
 import { BASE_URL } from "../constants/URL";
 
 export const getMonthlyStats = (tenant) => async (dispatch) => {
@@ -200,5 +200,60 @@ export const getMonthlyIncomeExpense = (filters = {}) => async (dispatch) => {
   }
 };
 
+export const getYearlyExpenseReport = ({ tenant, year }) => async (dispatch) => {
+  try {
+    if (!tenant || !year) {
+      toast.error("Tenant and year are required");
+      return;
+    }
+    dispatch({ type: GET_YEARLY_EXPENSE_REPORT, payload: undefined });
+    const queryParams = new URLSearchParams({ tenant, year });
+    const res = await axios.get(`${BASE_URL}/api/report/yearly-expense?${queryParams}`);
+    dispatch({
+      type: GET_YEARLY_EXPENSE_REPORT,
+      payload: res.data.data,
+    });
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Error fetching yearly expense report");
+    dispatch({ type: GET_YEARLY_EXPENSE_REPORT, payload: null });
+  }
+};
 
+export const getYearlyIncomeReport = ({ tenant, year }) => async (dispatch) => {
+  try {
+    if (!tenant || !year) {
+      toast.error("Tenant and year are required");
+      return;
+    }
+    dispatch({ type: GET_YEARLY_INCOME_REPORT, payload: undefined });
+    const queryParams = new URLSearchParams({ tenant, year });
+    const res = await axios.get(`${BASE_URL}/api/report/yearly-income?${queryParams}`);
+    dispatch({
+      type: GET_YEARLY_INCOME_REPORT,
+      payload: res.data.data,
+    });
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Error fetching yearly income report");
+    dispatch({ type: GET_YEARLY_INCOME_REPORT, payload: null });
+  }
+};
+
+export const getSchoolPrimaryReport = ({ month, year }) => async (dispatch) => {
+  try {
+    if (!month || !year) {
+      toast.error("Month and year are required");
+      return;
+    }
+    dispatch({ type: GET_SCHOOL_PRIMARY_REPORT, payload: undefined });
+    const queryParams = new URLSearchParams({ month, year });
+    const res = await axios.get(`${BASE_URL}/api/report/school-primary?${queryParams}`);
+    dispatch({
+      type: GET_SCHOOL_PRIMARY_REPORT,
+      payload: res.data.data,
+    });
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Error fetching school primary report");
+    dispatch({ type: GET_SCHOOL_PRIMARY_REPORT, payload: null });
+  }
+};
 

@@ -4,7 +4,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-
 .report {
   padding: 20px;
   font-size: 13px;
@@ -33,39 +32,6 @@
   font-size: 0.9rem;
   color: #6b7280;
   margin: 0;
-}
-
-.splitTable {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.tableSection {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.sectionTitle {
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 12px 16px;
-  margin: 0;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  color: #475569;
-}
-
-.revenueSubtitle {
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 10px 16px;
-  margin: 0;
-  background: #fafafa;
-  border-bottom: 1px solid #e5e7eb;
-  color: #6b7280;
 }
 
 .table {
@@ -101,54 +67,59 @@
   font-variant-numeric: tabular-nums;
 }
 
-.verticalAlign {
-  vertical-align: middle !important;
-}
-
-.subtotal {
+.totalRow td {
   font-weight: 600;
-}
-
-.subtotal td {
   background: #f8fafc !important;
   border-top: 2px solid #e2e8f0;
 }
 
-.emptyRow td {
-  padding: 6px 16px !important;
-  border-color: #e5e7eb !important;
+.grandTotal {
+  font-weight: 700;
+  background: #dbeafe !important;
+  color: #1e40af;
 }
 
-.totalsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
+.revenueSection {
+  margin-top: 24px;
   padding-top: 20px;
-  padding-bottom: 4px;
   border-top: 2px solid #e5e7eb;
 }
 
-.totalBlock {
+.revenueTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #475569;
+}
+
+.revenueList {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 12px 16px;
-  border-radius: 6px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  align-items: flex-end;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.totalLabel {
-  font-size: 0.85rem;
+.revenueRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  min-width: 200px;
+}
+
+.revenueTotal {
   font-weight: 600;
-  color: #6b7280;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
 }
 
-.totalValue {
-  font-size: 1.35rem;
+.finalTotal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
   font-weight: 700;
-  color: #111827;
-  letter-spacing: 0.02em;
+  font-size: 1.1rem;
+  padding: 12px 0;
 }
 
 @media print {
@@ -161,11 +132,6 @@
 
   .card :global(.card-body) {
     background: transparent !important;
-  }
-
-  .tableSection {
-    border: 1px solid #d1d5db;
-    box-shadow: none;
   }
 
   .report {
@@ -185,12 +151,6 @@
     font-size: 9pt;
   }
 
-  .splitTable {
-    gap: 16px;
-    margin-bottom: 16px;
-    page-break-inside: avoid;
-  }
-
   .table {
     font-size: 9pt;
   }
@@ -200,26 +160,15 @@
     padding: 4px 8px;
   }
 
-  .sectionTitle,
-  .revenueSubtitle {
-    font-size: 9pt;
+  .grandTotal {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  .totalsRow {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+  .revenueSection {
+    margin-top: 16px;
     padding-top: 12px;
-    padding-bottom: 0;
     page-break-inside: avoid;
-  }
-
-  .totalValue {
-    font-size: 11pt;
-  }
-
-  .no-print {
-    display: none !important;
   }
 
   @page {

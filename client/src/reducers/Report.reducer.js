@@ -1,4 +1,4 @@
-import { GET_MONTHLY_STATS, GET_FILTERED_STATS, GET_GRADE_BREAKDOWN, GET_SHIFT_BREAKDOWN, GET_BATCH_BREAKDOWN, GET_MONTHLY_INCOME_EXPENSE } from "../constants/Type";
+import { GET_MONTHLY_STATS, GET_FILTERED_STATS, GET_GRADE_BREAKDOWN, GET_SHIFT_BREAKDOWN, GET_BATCH_BREAKDOWN, GET_MONTHLY_INCOME_EXPENSE, GET_YEARLY_EXPENSE_REPORT, GET_YEARLY_INCOME_REPORT, GET_SCHOOL_PRIMARY_REPORT } from "../constants/Type";
 
 const initialState = {
   monthlyStats: [],
@@ -7,6 +7,9 @@ const initialState = {
   shiftBreakdown: null,
   batchBreakdown: null,
   monthlyIncomeExpense: null,
+  yearlyExpenseReport: null,
+  yearlyIncomeReport: null,
+  schoolPrimaryReport: null,
   loading: false,
 };
 
@@ -108,6 +111,24 @@ const reportReducer = (state = initialState, action) => {
         ...state,
         monthlyIncomeExpense: action.payload,
         loading: false,
+      };
+    case GET_YEARLY_EXPENSE_REPORT:
+      return {
+        ...state,
+        yearlyExpenseReport: action.payload === undefined ? state.yearlyExpenseReport : action.payload,
+        loading: action.payload === undefined,
+      };
+    case GET_YEARLY_INCOME_REPORT:
+      return {
+        ...state,
+        yearlyIncomeReport: action.payload === undefined ? state.yearlyIncomeReport : action.payload,
+        loading: action.payload === undefined,
+      };
+    case GET_SCHOOL_PRIMARY_REPORT:
+      return {
+        ...state,
+        schoolPrimaryReport: action.payload === undefined ? state.schoolPrimaryReport : action.payload,
+        loading: action.payload === undefined,
       };
     default:
       return state;
