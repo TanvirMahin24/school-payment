@@ -16,12 +16,15 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
     school = { income: 0, expense: 0, revenue: 0 },
     primary = { income: 0, expense: 0, revenue: 0 },
     combinedPaymentCount = 0,
+    combinedRevenue = 0,
   } = data;
 
   const schoolName = getTenantInstitutionName("school");
   const primaryName = getTenantInstitutionName("primary");
   const totalExpense = school.expense + primary.expense;
-  const finalTotal = school.income + primary.income + school.revenue + primary.revenue;
+  const totalIncome = school.income + primary.income + combinedRevenue;
+  const surplusOrDeficit = totalIncome - totalExpense;
+  const isSurplus = surplusOrDeficit >= 0;
 
   return (
     <Card className={styles.card}>
@@ -62,20 +65,24 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
         <div className={styles.revenueSection}>
           <div className={styles.revenueList}>
             <p className={styles.revenueRow}>
-              Total Revenue for {schoolName}: <span className={styles.amount}>{formatAmount(school.revenue)}</span>
+              Total Combined Revenue: <span className={styles.amount}>{formatAmount(combinedRevenue)}</span>
             </p>
-            <p className={styles.revenueRow}>
-              Total Revenue for {primaryName}: <span className={styles.amount}>{formatAmount(primary.revenue)}</span>
-            </p>
-          </div>
-          <div className={styles.totalExpense}>
-            Total Expense: <span className={styles.amount}>{formatAmount(totalExpense)}</span>
           </div>
         </div>
 
-        <h3 className={styles.finalTotal}>
-          Final Total: <span className={styles.amount}>{formatAmount(finalTotal)}</span>
-        </h3>
+        <div className={styles.totalsSection}>
+          <div className={styles.totalRow}>
+            <span className={styles.totalIncome}>
+              Total Income: <span className={styles.amount}>{formatAmount(totalIncome)}</span>
+            </span>
+            <span className={styles.totalExpense}>
+              Total Expense: <span className={styles.amount}>{formatAmount(totalExpense)}</span>
+            </span>
+          </div>
+          <p className={styles.surplusDeficit}>
+            {isSurplus ? "Surplus Fund" : "Deficit Fund"}: <span className={styles.amount}>{formatAmount(Math.abs(surplusOrDeficit))}</span>
+          </p>
+        </div>
       </Card.Body>
     </Card>
   );

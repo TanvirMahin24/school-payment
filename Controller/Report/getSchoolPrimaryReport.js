@@ -1,4 +1,4 @@
-const { Expense, Revenue, Payment } = require("../../Model");
+const { Expense, Revenue, Payment, CombinedRevenue } = require("../../Model");
 const { Sequelize, Op } = require("sequelize");
 
 const TENANTS = ["school", "primary"];
@@ -57,6 +57,13 @@ const getSchoolPrimaryReport = async (req, res) => {
       raw: true,
     });
     result.combinedPaymentCount = parseInt(countRows[0]?.count || 0, 10);
+
+    const combinedRevenueRows = await CombinedRevenue.findAll({
+      where: { month: monthStr, year: yearInt },
+      attributes: [[Sequelize.fn("SUM", Sequelize.col("amount")), "total"]],
+      raw: true,
+    });
+    result.combinedRevenue = parseFloat(combinedRevenueRows[0]?.total || 0);
 
     return res.status(200).json({
       message: "School and Primary report retrieved successfully",

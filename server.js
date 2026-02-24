@@ -15,6 +15,7 @@ const {
   Student,
   Expense,
   Revenue,
+  CombinedRevenue,
   ExpenseCategory,
   RevenueCategory,
 } = require("./Model");
@@ -64,7 +65,7 @@ const externalCors = cors({
 app.use(internalCors);
 
 app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms")
+  morgan(":method :url :status :res[content-length] - :response-time ms"),
 );
 app.use(passport.initialize());
 
@@ -102,6 +103,7 @@ app.use("/api/student", require("./Routes/Student"));
 app.use("/api/external", externalCors, require("./Routes/ExternalPayment"));
 app.use("/api/expense", require("./Routes/Expense"));
 app.use("/api/revenue", require("./Routes/Revenue"));
+app.use("/api/combined-revenue", require("./Routes/CombinedRevenue"));
 app.use("/api/expense-category", require("./Routes/ExpenseCategory"));
 app.use("/api/revenue-category", require("./Routes/RevenueCategory"));
 app.use("/api/report", require("./Routes/Report"));

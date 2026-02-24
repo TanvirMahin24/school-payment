@@ -15,6 +15,7 @@ import PaymentEntryPage from "./views/PaymentEntryPage/PaymentEntryPage.jsx";
 import PaymentEditPage from "./views/PaymentEditPage/PaymentEditPage.jsx";
 import ExpensePage from "./views/ExpensePage/ExpensePage.jsx";
 import RevenuePage from "./views/RevenuePage/RevenuePage.jsx";
+import CombinedRevenuePage from "./views/CombinedRevenuePage/CombinedRevenuePage.jsx";
 import CategoryManagementPage from "./views/CategoryManagementPage/CategoryManagementPage.jsx";
 import ReportsPage from "./views/ReportsPage/ReportsPage.jsx";
 import MonthlyIncomeExpensePage from "./views/MonthlyIncomeExpensePage/MonthlyIncomeExpensePage.jsx";
@@ -66,6 +67,7 @@ function App() {
               <Route path="management" element={<ManagementPage />} />
               <Route path="expenses" element={<ExpensePage />} />
               <Route path="revenues" element={<RevenuePage />} />
+              <Route path="combined-revenue" element={<CombinedRevenuePage />} />
               <Route path="categories" element={<CategoryManagementPage />} />
               <Route path="reports" element={<ReportsPage />} />
               <Route path="income-expense" element={<MonthlyIncomeExpensePage />} />

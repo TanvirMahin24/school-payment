@@ -8,6 +8,7 @@ import expenseReducer from "./Expense.reducer";
 import revenueReducer from "./Revenue.reducer";
 import categoryReducer from "./Category.reducer";
 import reportReducer from "./Report.reducer";
+import combinedRevenueReducer from "./CombinedRevenue.reducer";
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
   revenue: revenueReducer,
   category: categoryReducer,
   report: reportReducer,
+  combinedRevenue: combinedRevenueReducer,
 });
 
 export default reducer;

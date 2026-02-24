@@ -22,6 +22,7 @@ import {
   MdAssessment,
   MdSummarize,
   MdBusiness,
+  MdAccountBalance,
 } from "react-icons/md";
 
 const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
@@ -175,6 +176,14 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
                   <MdTrendingUp />
                 </span>
                 <span className={styles.nav__item_text}>Revenues</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/combined-revenue" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdAccountBalance />
+                </span>
+                <span className={styles.nav__item_text}>Combined Revenue</span>
               </NavLink>
             </div>
             <div className={styles.nav}>

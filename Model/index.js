@@ -8,6 +8,7 @@ const Expense = require("./Expense.model");
 const Revenue = require("./Revenue.model");
 const ExpenseCategory = require("./ExpenseCategory.model");
 const RevenueCategory = require("./RevenueCategory.model");
+const CombinedRevenue = require("./CombinedRevenue.model");
 
 module.exports = {
   User,
@@ -20,4 +21,5 @@ module.exports = {
   Revenue,
   ExpenseCategory,
   RevenueCategory,
+  CombinedRevenue,
 };
