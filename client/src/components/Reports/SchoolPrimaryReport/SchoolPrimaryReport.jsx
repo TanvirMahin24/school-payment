@@ -17,6 +17,7 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
     primary = { income: 0, expense: 0, revenue: 0 },
     combinedPaymentCount = 0,
     combinedRevenue = 0,
+    combinedRevenueEntries = [],
   } = data;
 
   const schoolName = getTenantInstitutionName("school");
@@ -64,23 +65,35 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
 
         <div className={styles.revenueSection}>
           <div className={styles.revenueList}>
-            <p className={styles.revenueRow}>
-              Total Combined Revenue: <span className={styles.amount}>{formatAmount(combinedRevenue)}</span>
-            </p>
+            {combinedRevenueEntries.map((entry) => (
+              <div key={entry.id} className={styles.revenueRow}>
+                <span>{entry.type || "-"}</span>
+                <span className={styles.amount}>
+                  {formatAmount(entry.amount)}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
         <div className={styles.totalsSection}>
           <div className={styles.totalRow}>
             <span className={styles.totalIncome}>
-              Total Income: <span className={styles.amount}>{formatAmount(totalIncome)}</span>
+              Total Income:{" "}
+              <span className={styles.amount}>{formatAmount(totalIncome)}</span>
             </span>
             <span className={styles.totalExpense}>
-              Total Expense: <span className={styles.amount}>{formatAmount(totalExpense)}</span>
+              Total Expense:{" "}
+              <span className={styles.amount}>
+                {formatAmount(totalExpense)}
+              </span>
             </span>
           </div>
           <p className={styles.surplusDeficit}>
-            {isSurplus ? "Surplus Fund" : "Deficit Fund"}: <span className={styles.amount}>{formatAmount(Math.abs(surplusOrDeficit))}</span>
+            {isSurplus ? "Surplus Fund" : "Deficit Fund"}:{" "}
+            <span className={styles.amount}>
+              {formatAmount(Math.abs(surplusOrDeficit))}
+            </span>
           </p>
         </div>
       </Card.Body>

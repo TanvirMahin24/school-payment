@@ -75,15 +75,35 @@
 
 .revenueList {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .revenueRow {
-  margin: 0 0 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.95rem;
 }
 
 .revenueRow .amount {
-  margin-left: 8px;
+  margin-left: 16px;
+  min-width: 6ch;
+}
+
+.revenueTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.revenueTotal .amount {
+  margin-left: 16px;
+  min-width: 6ch;
 }
 
 .totalsSection {
@@ -165,6 +185,10 @@
   .revenueSection {
     margin-top: 12px;
     padding-top: 12px;
+  }
+
+  .revenueTotal {
+    font-size: 9pt;
   }
 
   .totalsSection {

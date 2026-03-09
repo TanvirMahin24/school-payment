@@ -65,6 +65,13 @@ const getSchoolPrimaryReport = async (req, res) => {
     });
     result.combinedRevenue = parseFloat(combinedRevenueRows[0]?.total || 0);
 
+    const combinedRevenueEntries = await CombinedRevenue.findAll({
+      where: { month: monthStr, year: yearInt },
+      order: [["id", "DESC"]],
+      attributes: ["id", "amount", "type"],
+    });
+    result.combinedRevenueEntries = combinedRevenueEntries.map((r) => r.toJSON());
+
     return res.status(200).json({
       message: "School and Primary report retrieved successfully",
       data: result,

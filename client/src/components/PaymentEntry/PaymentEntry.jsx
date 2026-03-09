@@ -473,6 +473,22 @@ const PaymentEntry = ({
   const currentShift = currentShifts.find((s) => s.id === parseInt(shift));
   const currentBatches = currentShift?.batches || [];
 
+  // Column-wise sums for the table footer
+  const columnSums = rawList.reduce(
+    (acc, student) => {
+      const payment = studentPayments[student.id] || {};
+      const amount = parseFloat(payment.amount) || 0;
+      const extraAmount = parseFloat(payment.extra_amount) || 0;
+      const examFee = parseFloat(payment.exam_fee) || 0;
+      return {
+        amount: acc.amount + amount,
+        extra_amount: acc.extra_amount + extraAmount,
+        exam_fee: acc.exam_fee + examFee,
+      };
+    },
+    { amount: 0, extra_amount: 0, exam_fee: 0 }
+  );
+
   return (
     <Container className="pb-4">
       <Card bg="white" text="dark" className="shadow mb-4">
@@ -613,15 +629,15 @@ const PaymentEntry = ({
             <h5 className="mb-3">Bulk Fill (Apply to Selected Students)</h5>
             <Row>
               <Col md={2} className="py-2">
-                <label htmlFor="bulkAmount" className="d-block pb-1">
-                  Service Charge
+                <label htmlFor="bulkExamFee" className="d-block pb-1">
+                  Admission Fee/ Exam Fee
                 </label>
                 <Form.Control
                   type="text"
-                  id="bulkAmount"
+                  id="bulkExamFee"
                   placeholder="0.00"
-                  value={bulkAmount}
-                  onChange={(e) => setBulkAmount(e.target.value)}
+                  value={bulkExamFee}
+                  onChange={(e) => setBulkExamFee(e.target.value)}
                 />
               </Col>
               <Col md={2} className="py-2">
@@ -637,15 +653,15 @@ const PaymentEntry = ({
                 />
               </Col>
               <Col md={2} className="py-2">
-                <label htmlFor="bulkExamFee" className="d-block pb-1">
-                  Admission Fee/ Exam Fee
+                <label htmlFor="bulkAmount" className="d-block pb-1">
+                  Service Charge
                 </label>
                 <Form.Control
                   type="text"
-                  id="bulkExamFee"
+                  id="bulkAmount"
                   placeholder="0.00"
-                  value={bulkExamFee}
-                  onChange={(e) => setBulkExamFee(e.target.value)}
+                  value={bulkAmount}
+                  onChange={(e) => setBulkAmount(e.target.value)}
                 />
               </Col>
               <Col md={2} className="py-2">
@@ -766,13 +782,13 @@ const PaymentEntry = ({
                       <th style={{ width: "5%", padding: "0.5rem" }}>Roll</th>
                       <th style={{ width: "15%", padding: "0.5rem" }}>Name</th>
                       <th style={{ width: "10%", padding: "0.5rem" }}>
-                        Service Charge *
+                        Admission Fee/ Exam Fee
                       </th>
                       <th style={{ width: "10%", padding: "0.5rem" }}>
                         Session Charge/ Extra Cost
                       </th>
                       <th style={{ width: "10%", padding: "0.5rem" }}>
-                        Admission Fee/ Exam Fee
+                        Service Charge *
                       </th>
                       <th style={{ width: "22%", padding: "0.5rem" }}>Note</th>
                       <th
@@ -891,11 +907,11 @@ const PaymentEntry = ({
                               <Form.Control
                                 type="text"
                                 placeholder="0.00"
-                                value={payment.amount}
+                                value={payment.exam_fee}
                                 onChange={(e) =>
                                   updateStudentPayment(
                                     student.id,
-                                    "amount",
+                                    "exam_fee",
                                     e.target.value,
                                   )
                                 }
@@ -929,11 +945,11 @@ const PaymentEntry = ({
                               <Form.Control
                                 type="text"
                                 placeholder="0.00"
-                                value={payment.exam_fee}
+                                value={payment.amount}
                                 onChange={(e) =>
                                   updateStudentPayment(
                                     student.id,
-                                    "exam_fee",
+                                    "amount",
                                     e.target.value,
                                   )
                                 }
@@ -976,13 +992,36 @@ const PaymentEntry = ({
                         );
                       })}
                   </tbody>
+                  <tfoot>
+                    <tr className="table-secondary fw-bold">
+                      <td
+                        colSpan={3}
+                        style={{
+                          padding: "0.5rem",
+                          textAlign: "right",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        Total
+                      </td>
+                      <td style={{ padding: "0.5rem" }}>
+                        {columnSums.exam_fee.toFixed(2)}
+                      </td>
+                      <td style={{ padding: "0.5rem" }}>
+                        {columnSums.extra_amount.toFixed(2)}
+                      </td>
+                      <td style={{ padding: "0.5rem" }}>
+                        {columnSums.amount.toFixed(2)}
+                      </td>
+                      <td colSpan={2} style={{ padding: "0.5rem" }} />
+                    </tr>
+                  </tfoot>
                 </Table>
               </div>
               <div className="mt-3">
                 <small className="text-muted">
-                  * Required fields. Click "Submit All Payments" to create
-                  payments in the payment system. Fees" to create payments in
-                  the payment system.
+                  * Required fields. Click "Submit Selected" to create
+                  payments in the payment system.
                 </small>
               </div>
             </>
