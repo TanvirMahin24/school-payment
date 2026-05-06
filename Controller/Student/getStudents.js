@@ -25,6 +25,7 @@ const getStudents = async (req, res) => {
         where: {
           primaryId: parseInt(gradeId),
           del: false,
+          ...(tenant && { tenant }),
         },
       });
 
@@ -46,6 +47,7 @@ const getStudents = async (req, res) => {
         where: {
           primaryId: parseInt(shiftId),
           del: false,
+          ...(tenant && { tenant }),
         },
       });
 
@@ -66,6 +68,7 @@ const getStudents = async (req, res) => {
         where: {
           primaryId: parseInt(batchId),
           del: false,
+          ...(tenant && { tenant }),
         },
       });
 
@@ -115,7 +118,6 @@ const getStudents = async (req, res) => {
 };
 
 module.exports = { getStudents };
-
 
 
 

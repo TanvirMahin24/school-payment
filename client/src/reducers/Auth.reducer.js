@@ -12,6 +12,7 @@ const initialState = {
   isAuthenticated: false,
   name: "",
   email: "",
+  permissions: null,
   dashboard: null,
   loading: true,
 };
@@ -25,6 +26,8 @@ const authReducer = (state = initialState, action) => {
         isAuthenticated: true,
         loading: false,
         name: action.payload.name,
+        email: action.payload.email,
+        permissions: action.payload.permissions,
       };
     case DASHBOARD_DATA:
       return {
@@ -39,6 +42,7 @@ const authReducer = (state = initialState, action) => {
         loading: false,
         name: action.payload.name,
         email: action.payload.email,
+        permissions: action.payload.permissions,
       };
 
     case LOGIN_FAIL:
@@ -50,6 +54,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         name: "",
         email: "",
+        permissions: null,
         isAuthenticated: false,
         loading: false,
       };
@@ -60,4 +65,3 @@ const authReducer = (state = initialState, action) => {
 };
 
 export default authReducer;
-

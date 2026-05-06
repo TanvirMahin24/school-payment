@@ -20,7 +20,11 @@ const tenantReducer = (state = initialState, action) => {
     case SET_TENANT:
       // Persist to localStorage
       try {
-        localStorage.setItem("selectedTenant", action.payload);
+        if (action.payload) {
+          localStorage.setItem("selectedTenant", action.payload);
+        } else {
+          localStorage.removeItem("selectedTenant");
+        }
       } catch (error) {
         console.error("Error saving tenant to localStorage:", error);
       }
@@ -34,7 +38,6 @@ const tenantReducer = (state = initialState, action) => {
 };
 
 export default tenantReducer;
-
 
 
 

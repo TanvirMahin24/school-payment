@@ -1,4 +1,5 @@
 const { Payment } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
 
 const getPaymentDetails = async (req, res) => {
   try {
@@ -10,6 +11,12 @@ const getPaymentDetails = async (req, res) => {
 
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
+    }
+
+    if (!canAccessTenant(req.user, payment.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${payment.tenant} tenant`,
+      });
     }
 
     return res.status(200).json({
@@ -25,5 +32,4 @@ const getPaymentDetails = async (req, res) => {
 };
 
 module.exports = { getPaymentDetails };
-
 

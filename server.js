@@ -58,7 +58,7 @@ const externalCors = cors({
   origin: "*", // Allow all origins for external API
   credentials: false,
   allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
-  methods: ["POST"],
+  methods: ["GET", "POST", "PATCH"],
 });
 
 // Apply CORS middleware

@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const { Payment } = require("../../Model");
 const { Op } = require("sequelize");
+const { parseBoolean } = require("../../Utils/parseBoolean");
 
 const createBulkPayment = async (req, res) => {
   try {
@@ -43,6 +44,7 @@ const createBulkPayment = async (req, res) => {
           extra_amount,
           exam_fee,
           total_amount,
+          due,
           gradeId,
           shiftId,
           batchId,
@@ -91,6 +93,7 @@ const createBulkPayment = async (req, res) => {
             meta: meta || null,
             note: note || null,
             tenant: tenant || null,
+            due: parseBoolean(due, false),
           };
 
           // Update grade, shift, batch fields if provided
@@ -125,6 +128,7 @@ const createBulkPayment = async (req, res) => {
             extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
             exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
             total_amount: parseFloat(calculatedTotalAmount),
+            due: parseBoolean(due, false),
             gradeTenant: finalGradeId ? (tenant || "primary") : null,
             gradePrimaryId: finalGradeId ? parseInt(finalGradeId) : null,
             shiftTenant: finalShiftId ? (tenant || "primary") : null,
@@ -164,7 +168,6 @@ const createBulkPayment = async (req, res) => {
 };
 
 module.exports = { createBulkPayment };
-
 
 
 

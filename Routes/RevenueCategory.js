@@ -4,18 +4,21 @@ const { createRevenueCategory } = require("../Controller/RevenueCategory/createR
 const { getRevenueCategories } = require("../Controller/RevenueCategory/getRevenueCategories");
 const { updateRevenueCategory } = require("../Controller/RevenueCategory/updateRevenueCategory");
 const { deleteRevenueCategory } = require("../Controller/RevenueCategory/deleteRevenueCategory");
+const { requireTenantAccess } = require("../Utils/permissions");
 
 const router = express.Router();
 
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   createRevenueCategory
 );
 
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   getRevenueCategories
 );
 
@@ -32,7 +35,6 @@ router.delete(
 );
 
 module.exports = router;
-
 
 
 

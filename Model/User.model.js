@@ -26,8 +26,27 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  school: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  coaching: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  primary: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  can_view_combined_school_primary_report: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
 });
 
 module.exports = User;
-
 

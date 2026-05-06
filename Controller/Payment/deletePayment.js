@@ -1,4 +1,5 @@
 const { Payment } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
 
 const deletePayment = async (req, res) => {
   try {
@@ -7,6 +8,12 @@ const deletePayment = async (req, res) => {
     const payment = await Payment.findByPk(id);
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
+    }
+
+    if (!canAccessTenant(req.user, payment.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${payment.tenant} tenant`,
+      });
     }
 
     // Delete payment
@@ -25,5 +32,4 @@ const deletePayment = async (req, res) => {
 };
 
 module.exports = { deletePayment };
-
 

@@ -57,6 +57,8 @@ export const syncRecentStudents = (tenant) => async (dispatch) => {
 // GET SYNC STATUS
 export const getSyncStatus = (tenant) => async (dispatch) => {
   try {
+    if (!tenant) return null;
+
     const url = tenant
       ? `${BASE_URL}/api/student/sync-status?tenant=${tenant}`
       : `${BASE_URL}/api/student/sync-status`;
@@ -78,6 +80,11 @@ export const getSyncStatus = (tenant) => async (dispatch) => {
 // GET STUDENT LIST
 export const getStudentList = (year, gradeId, shiftId, batchId, tenant) => async (dispatch) => {
   try {
+    if (!tenant) {
+      toast.error("Please select a tenant");
+      return false;
+    }
+
     const queryParams = new URLSearchParams();
     if (year) queryParams.append("year", year);
     if (gradeId) queryParams.append("gradeId", gradeId);
@@ -86,9 +93,7 @@ export const getStudentList = (year, gradeId, shiftId, batchId, tenant) => async
     if (tenant) queryParams.append("tenant", tenant);
 
     const queryString = queryParams.toString();
-    const url = queryString
-      ? `${BASE_URL}/api/student?${queryString}`
-      : `${BASE_URL}/api/student`;
+    const url = `${BASE_URL}/api/student?${queryString}`;
 
     const res = await axios.get(url);
 
@@ -103,4 +108,3 @@ export const getStudentList = (year, gradeId, shiftId, batchId, tenant) => async
     return false;
   }
 };
-

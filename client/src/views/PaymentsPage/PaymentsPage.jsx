@@ -166,6 +166,11 @@ const PaymentsPage = ({
           if (bValue === -1) bValue = parseInt(b.month) || 0;
           return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
 
+        case "due":
+          aValue = a.due === true ? 1 : 0;
+          bValue = b.due === true ? 1 : 0;
+          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+
         case "class":
           const gradeA = grades?.find((g) => g.id === a.gradePrimaryId);
           const gradeB = grades?.find((g) => g.id === b.gradePrimaryId);
@@ -414,6 +419,12 @@ const PaymentsPage = ({
                     </th>
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSort("due")}
+                    >
+                      Due {getSortIcon("due")}
+                    </th>
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("class")}
                     >
                       Class {getSortIcon("class")}
@@ -455,6 +466,13 @@ const PaymentsPage = ({
                         ).toFixed(2)}
                       </td>
                       <td>{payment.month}</td>
+                      <td>
+                        {payment.due === true ? (
+                          <span className="badge bg-warning text-dark">Due</span>
+                        ) : (
+                          <span className="badge bg-secondary">No</span>
+                        )}
+                      </td>
                       <td>
                         {payment.gradePrimaryId
                           ? (() => {

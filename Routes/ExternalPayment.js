@@ -5,6 +5,10 @@ const { createExternalPayment } = require("../Controller/Payment/createExternalP
 const { createBulkExternalPayment } = require("../Controller/Payment/createBulkExternalPayment");
 const { getExternalPaymentsByStudents } = require("../Controller/Payment/getExternalPaymentsByStudents");
 const { getStudentMonthlyFees } = require("../Controller/Payment/getStudentMonthlyFees");
+const {
+  getDuePayments,
+  updatePaymentDue,
+} = require("../Controller/Payment/duePayment");
 
 const router = express.Router();
 
@@ -33,6 +37,7 @@ router.post(
     check("total_amount", "Total amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    check("due", "Due should be a boolean").optional().isBoolean(),
   ],
   createExternalPayment
 );
@@ -63,6 +68,9 @@ router.post(
     body("payments.*.total_amount", "Total amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    body("payments.*.due", "Due should be a boolean")
+      .optional()
+      .isBoolean(),
   ],
   createBulkExternalPayment
 );
@@ -74,6 +82,30 @@ router.get(
   getExternalPaymentsByStudents
 );
 
+router.get(
+  "/due-payments",
+  apiKeyAuth,
+  [
+    check("tenant", "Tenant is required").not().isEmpty().isString(),
+    check("year", "Year should be a valid year").isInt({ min: 2000, max: 2100 }),
+    check("month", "Month is required").not().isEmpty().trim(),
+    check("gradeId", "Grade ID should be a number").optional().isInt({ min: 1 }),
+    check("shiftId", "Shift ID should be a number").optional().isInt({ min: 1 }),
+    check("batchId", "Batch ID should be a number").optional().isInt({ min: 1 }),
+  ],
+  getDuePayments
+);
+
+router.patch(
+  "/payments/:id/due",
+  apiKeyAuth,
+  [
+    check("id", "Payment ID should be a number").isInt({ min: 1 }),
+    check("due", "Due should be a boolean").isBoolean(),
+  ],
+  updatePaymentDue
+);
+
 // External Payment API Route (3rd party access) - Get student monthly fees
 router.get(
   "/student-monthly-fees",
@@ -82,4 +114,3 @@ router.get(
 );
 
 module.exports = router;
-

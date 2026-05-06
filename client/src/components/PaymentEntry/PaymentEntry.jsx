@@ -87,6 +87,7 @@ const PaymentEntry = ({
                   ? parseFloat(existingPayment.exam_fee)
                   : "",
                 note: existingPayment.note || "",
+                due: existingPayment.due === true,
               };
               initialStatus[student.id] = "existing";
             } else {
@@ -96,6 +97,7 @@ const PaymentEntry = ({
                 extra_amount: "",
                 exam_fee: "",
                 note: "",
+                due: false,
               };
               initialStatus[student.id] = "new";
             }
@@ -114,6 +116,7 @@ const PaymentEntry = ({
               extra_amount: "",
               exam_fee: "",
               note: "",
+              due: false,
             };
           });
           setStudentPayments(initialPayments);
@@ -182,6 +185,7 @@ const PaymentEntry = ({
               ? parseFloat(existingPayment.exam_fee)
               : "",
             note: existingPayment.note || "",
+            due: existingPayment.due === true,
           };
           initialStatus[student.id] = "existing";
         } else {
@@ -191,6 +195,7 @@ const PaymentEntry = ({
             extra_amount: "",
             exam_fee: "",
             note: "",
+            due: false,
           };
           initialStatus[student.id] = "new";
         }
@@ -379,6 +384,7 @@ const PaymentEntry = ({
             ? parseFloat(payment.extra_amount)
             : 0,
           exam_fee: payment.exam_fee ? parseFloat(payment.exam_fee) : 0,
+          due: payment.due === true,
           month: month,
           year: year,
           tenant: selectedTenant,
@@ -456,6 +462,7 @@ const PaymentEntry = ({
           extra_amount: "",
           exam_fee: "",
           note: "",
+          due: false,
         };
       });
       setStudentPayments(clearedPayments);
@@ -790,7 +797,10 @@ const PaymentEntry = ({
                       <th style={{ width: "10%", padding: "0.5rem" }}>
                         Service Charge *
                       </th>
-                      <th style={{ width: "22%", padding: "0.5rem" }}>Note</th>
+                      <th style={{ width: "8%", padding: "0.5rem", textAlign: "center" }}>
+                        Due
+                      </th>
+                      <th style={{ width: "18%", padding: "0.5rem" }}>Note</th>
                       <th
                         style={{
                           width: "10%",
@@ -815,6 +825,7 @@ const PaymentEntry = ({
                           extra_amount: "",
                           exam_fee: "",
                           note: "",
+                          due: false,
                         };
                         const status = paymentStatus[student.id];
                         const getStatusBadge = () => {
@@ -960,6 +971,25 @@ const PaymentEntry = ({
                                 }}
                               />
                             </td>
+                            <td
+                              style={{
+                                padding: "0.5rem",
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <Form.Check
+                                type="switch"
+                                checked={payment.due === true}
+                                onChange={(e) =>
+                                  updateStudentPayment(
+                                    student.id,
+                                    "due",
+                                    e.target.checked,
+                                  )
+                                }
+                              />
+                            </td>
                             <td style={{ padding: "0.5rem" }}>
                               <Form.Control
                                 type="text"
@@ -1013,7 +1043,7 @@ const PaymentEntry = ({
                       <td style={{ padding: "0.5rem" }}>
                         {columnSums.amount.toFixed(2)}
                       </td>
-                      <td colSpan={2} style={{ padding: "0.5rem" }} />
+                      <td colSpan={3} style={{ padding: "0.5rem" }} />
                     </tr>
                   </tfoot>
                 </Table>

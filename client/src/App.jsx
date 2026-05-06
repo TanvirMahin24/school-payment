@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +11,7 @@ import DashboardPage from "./views/DashboardPage/DashboardPage.jsx";
 import LoginPage from "./views/LoginPage/LoginPage.jsx";
 import LandingPage from "./views/LandingPage/LandingPage.jsx";
 import PaymentsPage from "./views/PaymentsPage/PaymentsPage.jsx";
+import DuePaymentsPage from "./views/DuePaymentsPage/DuePaymentsPage.jsx";
 import ManagementPage from "./views/ManagementPage/ManagementPage.jsx";
 import PaymentEntryPage from "./views/PaymentEntryPage/PaymentEntryPage.jsx";
 import PaymentEditPage from "./views/PaymentEditPage/PaymentEditPage.jsx";
@@ -22,6 +24,17 @@ import MonthlyIncomeExpensePage from "./views/MonthlyIncomeExpensePage/MonthlyIn
 import YearlyExpenseReportPage from "./views/YearlyExpenseReportPage/YearlyExpenseReportPage.jsx";
 import YearlyIncomeReportPage from "./views/YearlyIncomeReportPage/YearlyIncomeReportPage.jsx";
 import SchoolPrimaryReportPage from "./views/SchoolPrimaryReportPage/SchoolPrimaryReportPage.jsx";
+import { canViewSchoolPrimaryReport } from "./constants/Tenant";
+
+const SchoolPrimaryReportRoute = () => {
+  const permissions = useSelector((state) => state.auth?.permissions);
+
+  if (!canViewSchoolPrimaryReport(permissions)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <SchoolPrimaryReportPage />;
+};
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -62,6 +75,7 @@ function App() {
               {/* PRIVATE ROUTES */}
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="payments" element={<PaymentsPage />} />
+              <Route path="due-payments" element={<DuePaymentsPage />} />
               <Route path="payments/:id/edit" element={<PaymentEditPage />} />
               <Route path="payment-entry" element={<PaymentEntryPage />} />
               <Route path="management" element={<ManagementPage />} />
@@ -73,7 +87,7 @@ function App() {
               <Route path="income-expense" element={<MonthlyIncomeExpensePage />} />
               <Route path="yearly-expense" element={<YearlyExpenseReportPage />} />
               <Route path="yearly-income" element={<YearlyIncomeReportPage />} />
-              <Route path="school-primary" element={<SchoolPrimaryReportPage />} />
+              <Route path="school-primary" element={<SchoolPrimaryReportRoute />} />
             </>
           </Route>
         </Routes>
@@ -83,4 +97,3 @@ function App() {
 }
 
 export default App;
-

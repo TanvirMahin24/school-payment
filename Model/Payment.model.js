@@ -50,6 +50,11 @@ const Payment = sequelize.define("payment", {
     type: Sequelize.DECIMAL(10, 2),
     allowNull: true,
   },
+  due: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   gradeTenant: {
     type: Sequelize.STRING,
     allowNull: true,

@@ -6,6 +6,8 @@ import {
   GET_PAYMENT_DETAILS,
   UPDATE_PAYMENT,
   GET_PAYMENT,
+  GET_DUE_PAYMENTS,
+  CLEAR_DUE_PAYMENT,
 } from "../constants/Type";
 import { BASE_URL } from "../constants/URL";
 
@@ -42,6 +44,58 @@ export const getPayments = (filters = {}) => async (dispatch) => {
     });
   } catch (err) {
     toast.error(err.response?.data?.message || "Error fetching payments");
+  }
+};
+
+// GET DUE PAYMENT LIST
+export const getDuePayments = (filters = {}) => async (dispatch) => {
+  try {
+    if (filters.clear) {
+      dispatch({
+        type: GET_DUE_PAYMENTS,
+        payload: [],
+      });
+      return;
+    }
+
+    const queryParams = new URLSearchParams();
+    if (filters.tenant) queryParams.append("tenant", filters.tenant);
+    if (filters.year) queryParams.append("year", filters.year);
+    if (filters.month) queryParams.append("month", filters.month);
+    if (filters.gradeId) queryParams.append("gradeId", filters.gradeId);
+    if (filters.shiftId) queryParams.append("shiftId", filters.shiftId);
+    if (filters.batchId) queryParams.append("batchId", filters.batchId);
+
+    const res = await axios.get(
+      `${BASE_URL}/api/payment/due?${queryParams.toString()}`
+    );
+
+    dispatch({
+      type: GET_DUE_PAYMENTS,
+      payload: res.data.data,
+    });
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Error fetching due payments");
+  }
+};
+
+// CLEAR PAYMENT DUE STATUS
+export const clearPaymentDue = (id) => async (dispatch) => {
+  try {
+    const res = await axios.patch(`${BASE_URL}/api/payment/${id}/due`, {
+      due: false,
+    });
+
+    dispatch({
+      type: CLEAR_DUE_PAYMENT,
+      payload: id,
+    });
+
+    toast.success(res.data?.message || "Due payment updated successfully");
+    return true;
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Error updating due payment");
+    return false;
   }
 };
 
@@ -219,5 +273,4 @@ export const createPayments = async (paymentsArray) => {
     };
   }
 };
-
 

@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 
 const jwt = require("jsonwebtoken");
 const { User } = require("../../Model");
+const { serializeUserPermissions } = require("../../Utils/permissions");
 
 const loginController = async (req, res) => {
   try {
@@ -38,6 +39,7 @@ const loginController = async (req, res) => {
           data: {
             name: newUser[0].dataValues.name,
             email: newUser[0].dataValues.email,
+            permissions: serializeUserPermissions(newUser[0]),
             token,
           },
         });
@@ -62,5 +64,4 @@ const loginController = async (req, res) => {
 };
 
 module.exports = { loginController };
-
 

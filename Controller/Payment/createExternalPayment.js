@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const { Payment } = require("../../Model");
+const { parseBoolean } = require("../../Utils/parseBoolean");
 
 const createExternalPayment = async (req, res) => {
   try {
@@ -25,6 +26,7 @@ const createExternalPayment = async (req, res) => {
       extra_amount,
       exam_fee,
       total_amount,
+      due,
     } = req.body;
 
     // Calculate total_amount if not provided
@@ -44,6 +46,7 @@ const createExternalPayment = async (req, res) => {
       extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
       exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
       total_amount: parseFloat(calculatedTotalAmount),
+      due: parseBoolean(due, false),
     });
 
     return res.status(201).json({
@@ -61,6 +64,7 @@ const createExternalPayment = async (req, res) => {
         extra_amount: newPayment.extra_amount,
         exam_fee: newPayment.exam_fee,
         total_amount: newPayment.total_amount,
+        due: newPayment.due,
         createdAt: newPayment.createdAt,
         updatedAt: newPayment.updatedAt,
       },
@@ -76,4 +80,3 @@ const createExternalPayment = async (req, res) => {
 };
 
 module.exports = { createExternalPayment };
-

@@ -6,6 +6,7 @@ const { registerController } = require("../Controller/Auth/Register");
 const { loginController } = require("../Controller/Auth/Login");
 const { authUserProfile } = require("../Controller/Auth/AuthUser");
 const { getDashboard } = require("../Controller/Auth/getDashboard");
+const { requireTenantAccess } = require("../Utils/permissions");
 
 const router = express.Router();
 
@@ -36,9 +37,9 @@ router.get(
 router.get(
   "/dashboard",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   getDashboard
 );
 
 module.exports = router;
-
 

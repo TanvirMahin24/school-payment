@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 const { Payment, Grade, Shift, Batch } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
+const { parseBoolean } = require("../../Utils/parseBoolean");
 
 const updatePayment = async (req, res) => {
   try {
@@ -21,6 +23,7 @@ const updatePayment = async (req, res) => {
       extra_amount,
       exam_fee,
       total_amount,
+      due,
       gradeId,
       shiftId,
       batchId,
@@ -32,6 +35,12 @@ const updatePayment = async (req, res) => {
     // Check if payment exists
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
+    }
+
+    if (!canAccessTenant(req.user, payment.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${payment.tenant} tenant`,
+      });
     }
 
     // Calculate total_amount if not provided
@@ -152,6 +161,7 @@ const updatePayment = async (req, res) => {
     if (year !== undefined) updateData.year = year ? parseInt(year) : null;
     if (meta !== undefined) updateData.meta = meta || null;
     if (note !== undefined) updateData.note = note || null;
+    if (due !== undefined) updateData.due = parseBoolean(due, false);
     if (extra_amount !== undefined) updateData.extra_amount = parseFloat(extra_amount) || 0;
     if (exam_fee !== undefined) updateData.exam_fee = parseFloat(exam_fee) || 0;
     if (total_amount !== undefined || amount !== undefined || extra_amount !== undefined || exam_fee !== undefined) {
@@ -174,5 +184,3 @@ const updatePayment = async (req, res) => {
 };
 
 module.exports = { updatePayment };
-
-

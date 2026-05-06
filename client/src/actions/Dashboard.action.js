@@ -7,11 +7,28 @@ import {
   LOGIN_FAIL,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
+  SET_TENANT,
   PROFILE_UPDATE,
   PROFILE_UPDATE_ERROR,
 } from "../constants/Type";
 import { BASE_URL } from "../constants/URL";
+import { getAllowedTenantList, getDefaultAllowedTenant } from "../constants/Tenant";
 import setAuthToken from "../utils/setAuthToken";
+
+const normalizeSelectedTenant = (dispatch, permissions) => {
+  if (!permissions) return;
+
+  const allowedTenants = getAllowedTenantList(permissions).map((tenant) => tenant.value);
+  const storedTenant = localStorage.getItem("selectedTenant");
+  const nextTenant = allowedTenants.includes(storedTenant)
+    ? storedTenant
+    : getDefaultAllowedTenant(permissions);
+
+  dispatch({
+    type: SET_TENANT,
+    payload: nextTenant,
+  });
+};
 
 //GET DASHBOARD DATA
 export const getDashboardData = (tenant, filters = {}) => async (dispatch) => {
@@ -56,12 +73,14 @@ export const login = (values) => async (dispatch) => {
       config
     );
     setAuthToken(res.data.data.token);
+    normalizeSelectedTenant(dispatch, res.data.data.permissions);
     dispatch({
       type: LOGIN_SUCCESS,
       payload: {
         token: res.data.data.token,
         name: res.data.data.name,
         email: res.data.data.email,
+        permissions: res.data.data.permissions,
       },
     });
     toast.success("Logged in successfully");
@@ -96,6 +115,7 @@ export const authUserAction = () => async (dispatch) => {
 
     const res = await axios.get(`${BASE_URL}/api/profile`);
 
+    normalizeSelectedTenant(dispatch, res.data.data.permissions);
     dispatch({
       type: AUTH_USER_LOAD,
       payload: res.data.data,
@@ -153,4 +173,3 @@ export const updateUserAction = (values) => async (dispatch) => {
     return false;
   }
 };
-

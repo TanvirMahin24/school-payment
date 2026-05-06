@@ -6,9 +6,9 @@ import { BASE_URL } from "../constants/URL";
 // GET GRADE LIST
 export const getGradeList = (tenant) => async (dispatch) => {
   try {
-    const url = tenant 
-      ? `${BASE_URL}/api/grade?tenant=${tenant}`
-      : `${BASE_URL}/api/grade`;
+    if (!tenant) return;
+
+    const url = `${BASE_URL}/api/grade?tenant=${tenant}`;
     
     const res = await axios.get(url);
     
@@ -42,4 +42,3 @@ export const syncGrades = (tenant) => async (dispatch) => {
     return { success: false, error: err.message };
   }
 };
-

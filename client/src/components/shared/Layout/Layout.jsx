@@ -7,7 +7,11 @@ import { connect } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../../../actions/Dashboard.action";
 import { setTenant } from "../../../actions/Tenant.action";
-import { TENANT_LIST, getTenantLabel } from "../../../constants/Tenant";
+import {
+  canViewSchoolPrimaryReport,
+  getAllowedTenantList,
+  getDefaultAllowedTenant,
+} from "../../../constants/Tenant";
 import styles from "./Layout.module.css";
 import {
   MdPayment,
@@ -23,21 +27,36 @@ import {
   MdSummarize,
   MdBusiness,
   MdAccountBalance,
+  MdPendingActions,
 } from "react-icons/md";
 
-const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
+const Layout = ({ logout, children, title, selectedTenant, permissions, setTenant }) => {
   const navigate = useNavigate();
   const [show, setShow] = React.useState(false);
+  const allowedTenants = React.useMemo(
+    () => getAllowedTenantList(permissions),
+    [permissions],
+  );
+  const canSeeSchoolPrimaryReport = canViewSchoolPrimaryReport(permissions);
 
   useEffect(() => {
-    // Initialize tenant from Redux store (which loads from localStorage)
-    if (!selectedTenant) {
-      const storedTenant = localStorage.getItem("selectedTenant");
-      if (storedTenant) {
-        setTenant(storedTenant);
-      }
+    if (!permissions) {
+      return;
     }
-  }, [selectedTenant, setTenant]);
+
+    const allowedTenantValues = allowedTenants.map((tenant) => tenant.value);
+    const storedTenant = localStorage.getItem("selectedTenant");
+    const tenantToValidate = selectedTenant || storedTenant;
+
+    if (tenantToValidate && allowedTenantValues.includes(tenantToValidate)) {
+      if (tenantToValidate !== selectedTenant) {
+        setTenant(tenantToValidate);
+      }
+      return;
+    }
+
+    setTenant(getDefaultAllowedTenant(permissions));
+  }, [allowedTenants, permissions, selectedTenant, setTenant]);
 
   const logoutHandeler = async () => {
     let check = await logout();
@@ -57,7 +76,7 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
           <div className={styles.tenant_header_content}>
             {/* <span className={styles.tenant_label}>Select Tenant:</span> */}
             <ButtonGroup className={styles.tenant_buttons}>
-              {TENANT_LIST.map((tenant) => (
+              {allowedTenants.map((tenant) => (
                 <Button
                   key={tenant.value}
                   variant={
@@ -138,20 +157,30 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
                 <span className={styles.nav__item_text}>Yearly Income Report</span>
               </NavLink>
             </div>
-            <div className={styles.nav}>
-              <NavLink to="/school-primary" className={styles.nav__item}>
-                <span className={styles.icon}>
-                  <MdBusiness />
-                </span>
-                <span className={styles.nav__item_text}>School and Primary Report</span>
-              </NavLink>
-            </div>
+            {canSeeSchoolPrimaryReport && (
+              <div className={styles.nav}>
+                <NavLink to="/school-primary" className={styles.nav__item}>
+                  <span className={styles.icon}>
+                    <MdBusiness />
+                  </span>
+                  <span className={styles.nav__item_text}>School and Primary Report</span>
+                </NavLink>
+              </div>
+            )}
             <div className={styles.nav}>
               <NavLink to="/payments" className={styles.nav__item}>
                 <span className={styles.icon}>
                   <MdPayment />
                 </span>
                 <span className={styles.nav__item_text}>Payments</span>
+              </NavLink>
+            </div>
+            <div className={styles.nav}>
+              <NavLink to="/due-payments" className={styles.nav__item}>
+                <span className={styles.icon}>
+                  <MdPendingActions />
+                </span>
+                <span className={styles.nav__item_text}>Due Payments</span>
               </NavLink>
             </div>
             <div className={styles.nav}>
@@ -237,6 +266,7 @@ const Layout = ({ logout, children, title, selectedTenant, setTenant }) => {
 
 const mapStateToProps = (state) => ({
   selectedTenant: state.tenant?.selectedTenant,
+  permissions: state.auth?.permissions,
 });
 
 export default connect(mapStateToProps, { logout, setTenant })(Layout);

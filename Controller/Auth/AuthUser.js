@@ -1,3 +1,5 @@
+const { serializeUserPermissions } = require("../../Utils/permissions");
+
 const authUserProfile = async (req, res) => {
   try {
     if (req.user) {
@@ -6,6 +8,7 @@ const authUserProfile = async (req, res) => {
         data: {
           name: req.user.name,
           email: req.user.email,
+          permissions: serializeUserPermissions(req.user),
         },
       });
     }
@@ -18,5 +21,4 @@ const authUserProfile = async (req, res) => {
 };
 
 module.exports = { authUserProfile };
-
 

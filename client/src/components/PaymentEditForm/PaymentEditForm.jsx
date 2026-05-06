@@ -13,6 +13,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
     exam_fee: "",
     month: months[new Date().getMonth()],
     year: new Date().getFullYear(),
+    due: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -25,6 +26,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
         exam_fee: payment.exam_fee?.toString() || "0",
         month: payment.month || months[new Date().getMonth()],
         year: payment.year || new Date().getFullYear(),
+        due: payment.due === true,
       });
     }
   }, [payment]);
@@ -70,6 +72,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
       exam_fee: formData.exam_fee ? parseFloat(formData.exam_fee) : 0,
       month: formData.month,
       year: formData.year,
+      due: formData.due === true,
       userId: payment.userId, // Keep existing userId
       tenant: selectedTenant || payment.tenant,
     };
@@ -224,7 +227,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
             </Col>
           </Row>
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Year *</Form.Label>
                 <Form.Select
@@ -241,7 +244,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Month *</Form.Label>
                 <Form.Select
@@ -256,6 +259,24 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
                     </option>
                   ))}
                 </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4} className="d-flex align-items-end">
+              <Form.Group className="mb-3">
+                <Form.Check
+                  type="switch"
+                  id="payment-due-switch"
+                  name="due"
+                  label="Due"
+                  checked={formData.due}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      due: e.target.checked,
+                    });
+                    setError("");
+                  }}
+                />
               </Form.Group>
             </Col>
           </Row>

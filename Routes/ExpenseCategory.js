@@ -4,18 +4,21 @@ const { createExpenseCategory } = require("../Controller/ExpenseCategory/createE
 const { getExpenseCategories } = require("../Controller/ExpenseCategory/getExpenseCategories");
 const { updateExpenseCategory } = require("../Controller/ExpenseCategory/updateExpenseCategory");
 const { deleteExpenseCategory } = require("../Controller/ExpenseCategory/deleteExpenseCategory");
+const { requireTenantAccess } = require("../Utils/permissions");
 
 const router = express.Router();
 
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   createExpenseCategory
 );
 
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   getExpenseCategories
 );
 
@@ -32,7 +35,6 @@ router.delete(
 );
 
 module.exports = router;
-
 
 
 

@@ -1,4 +1,5 @@
 const { ExpenseCategory, Expense } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
 
 const deleteExpenseCategory = async (req, res) => {
   try {
@@ -6,6 +7,12 @@ const deleteExpenseCategory = async (req, res) => {
     const category = await ExpenseCategory.findByPk(id);
     if (!category) {
       return res.status(404).json({ message: "Expense category not found" });
+    }
+
+    if (!canAccessTenant(req.user, category.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${category.tenant} tenant`,
+      });
     }
 
     // Check if category is used in any expenses
@@ -36,7 +43,6 @@ const deleteExpenseCategory = async (req, res) => {
 };
 
 module.exports = { deleteExpenseCategory };
-
 
 
 

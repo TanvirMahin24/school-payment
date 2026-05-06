@@ -1,4 +1,5 @@
 const { RevenueCategory } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
 
 const updateRevenueCategory = async (req, res) => {
   try {
@@ -8,6 +9,12 @@ const updateRevenueCategory = async (req, res) => {
     const category = await RevenueCategory.findByPk(id);
     if (!category) {
       return res.status(404).json({ message: "Revenue category not found" });
+    }
+
+    if (!canAccessTenant(req.user, category.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${category.tenant} tenant`,
+      });
     }
 
     // Check if new name conflicts with existing category for same tenant
@@ -45,7 +52,6 @@ const updateRevenueCategory = async (req, res) => {
 };
 
 module.exports = { updateRevenueCategory };
-
 
 
 

@@ -4,10 +4,13 @@ import {
   GET_PAYMENT_DETAILS,
   UPDATE_PAYMENT,
   GET_PAYMENT,
+  GET_DUE_PAYMENTS,
+  CLEAR_DUE_PAYMENT,
 } from "../constants/Type";
 
 const initialState = {
   payments: [],
+  duePayments: [],
   payment: null,
   loading: false,
 };
@@ -18,6 +21,12 @@ const paymentReducer = (state = initialState, action) => {
       return {
         ...state,
         payments: action.payload,
+        loading: false,
+      };
+    case GET_DUE_PAYMENTS:
+      return {
+        ...state,
+        duePayments: action.payload,
         loading: false,
       };
     case GET_PAYMENT_DETAILS:
@@ -48,11 +57,18 @@ const paymentReducer = (state = initialState, action) => {
         ),
         loading: false,
       };
+    case CLEAR_DUE_PAYMENT:
+      return {
+        ...state,
+        duePayments: state.duePayments.filter(
+          (payment) => payment.id !== action.payload
+        ),
+        loading: false,
+      };
     default:
       return state;
   }
 };
 
 export default paymentReducer;
-
 

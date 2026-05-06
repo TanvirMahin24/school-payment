@@ -1,4 +1,5 @@
 const { Revenue } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
 
 const deleteRevenue = async (req, res) => {
   try {
@@ -6,6 +7,12 @@ const deleteRevenue = async (req, res) => {
     const revenue = await Revenue.findByPk(id);
     if (!revenue) {
       return res.status(404).json({ message: "Revenue not found" });
+    }
+
+    if (!canAccessTenant(req.user, revenue.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${revenue.tenant} tenant`,
+      });
     }
 
     await revenue.destroy();
@@ -23,7 +30,6 @@ const deleteRevenue = async (req, res) => {
 };
 
 module.exports = { deleteRevenue };
-
 
 
 

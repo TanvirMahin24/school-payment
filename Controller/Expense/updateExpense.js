@@ -1,4 +1,5 @@
 const { Expense, ExpenseCategory } = require("../../Model");
+const { canAccessTenant } = require("../../Utils/permissions");
 
 const updateExpense = async (req, res) => {
   try {
@@ -8,6 +9,12 @@ const updateExpense = async (req, res) => {
     const expense = await Expense.findByPk(id);
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
+    }
+
+    if (!canAccessTenant(req.user, expense.tenant)) {
+      return res.status(403).json({
+        message: `You do not have permission to access ${expense.tenant} tenant`,
+      });
     }
 
     // Validate category if provided
@@ -59,7 +66,6 @@ const updateExpense = async (req, res) => {
 };
 
 module.exports = { updateExpense };
-
 
 
 

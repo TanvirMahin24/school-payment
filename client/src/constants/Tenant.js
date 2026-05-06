@@ -29,6 +29,19 @@ export const TENANT_LIST = [
 
 export const DEFAULT_TENANT = TENANTS.COACHING;
 
+export const getAllowedTenantList = (permissions) => {
+  if (!permissions) return TENANT_LIST;
+  return TENANT_LIST.filter((tenant) => permissions[tenant.value] === true);
+};
+
+export const getDefaultAllowedTenant = (permissions) => {
+  return getAllowedTenantList(permissions)[0]?.value || null;
+};
+
+export const canViewSchoolPrimaryReport = (permissions) => {
+  return permissions?.can_view_combined_school_primary_report === true;
+};
+
 /**
  * Get tenant label by value
  * @param {string} tenant - Tenant value

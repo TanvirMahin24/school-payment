@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const { Payment, Grade, Shift, Batch } = require("../../Model");
+const { parseBoolean } = require("../../Utils/parseBoolean");
 
 const createPayment = async (req, res) => {
   try {
@@ -21,6 +22,7 @@ const createPayment = async (req, res) => {
       extra_amount,
       exam_fee,
       total_amount,
+      due,
       gradeId,
       shiftId,
       batchId,
@@ -143,6 +145,7 @@ const createPayment = async (req, res) => {
       extra_amount: extra_amount ? parseFloat(extra_amount) : 0,
       exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
       total_amount: parseFloat(calculatedTotalAmount),
+      due: parseBoolean(due, false),
       gradeTenant,
       gradePrimaryId,
       shiftTenant,
@@ -164,5 +167,4 @@ const createPayment = async (req, res) => {
 };
 
 module.exports = { createPayment };
-
 

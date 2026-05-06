@@ -11,6 +11,11 @@ const {
   getPaymentDetails,
 } = require("../Controller/Payment/getPaymentDetails");
 const { getPaymentsByStudents } = require("../Controller/Payment/getPaymentsByStudents");
+const {
+  getDuePayments,
+  updatePaymentDue,
+} = require("../Controller/Payment/duePayment");
+const { requireTenantAccess } = require("../Utils/permissions");
 
 const router = express.Router();
 
@@ -19,6 +24,7 @@ const router = express.Router();
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   [
     check("amount", "Amount is required and must be a number")
       .not()
@@ -42,6 +48,7 @@ router.post(
     check("total_amount", "Total amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    check("due", "Due should be a boolean").optional().isBoolean(),
     check("gradeId", "Grade ID should be a number")
       .optional()
       .isInt({ min: 1 }),
@@ -58,6 +65,7 @@ router.post(
 router.post(
   "/create-bulk",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   [
     check("payments", "Payments array is required").isArray({ min: 1 }),
     check("payments.*.amount", "Amount is required and must be a number")
@@ -72,16 +80,45 @@ router.post(
     check("payments.*.exam_fee", "Exam fee should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    check("payments.*.due", "Due should be a boolean")
+      .optional()
+      .isBoolean(),
   ],
   createBulkPayment
 );
 
-router.get("/", passport.authenticate("jwt", { session: false }), getPayments);
+router.get("/", passport.authenticate("jwt", { session: false }), requireTenantAccess, getPayments);
+
+router.get(
+  "/due",
+  passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
+  [
+    check("tenant", "Tenant is required").not().isEmpty().isString(),
+    check("year", "Year should be a valid year").isInt({ min: 2000, max: 2100 }),
+    check("month", "Month is required").not().isEmpty().trim(),
+    check("gradeId", "Grade ID should be a number").optional().isInt({ min: 1 }),
+    check("shiftId", "Shift ID should be a number").optional().isInt({ min: 1 }),
+    check("batchId", "Batch ID should be a number").optional().isInt({ min: 1 }),
+  ],
+  getDuePayments
+);
 
 router.get(
   "/by-students",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   getPaymentsByStudents
+);
+
+router.patch(
+  "/:id/due",
+  passport.authenticate("jwt", { session: false }),
+  [
+    check("id", "Payment ID should be a number").isInt({ min: 1 }),
+    check("due", "Due should be a boolean").isBoolean(),
+  ],
+  updatePaymentDue
 );
 
 router.get(
@@ -99,6 +136,7 @@ router.delete(
 router.patch(
   "/:id",
   passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
   [
     check("amount", "Amount is required and must be a number")
       .not()
@@ -122,6 +160,7 @@ router.patch(
     check("total_amount", "Total amount should be a number")
       .optional()
       .isFloat({ min: 0 }),
+    check("due", "Due should be a boolean").optional().isBoolean(),
     check("gradeId", "Grade ID should be a number")
       .optional()
       .isInt({ min: 1 }),

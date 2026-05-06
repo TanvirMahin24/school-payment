@@ -24,14 +24,10 @@ const ManagementPage = ({
     syncGrades: false,
   });
 
-  // Fetch sync status on mount and when tenant changes
   useEffect(() => {
-    getSyncStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    getSyncStatus(selectedTenant);
+    if (selectedTenant) {
+      getSyncStatus(selectedTenant);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTenant]);
 
@@ -270,5 +266,4 @@ export default connect(mapStateToProps, {
   getSyncStatus,
   syncGrades,
 })(ManagementPage);
-
 

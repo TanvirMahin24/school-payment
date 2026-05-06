@@ -22,8 +22,10 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
 
   const schoolName = getTenantInstitutionName("school");
   const primaryName = getTenantInstitutionName("primary");
+  const schoolIncome = (school.income ?? 0) + (school.revenue ?? 0);
+  const primaryIncome = (primary.income ?? 0) + (primary.revenue ?? 0);
   const totalExpense = school.expense + primary.expense;
-  const totalIncome = school.income + primary.income + combinedRevenue;
+  const totalIncome = schoolIncome + primaryIncome + combinedRevenue;
   const surplusOrDeficit = totalIncome - totalExpense;
   const isSurplus = surplusOrDeficit >= 0;
 
@@ -49,7 +51,7 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
           <tbody>
             <tr>
               <td>{schoolName}</td>
-              <td className={styles.amount}>{formatAmount(school.income)}</td>
+              <td className={styles.amount}>{formatAmount(schoolIncome)}</td>
               <td className={styles.amount}>{formatAmount(school.expense)}</td>
               <td rowSpan={2} className={styles.amount}>
                 {combinedPaymentCount}
@@ -57,7 +59,7 @@ const SchoolPrimaryReport = ({ data, month, year }) => {
             </tr>
             <tr>
               <td>{primaryName}</td>
-              <td className={styles.amount}>{formatAmount(primary.income)}</td>
+              <td className={styles.amount}>{formatAmount(primaryIncome)}</td>
               <td className={styles.amount}>{formatAmount(primary.expense)}</td>
             </tr>
           </tbody>
