@@ -60,7 +60,11 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
     const url =
       type === "expense"
         ? `${BASE_URL}/api/expense`
-        : `${BASE_URL}/api/revenue`;
+        : type === "due"
+          ? `${BASE_URL}/api/payment/due`
+          : type === "due"
+            ? `${BASE_URL}/api/payment/due`
+            : `${BASE_URL}/api/revenue`;
     const params = { tenant: selectedTenant };
     if (variant === "monthly" && month && year) {
       params.month = month;
@@ -86,6 +90,8 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
         payments: data.thisYearPayments || 0,
         revenueAmount: data.thisYearRevenueAmount || "0.00",
         revenues: data.thisYearRevenues || 0,
+        dueAmount: data.thisYearDueAmount || "0.00",
+        duePayments: data.thisYearDuePayments || 0,
         expenseAmount: data.thisYearExpenseAmount || "0.00",
         expenses: data.thisYearExpenses || 0,
         profit: data.thisYearProfit || "0.00",
@@ -100,6 +106,8 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
       payments: data.thisMonthPayments || 0,
       revenueAmount: data.thisMonthRevenueAmount || "0.00",
       revenues: data.thisMonthRevenues || 0,
+      dueAmount: data.thisMonthDueAmount || "0.00",
+      duePayments: data.thisMonthDuePayments || 0,
       expenseAmount: data.thisMonthExpenseAmount || "0.00",
       expenses: data.thisMonthExpenses || 0,
       profit: data.thisMonthProfit || "0.00",
@@ -276,17 +284,40 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                         <Col md={2} className="py-2">
                           <div className="text-center">
                             <div className="text-muted small">
-                              {isAllMonths ? "Total Profit" : "Profit"}
+                              {isAllMonths ? "Total Due Amount" : "Due Amount"}
                             </div>
-                            <div
-                              className={`h4 mb-0 ${parseFloat(displayData.profit || 0) >= 0 ? "text-success" : "text-danger"}`}
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              className="h4 mb-0 text-warning"
+                              style={{
+                                cursor: "pointer",
+                                textDecoration: "underline",
+                              }}
+                              onClick={() =>
+                                handleOpenModal(
+                                  "due",
+                                  displayData.variant,
+                                  isAllMonths ? null : selectedMonth,
+                                  selectedYear,
+                                  displayData.periodLabel,
+                                )
+                              }
+                              onKeyDown={(e) =>
+                                e.key === "Enter" &&
+                                handleOpenModal(
+                                  "due",
+                                  displayData.variant,
+                                  isAllMonths ? null : selectedMonth,
+                                  selectedYear,
+                                  displayData.periodLabel,
+                                )
+                              }
                             >
-                              {displayData.profit}
-                            </div>
+                              {displayData.dueAmount}
+                            </span>
                             <div className="text-muted small">
-                              {isAllMonths
-                                ? "Year-to-date"
-                                : "Revenue - Expenses"}
+                              {displayData.duePayments} entries
                             </div>
                           </div>
                         </Col>

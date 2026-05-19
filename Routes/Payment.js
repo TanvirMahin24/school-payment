@@ -49,6 +49,9 @@ router.post(
       .optional()
       .isFloat({ min: 0 }),
     check("due", "Due should be a boolean").optional().isBoolean(),
+    check("due_amount", "Due amount should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
     check("gradeId", "Grade ID should be a number")
       .optional()
       .isInt({ min: 1 }),
@@ -96,7 +99,7 @@ router.get(
   [
     check("tenant", "Tenant is required").not().isEmpty().isString(),
     check("year", "Year should be a valid year").isInt({ min: 2000, max: 2100 }),
-    check("month", "Month is required").not().isEmpty().trim(),
+    check("month", "Month should be a string").optional().not().isEmpty().trim(),
     check("gradeId", "Grade ID should be a number").optional().isInt({ min: 1 }),
     check("shiftId", "Shift ID should be a number").optional().isInt({ min: 1 }),
     check("batchId", "Batch ID should be a number").optional().isInt({ min: 1 }),
@@ -161,6 +164,9 @@ router.patch(
       .optional()
       .isFloat({ min: 0 }),
     check("due", "Due should be a boolean").optional().isBoolean(),
+    check("due_amount", "Due amount should be a number")
+      .optional()
+      .isFloat({ min: 0 }),
     check("gradeId", "Grade ID should be a number")
       .optional()
       .isInt({ min: 1 }),

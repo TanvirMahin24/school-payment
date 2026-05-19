@@ -35,7 +35,9 @@ const DuePaymentsPage = ({
 
   const currentGrade = grades?.find((item) => item.id === parseInt(grade));
   const currentShifts = currentGrade?.shifts || [];
-  const currentShift = currentShifts.find((item) => item.id === parseInt(shift));
+  const currentShift = currentShifts.find(
+    (item) => item.id === parseInt(shift),
+  );
   const currentBatches = currentShift?.batches || [];
 
   const gradeMap = useMemo(() => {
@@ -52,19 +54,21 @@ const DuePaymentsPage = ({
   const getShiftName = (payment) => {
     const gradeItem = gradeMap.get(payment.gradePrimaryId);
     return (
-      gradeItem?.shifts?.find((shiftItem) => shiftItem.id === payment.shiftPrimaryId)
-        ?.name || "-"
+      gradeItem?.shifts?.find(
+        (shiftItem) => shiftItem.id === payment.shiftPrimaryId,
+      )?.name || "-"
     );
   };
 
   const getBatchName = (payment) => {
     const gradeItem = gradeMap.get(payment.gradePrimaryId);
     const shiftItem = gradeItem?.shifts?.find(
-      (item) => item.id === payment.shiftPrimaryId
+      (item) => item.id === payment.shiftPrimaryId,
     );
     return (
-      shiftItem?.batches?.find((batchItem) => batchItem.id === payment.batchPrimaryId)
-        ?.name || "-"
+      shiftItem?.batches?.find(
+        (batchItem) => batchItem.id === payment.batchPrimaryId,
+      )?.name || "-"
     );
   };
 
@@ -87,6 +91,21 @@ const DuePaymentsPage = ({
   const handleClearDue = async () => {
     if (!paymentToClear) return;
     await clearPaymentDue(paymentToClear.id);
+  };
+
+  const totalDue = (payments) => {
+    let total = 0;
+    if (payments && payments.length > 0) {
+      payments.map((item) => {
+        if (!item.due_amount) {
+          return item;
+        }
+        total += item?.due_amount ? parseFloat(item?.due_amount) : 0;
+        return item;
+      });
+    }
+
+    return total.toFixed(2);
   };
 
   return (
@@ -154,7 +173,11 @@ const DuePaymentsPage = ({
               </Form.Select>
             </Col>
             <Col md={3} className="d-flex align-items-end py-3">
-              <Button onClick={handleSelect} variant="primary" className="w-100">
+              <Button
+                onClick={handleSelect}
+                variant="primary"
+                className="w-100"
+              >
                 Select
               </Button>
             </Col>
@@ -206,54 +229,71 @@ const DuePaymentsPage = ({
       </Card>
 
       {duePayments && duePayments.length > 0 ? (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Roll</th>
-              <th>Student Name</th>
-              <th>Phone</th>
-              <th>Month</th>
-              <th>Year</th>
-              <th>Service Charge</th>
-              <th>Extra/Session</th>
-              <th>Exam/Admission</th>
-              <th>Total</th>
-              <th>Class</th>
-              <th>Shift</th>
-              <th>Batch</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {duePayments.map((payment) => (
-              <tr key={payment.id}>
-                <td>{payment.student?.uid || "-"}</td>
-                <td>{payment.student?.name || "-"}</td>
-                <td>{payment.student?.phone || "-"}</td>
-                <td>{payment.month}</td>
-                <td>{payment.year || "-"}</td>
-                <td>{parseFloat(payment.amount || 0).toFixed(2)}</td>
-                <td>{parseFloat(payment.extra_amount || 0).toFixed(2)}</td>
-                <td>{parseFloat(payment.exam_fee || 0).toFixed(2)}</td>
-                <td>
-                  {parseFloat(payment.total_amount || payment.amount || 0).toFixed(2)}
-                </td>
-                <td>{getGradeName(payment)}</td>
-                <td>{getShiftName(payment)}</td>
-                <td>{getBatchName(payment)}</td>
-                <td>
-                  <Button
-                    variant="outline-success"
-                    size="sm"
-                    onClick={() => setPaymentToClear(payment)}
-                  >
-                    Clear Due
-                  </Button>
-                </td>
+        <>
+          <Table striped bordered hover responsive width={"100%"}>
+            <thead>
+              <tr>
+                <th>Roll</th>
+                <th>Student Name</th>
+                <th>Phone</th>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Service Charge</th>
+                <th>Extra/Session</th>
+                <th>Exam/Admission</th>
+                <th>Total</th>
+                <th>Due Amount</th>
+                <th>Class</th>
+                <th>Shift</th>
+                <th>Batch</th>
+                <th>Note</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody className="table-responsive">
+              {duePayments.map((payment) => (
+                <tr key={payment.id}>
+                  <td>{payment.student?.uid || "-"}</td>
+                  <td>{payment.student?.name || "-"}</td>
+                  <td>{payment.student?.phone || "-"}</td>
+                  <td>{payment.month}</td>
+                  <td>{payment.year || "-"}</td>
+                  <td>{parseFloat(payment.amount || 0).toFixed(2)}</td>
+                  <td>{parseFloat(payment.extra_amount || 0).toFixed(2)}</td>
+                  <td>{parseFloat(payment.exam_fee || 0).toFixed(2)}</td>
+                  <td>
+                    {parseFloat(
+                      payment.total_amount || payment.amount || 0,
+                    ).toFixed(2)}
+                  </td>
+                  <td className="fw-bold text-danger">
+                    {parseFloat(
+                      payment.due_amount || payment.due_amount || 0,
+                    ).toFixed(2)}
+                  </td>
+                  <td>{getGradeName(payment)}</td>
+                  <td>{getShiftName(payment)}</td>
+                  <td>{getBatchName(payment)}</td>
+                  <td>{payment.note}</td>
+                  <td>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => setPaymentToClear(payment)}
+                    >
+                      Clear Due
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <div className="container pt-4">
+            <h4 className="text-center text-danger fw-bold">
+              Total Due Amount: {totalDue(duePayments)}
+            </h4>
+          </div>
+        </>
       ) : (
         <div className="text-center py-5">
           <p className="mb-0">

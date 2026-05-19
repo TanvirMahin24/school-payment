@@ -88,6 +88,9 @@ const PaymentEntry = ({
                   : "",
                 note: existingPayment.note || "",
                 due: existingPayment.due === true,
+                due_amount: existingPayment.due_amount
+                  ? parseFloat(existingPayment.due_amount)
+                  : null,
               };
               initialStatus[student.id] = "existing";
             } else {
@@ -98,6 +101,7 @@ const PaymentEntry = ({
                 exam_fee: "",
                 note: "",
                 due: false,
+                due_amount: null,
               };
               initialStatus[student.id] = "new";
             }
@@ -117,6 +121,7 @@ const PaymentEntry = ({
               exam_fee: "",
               note: "",
               due: false,
+              due_amount: null,
             };
           });
           setStudentPayments(initialPayments);
@@ -186,6 +191,9 @@ const PaymentEntry = ({
               : "",
             note: existingPayment.note || "",
             due: existingPayment.due === true,
+            due_amount: existingPayment.due_amount
+              ? parseFloat(existingPayment.due_amount)
+              : null,
           };
           initialStatus[student.id] = "existing";
         } else {
@@ -196,6 +204,7 @@ const PaymentEntry = ({
             exam_fee: "",
             note: "",
             due: false,
+            due_amount: null,
           };
           initialStatus[student.id] = "new";
         }
@@ -385,6 +394,10 @@ const PaymentEntry = ({
             : 0,
           exam_fee: payment.exam_fee ? parseFloat(payment.exam_fee) : 0,
           due: payment.due === true,
+          due_amount:
+            payment.due && payment.due_amount
+              ? parseFloat(payment.due_amount)
+              : null,
           month: month,
           year: year,
           tenant: selectedTenant,
@@ -463,6 +476,7 @@ const PaymentEntry = ({
           exam_fee: "",
           note: "",
           due: false,
+          due_amount: null,
         };
       });
       setStudentPayments(clearedPayments);
@@ -487,13 +501,15 @@ const PaymentEntry = ({
       const amount = parseFloat(payment.amount) || 0;
       const extraAmount = parseFloat(payment.extra_amount) || 0;
       const examFee = parseFloat(payment.exam_fee) || 0;
+      const dueAmount = parseFloat(payment.due_amount) || 0;
       return {
         amount: acc.amount + amount,
         extra_amount: acc.extra_amount + extraAmount,
         exam_fee: acc.exam_fee + examFee,
+        due_amount: acc.due_amount + dueAmount,
       };
     },
-    { amount: 0, extra_amount: 0, exam_fee: 0 }
+    { amount: 0, extra_amount: 0, exam_fee: 0, due_amount: 0 },
   );
 
   return (
@@ -797,8 +813,17 @@ const PaymentEntry = ({
                       <th style={{ width: "10%", padding: "0.5rem" }}>
                         Service Charge *
                       </th>
-                      <th style={{ width: "8%", padding: "0.5rem", textAlign: "center" }}>
+                      <th
+                        style={{
+                          width: "8%",
+                          padding: "0.5rem",
+                          textAlign: "center",
+                        }}
+                      >
                         Due
+                      </th>
+                      <th style={{ width: "10%", padding: "0.5rem" }}>
+                        Due Amount
                       </th>
                       <th style={{ width: "18%", padding: "0.5rem" }}>Note</th>
                       <th
@@ -826,6 +851,7 @@ const PaymentEntry = ({
                           exam_fee: "",
                           note: "",
                           due: false,
+                          due_amount: null,
                         };
                         const status = paymentStatus[student.id];
                         const getStatusBadge = () => {
@@ -993,6 +1019,26 @@ const PaymentEntry = ({
                             <td style={{ padding: "0.5rem" }}>
                               <Form.Control
                                 type="text"
+                                placeholder="0.00"
+                                value={payment.due_amount ?? ""}
+                                disabled={!payment.due}
+                                onChange={(e) =>
+                                  updateStudentPayment(
+                                    student.id,
+                                    "due_amount",
+                                    e.target.value,
+                                  )
+                                }
+                                size="sm"
+                                style={{
+                                  fontSize: "0.875rem",
+                                  padding: "0.25rem 0.5rem",
+                                }}
+                              />
+                            </td>
+                            <td style={{ padding: "0.5rem" }}>
+                              <Form.Control
+                                type="text"
                                 placeholder="Note..."
                                 value={payment.note}
                                 onChange={(e) =>
@@ -1043,15 +1089,19 @@ const PaymentEntry = ({
                       <td style={{ padding: "0.5rem" }}>
                         {columnSums.amount.toFixed(2)}
                       </td>
-                      <td colSpan={3} style={{ padding: "0.5rem" }} />
+                      <td></td>
+                      <td style={{ padding: "0.5rem" }}>
+                        {columnSums.due_amount.toFixed(2)}
+                      </td>
+                      <td colSpan={2} style={{ padding: "0.5rem" }} />
                     </tr>
                   </tfoot>
                 </Table>
               </div>
               <div className="mt-3">
                 <small className="text-muted">
-                  * Required fields. Click "Submit Selected" to create
-                  payments in the payment system.
+                  * Required fields. Click "Submit Selected" to create payments
+                  in the payment system.
                 </small>
               </div>
             </>

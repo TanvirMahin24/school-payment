@@ -45,6 +45,7 @@ const createBulkPayment = async (req, res) => {
           exam_fee,
           total_amount,
           due,
+          due_amount,
           gradeId,
           shiftId,
           batchId,
@@ -94,6 +95,7 @@ const createBulkPayment = async (req, res) => {
             note: note || null,
             tenant: tenant || null,
             due: parseBoolean(due, false),
+            due_amount: due_amount !== undefined && due_amount !== null ? parseFloat(due_amount) : null,
           };
 
           // Update grade, shift, batch fields if provided
@@ -129,6 +131,7 @@ const createBulkPayment = async (req, res) => {
             exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
             total_amount: parseFloat(calculatedTotalAmount),
             due: parseBoolean(due, false),
+            due_amount: due_amount !== undefined && due_amount !== null ? parseFloat(due_amount) : null,
             gradeTenant: finalGradeId ? (tenant || "primary") : null,
             gradePrimaryId: finalGradeId ? parseInt(finalGradeId) : null,
             shiftTenant: finalShiftId ? (tenant || "primary") : null,

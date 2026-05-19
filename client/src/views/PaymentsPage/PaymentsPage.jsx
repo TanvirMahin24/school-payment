@@ -1,27 +1,21 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  Button,
+  Card,
   Col,
   Container,
+  Form,
   Row,
   Table,
-  Button,
-  ButtonGroup,
-  Form,
-  Card,
 } from "react-bootstrap";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { connect } from "react-redux";
-import Layout from "../../components/shared/Layout/Layout";
-import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
-import { getPayments, deletePayment } from "../../actions/Payment.action";
-import { getGradeList } from "../../actions/Grade.action";
 import { useNavigate } from "react-router-dom";
-import {
-  TENANT_LIST,
-  DEFAULT_TENANT,
-  getTenantLabel,
-} from "../../constants/Tenant";
+import { getGradeList } from "../../actions/Grade.action";
+import { deletePayment, getPayments } from "../../actions/Payment.action";
+import ConfirmModal from "../../components/shared/ConfirmModal/ConfirmModal";
+import Layout from "../../components/shared/Layout/Layout";
 import { months } from "../../constants/MonthsAndYears";
-import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
 const PaymentsPage = ({
   payments,
@@ -423,6 +417,7 @@ const PaymentsPage = ({
                     >
                       Due {getSortIcon("due")}
                     </th>
+
                     <th
                       style={{ cursor: "pointer", userSelect: "none" }}
                       onClick={() => handleSort("class")}
@@ -468,11 +463,14 @@ const PaymentsPage = ({
                       <td>{payment.month}</td>
                       <td>
                         {payment.due === true ? (
-                          <span className="badge bg-warning text-dark">Due</span>
+                          <span className="badge bg-warning text-dark">
+                            Due {payment.due_amount ? payment.due_amount : ""}
+                          </span>
                         ) : (
                           <span className="badge bg-secondary">No</span>
                         )}
                       </td>
+
                       <td>
                         {payment.gradePrimaryId
                           ? (() => {

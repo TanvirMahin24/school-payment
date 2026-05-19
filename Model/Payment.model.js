@@ -55,6 +55,11 @@ const Payment = sequelize.define("payment", {
     allowNull: false,
     defaultValue: false,
   },
+  due_amount: {
+    type: Sequelize.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: null,
+  },
   gradeTenant: {
     type: Sequelize.STRING,
     allowNull: true,

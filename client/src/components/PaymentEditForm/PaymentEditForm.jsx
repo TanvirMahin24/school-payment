@@ -14,6 +14,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
     month: months[new Date().getMonth()],
     year: new Date().getFullYear(),
     due: false,
+    due_amount: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -27,6 +28,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
         month: payment.month || months[new Date().getMonth()],
         year: payment.year || new Date().getFullYear(),
         due: payment.due === true,
+        due_amount: payment.due_amount?.toString() || "",
       });
     }
   }, [payment]);
@@ -73,6 +75,7 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
       month: formData.month,
       year: formData.year,
       due: formData.due === true,
+      due_amount: formData.due && formData.due_amount ? parseFloat(formData.due_amount) : null,
       userId: payment.userId, // Keep existing userId
       tenant: selectedTenant || payment.tenant,
     };
@@ -276,6 +279,20 @@ const PaymentEditForm = ({ payment, updatePayment, selectedTenant }) => {
                     });
                     setError("");
                   }}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={4}>
+              <Form.Group className="mb-3">
+                <Form.Label>Due Amount</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="due_amount"
+                  value={formData.due_amount}
+                  onChange={handleChange}
+                  disabled={!formData.due}
                 />
               </Form.Group>
             </Col>

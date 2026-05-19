@@ -168,8 +168,11 @@ const updatePaymentDue = async (req, res) => {
       });
     }
 
+    const due = parseBoolean(req.body.due, false);
+
     await payment.update({
-      due: parseBoolean(req.body.due, false),
+      due,
+      due_amount: due ? payment.due_amount : 0,
     });
 
     return res.status(200).json({
@@ -178,6 +181,7 @@ const updatePaymentDue = async (req, res) => {
       data: {
         id: payment.id,
         due: payment.due,
+        due_amount: payment.due_amount,
         tenant: payment.tenant,
         year: payment.year,
         month: payment.month,

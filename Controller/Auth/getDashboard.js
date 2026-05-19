@@ -45,6 +45,25 @@ const getDashboard = async (req, res) => {
     const thisYearExamFeeAmount = await Payment.sum("exam_fee", { where: thisYearPaymentWhere }) || 0;
     const thisYearCombinedPaymentAmount = await Payment.sum("total_amount", { where: thisYearPaymentWhere }) || 0;
 
+    // Monthly Due Payments (month + year)
+    const thisMonthDueWhere = {
+      ...paymentWhere,
+      month: monthFilter,
+      year: yearFilter,
+      due: true,
+    };
+    const thisMonthDuePayments = await Payment.count({ where: thisMonthDueWhere });
+    const thisMonthDueAmount = await Payment.sum("due_amount", { where: thisMonthDueWhere }) || 0;
+
+    // Yearly Due Payments (year only)
+    const thisYearDueWhere = {
+      ...paymentWhere,
+      year: yearlyFilter,
+      due: true,
+    };
+    const thisYearDuePayments = await Payment.count({ where: thisYearDueWhere });
+    const thisYearDueAmount = await Payment.sum("due_amount", { where: thisYearDueWhere }) || 0;
+
     // Total Expenses
     const expenseCount = await Expense.count({ where: expenseWhere });
     const totalExpenseAmount = await Expense.sum("amount", { where: expenseWhere }) || 0;
@@ -115,6 +134,12 @@ const getDashboard = async (req, res) => {
         thisYearExtraPaymentAmount: parseFloat(thisYearExtraPaymentAmount).toFixed(2),
         thisYearExamFeeAmount: parseFloat(thisYearExamFeeAmount).toFixed(2),
         thisYearCombinedPaymentAmount: parseFloat(thisYearCombinedPaymentAmount).toFixed(2),
+
+        // Due payment stats
+        thisMonthDuePayments,
+        thisMonthDueAmount: parseFloat(thisMonthDueAmount).toFixed(2),
+        thisYearDuePayments,
+        thisYearDueAmount: parseFloat(thisYearDueAmount).toFixed(2),
         
         // Expense stats
         expenses: expenseCount,
@@ -153,5 +178,4 @@ const getDashboard = async (req, res) => {
 };
 
 module.exports = { getDashboard };
-
 

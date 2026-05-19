@@ -27,6 +27,7 @@ const createExternalPayment = async (req, res) => {
       exam_fee,
       total_amount,
       due,
+      due_amount,
     } = req.body;
 
     // Calculate total_amount if not provided
@@ -47,6 +48,7 @@ const createExternalPayment = async (req, res) => {
       exam_fee: exam_fee ? parseFloat(exam_fee) : 0,
       total_amount: parseFloat(calculatedTotalAmount),
       due: parseBoolean(due, false),
+      due_amount: due_amount !== undefined && due_amount !== null ? parseFloat(due_amount) : null,
     });
 
     return res.status(201).json({
@@ -65,6 +67,7 @@ const createExternalPayment = async (req, res) => {
         exam_fee: newPayment.exam_fee,
         total_amount: newPayment.total_amount,
         due: newPayment.due,
+        due_amount: newPayment.due_amount,
         createdAt: newPayment.createdAt,
         updatedAt: newPayment.updatedAt,
       },
