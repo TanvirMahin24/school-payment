@@ -107,10 +107,12 @@ const getExternalPaymentsByStudents = async (req, res) => {
       order: [["id", "DESC"]],
     });
 
-    // Create a map of userId to payment for easy lookup
+    // Keep the first row per student because the list is already ordered by newest first.
     const paymentMap = {};
     paymentList.forEach((payment) => {
-      paymentMap[payment.userId] = payment.toJSON();
+      if (!paymentMap[payment.userId]) {
+        paymentMap[payment.userId] = payment.toJSON();
+      }
     });
 
     return res.status(200).json({
@@ -127,7 +129,6 @@ const getExternalPaymentsByStudents = async (req, res) => {
 };
 
 module.exports = { getExternalPaymentsByStudents };
-
 
 
 
