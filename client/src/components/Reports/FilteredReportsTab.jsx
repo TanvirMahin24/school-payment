@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Row, Col, Form, Button, Card, Spinner } from "react-bootstrap";
 import { connect } from "react-redux";
 import { getFilteredStats } from "../../actions/Report.action";
 import { getGradeList } from "../../actions/Grade.action";
 import FilteredChart from "./FilteredChart";
 import { months, years } from "../../constants/MonthsAndYears";
+import ReportExportActions from "./ReportExportActions";
 
 const FilteredReportsTab = ({
   selectedTenant,
@@ -14,6 +15,7 @@ const FilteredReportsTab = ({
   filteredStats,
   loading,
 }) => {
+  const componentRef = useRef(null);
   const [grade, setGrade] = useState("");
   const [shift, setShift] = useState("");
   const [batch, setBatch] = useState("");
@@ -64,6 +66,16 @@ const FilteredReportsTab = ({
   const currentShifts = currentGrade?.shifts || [];
   const currentShift = currentShifts.find((s) => s.id === parseInt(shift));
   const currentBatches = currentShift?.batches || [];
+  const selectedBatch = currentBatches.find((b) => b.id === parseInt(batch));
+  const hasData = Array.isArray(filteredStats) && filteredStats.length > 0;
+  const subtitle = `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+
+  const detailsParts = [];
+  if (currentGrade?.name) detailsParts.push(`Class: ${currentGrade.name}`);
+  if (currentShift?.name) detailsParts.push(`Shift: ${currentShift.name}`);
+  if (selectedBatch?.name) detailsParts.push(`Batch: ${selectedBatch.name}`);
+  const reportDetails =
+    detailsParts.length > 0 ? detailsParts.join(" | ") : "All Classes";
 
   return (
     <div>
@@ -205,12 +217,27 @@ const FilteredReportsTab = ({
         </Card.Body>
       </Card>
 
+      <ReportExportActions
+        contentRef={componentRef}
+        fileName={`Filtered-Report-${startMonth}-${startYear}-${endMonth}-${endYear}`}
+        hasData={hasData}
+      />
+
       {loading ? (
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 400 }}>
           <Spinner animation="border" variant="primary" />
         </div>
-      ) : filteredStats && filteredStats.length > 0 ? (
-        <FilteredChart data={filteredStats} hasFilter={!!(grade || shift || batch)} selectedTenant={selectedTenant} />
+      ) : hasData ? (
+        <div ref={componentRef}>
+          <FilteredChart
+            data={filteredStats}
+            hasFilter={!!(grade || shift || batch)}
+            selectedTenant={selectedTenant}
+            reportTitle="Filtered Report"
+            reportSubtitle={subtitle}
+            reportDetails={reportDetails}
+          />
+        </div>
       ) : filteredStats && filteredStats.length === 0 ? (
         <Card>
           <Card.Body>
@@ -239,4 +266,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getFilteredStats, getGradeList })(FilteredReportsTab);
-

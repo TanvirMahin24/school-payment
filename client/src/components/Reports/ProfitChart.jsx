@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Card, Table } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../constants/URL";
 import MonthDetailModal from "./MonthDetailModal";
+import ReportExportActions from "./ReportExportActions";
+import ReportPrintHeader from "./ReportPrintHeader";
 // import Chart from "react-apexcharts";
 
 const INITIAL_MODAL_STATE = {
@@ -16,6 +18,7 @@ const INITIAL_MODAL_STATE = {
 
 const ProfitChart = ({ data, selectedTenant }) => {
   const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
+  const componentRef = useRef(null);
 
   const handleOpenModal = async (type, row) => {
     if (!selectedTenant) {
@@ -53,6 +56,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
         examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
+        dueAmount: acc.dueAmount + parseFloat(d.dueAmount || 0),
         expense: acc.expense + parseFloat(d.expense || 0),
         profit: acc.profit + parseFloat(d.profit || 0),
       }),
@@ -61,13 +65,16 @@ const ProfitChart = ({ data, selectedTenant }) => {
         payment: 0,
         extraPayment: 0,
         examPayment: 0,
+        dueAmount: 0,
         expense: 0,
         profit: 0,
       },
     );
   }, [data]);
 
-  if (!data || data.length === 0) {
+  const hasData = Array.isArray(data) && data.length > 0;
+
+  if (!hasData) {
     return (
       <div className="text-center py-5">
         <p className="text-muted">No data available</p>
@@ -145,9 +152,19 @@ const ProfitChart = ({ data, selectedTenant }) => {
 
   return (
     <>
-      <Card className="border-0">
-        <Card.Body>
-          <h5 className="mb-3">Monthly Profit (Last 12 Months)</h5>
+      <ReportExportActions
+        contentRef={componentRef}
+        fileName="Profit-Report-Last-12-Months"
+        hasData={hasData}
+      />
+      <div ref={componentRef}>
+        <Card className="border-0">
+          <Card.Body>
+            <ReportPrintHeader
+              title="Profit Report"
+              subtitle="Last 12 Months"
+              tenant={selectedTenant}
+            />
           {/* <Chart
           options={chartData.options}
           series={chartData.series}
@@ -161,6 +178,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
                 <th className="text-end">Service Charge</th>
                 <th className="text-end">Session Charge/ Extra Cost</th>
                 <th className="text-end">Admission Fee/ Exam Fee</th>
+                <th className="text-end">Due Amount</th>
                 <th className="text-end">Revenue</th>
                 <th className="text-end">Expense</th>
                 <th className="text-end">Profit</th>
@@ -178,6 +196,9 @@ const ProfitChart = ({ data, selectedTenant }) => {
                   </td>
                   <td className="text-end">
                     {parseFloat(d.examPayment || 0).toFixed(2)}
+                  </td>
+                  <td className="text-end">
+                    {parseFloat(d.dueAmount || 0).toFixed(2)}
                   </td>
                   <td className="text-end">
                     <span
@@ -224,6 +245,9 @@ const ProfitChart = ({ data, selectedTenant }) => {
                   <td className="text-end">
                     {totalStats.examPayment.toFixed(2)}
                   </td>
+                  <td className="text-end">
+                    {totalStats.dueAmount.toFixed(2)}
+                  </td>
                   <td className="text-end">{totalStats.revenue.toFixed(2)}</td>
                   <td className="text-end">{totalStats.expense.toFixed(2)}</td>
                   <td
@@ -235,8 +259,9 @@ const ProfitChart = ({ data, selectedTenant }) => {
               )}
             </tbody>
           </Table>
-        </Card.Body>
-      </Card>
+          </Card.Body>
+        </Card>
+      </div>
       <MonthDetailModal
         show={modalState.show}
         onHide={handleCloseModal}

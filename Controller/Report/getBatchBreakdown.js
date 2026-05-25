@@ -131,6 +131,7 @@ const getBatchBreakdown = async (req, res) => {
         [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
         [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
         [Sequelize.fn("SUM", Sequelize.col("exam_fee")), "examPayment"],
+        [Sequelize.fn("SUM", Sequelize.col("due_amount")), "dueAmount"],
       ],
       group: ["gradePrimaryId", "shiftPrimaryId", "batchPrimaryId"],
       raw: true,
@@ -140,12 +141,14 @@ const getBatchBreakdown = async (req, res) => {
     const paymentMap = new Map();
     const extraPaymentMap = new Map();
     const examPaymentMap = new Map();
+    const dueAmountMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId && p.shiftPrimaryId && p.batchPrimaryId) {
         const key = `${p.gradePrimaryId}_${p.shiftPrimaryId}_${p.batchPrimaryId}`;
         paymentMap.set(key, parseFloat(p.payment || 0));
         extraPaymentMap.set(key, parseFloat(p.extraPayment || 0));
         examPaymentMap.set(key, parseFloat(p.examPayment || 0));
+        dueAmountMap.set(key, parseFloat(p.dueAmount || 0));
       }
     });
 
@@ -172,6 +175,7 @@ const getBatchBreakdown = async (req, res) => {
           const payment = paymentMap.get(batchKey) || 0;
           const extraPayment = extraPaymentMap.get(batchKey) || 0;
           const examPayment = examPaymentMap.get(batchKey) || 0;
+          const dueAmount = dueAmountMap.get(batchKey) || 0;
           const totalPayment = payment + extraPayment;
           const totalRevenueForBatch = totalPayment + (totalRevenue / totalBatches); // Distribute revenue
           const expenseForBatch = totalExpense / totalBatches; // Distribute expense equally
@@ -188,6 +192,7 @@ const getBatchBreakdown = async (req, res) => {
             payment: payment,
             extraPayment: extraPayment,
             examPayment: examPayment,
+            dueAmount: dueAmount,
             expense: expenseForBatch,
             totalRevenue: totalRevenueForBatch,
             profit: profit,
@@ -221,4 +226,3 @@ const getBatchBreakdown = async (req, res) => {
 };
 
 module.exports = { getBatchBreakdown };
-

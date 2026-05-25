@@ -7,6 +7,7 @@ import Layout from "../../components/shared/Layout/Layout";
 import { getYearlyExpenseReport } from "../../actions/Report.action";
 import YearlyExpenseReport from "../../components/Reports/YearlyExpenseReport/YearlyExpenseReport";
 import { years } from "../../constants/MonthsAndYears";
+import { exportReportToPdf } from "../../utils/exportReportToPdf";
 
 const getYearsWithCurrent = () => {
   const currentYear = new Date().getFullYear();
@@ -25,6 +26,7 @@ const YearlyExpenseReportPage = ({
   loading,
 }) => {
   const [year, setYear] = useState(new Date().getFullYear());
+  const [isDownloading, setIsDownloading] = useState(false);
   const componentRef = React.useRef();
 
   const handlePrint = useReactToPrint({
@@ -44,6 +46,17 @@ const YearlyExpenseReportPage = ({
       return;
     }
     getYearlyExpenseReport({ tenant, year });
+  };
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+      await exportReportToPdf(componentRef.current, `Yearly-Expense-Report-${year}`);
+    } catch (error) {
+      toast.error(error.message || "Failed to download the report PDF");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const hasData =
@@ -77,9 +90,14 @@ const YearlyExpenseReportPage = ({
             </Col>
             {hasData && (
               <Col md="auto" className="d-flex align-items-end">
-                <Button variant="outline-secondary" onClick={handlePrint}>
-                  Print / PDF
-                </Button>
+                <div className="d-flex gap-2">
+                  <Button variant="outline-secondary" onClick={handlePrint}>
+                    Print / PDF
+                  </Button>
+                  <Button variant="outline-primary" onClick={handleDownload} disabled={isDownloading}>
+                    {isDownloading ? "Downloading..." : "Download"}
+                  </Button>
+                </div>
               </Col>
             )}
           </Row>

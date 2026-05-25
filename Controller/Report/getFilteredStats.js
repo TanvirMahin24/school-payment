@@ -90,6 +90,7 @@ const getFilteredStats = async (req, res) => {
         [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
         [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
         [Sequelize.fn("SUM", Sequelize.col("exam_fee")), "examPayment"],
+        [Sequelize.fn("SUM", Sequelize.col("due_amount")), "dueAmount"],
       ],
       group: ["month", "year"],
       raw: true,
@@ -111,11 +112,13 @@ const getFilteredStats = async (req, res) => {
     const paymentMap = new Map();
     const extraPaymentMap = new Map();
     const examPaymentMap = new Map();
+    const dueAmountMap = new Map();
     payments.forEach((p) => {
       const key = `${p.month}_${p.year}`;
       paymentMap.set(key, parseFloat(p.payment || 0));
       extraPaymentMap.set(key, parseFloat(p.extraPayment || 0));
       examPaymentMap.set(key, parseFloat(p.examPayment || 0));
+      dueAmountMap.set(key, parseFloat(p.dueAmount || 0));
     });
 
     // Get unique month-year combinations
@@ -133,6 +136,7 @@ const getFilteredStats = async (req, res) => {
         const payment = paymentMap.get(key) || 0;
         const extraPayment = extraPaymentMap.get(key) || 0;
         const examPayment = examPaymentMap.get(key) || 0;
+        const dueAmount = dueAmountMap.get(key) || 0;
         const totalPayment = payment + extraPayment + examPayment;
         const totalRevenue = revenue + totalPayment;
         const profit = totalRevenue - expense;
@@ -146,6 +150,7 @@ const getFilteredStats = async (req, res) => {
           payment,
           extraPayment,
           examPayment,
+          dueAmount,
           totalRevenue,
           profit,
         };
@@ -178,4 +183,3 @@ function getMonthIndex(monthName) {
 }
 
 module.exports = { getFilteredStats };
-

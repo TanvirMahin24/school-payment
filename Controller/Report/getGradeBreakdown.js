@@ -90,6 +90,7 @@ const getGradeBreakdown = async (req, res) => {
         [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
         [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
         [Sequelize.fn("SUM", Sequelize.col("exam_fee")), "examPayment"],
+        [Sequelize.fn("SUM", Sequelize.col("due_amount")), "dueAmount"],
       ],
       group: ["gradePrimaryId"],
       raw: true,
@@ -99,11 +100,13 @@ const getGradeBreakdown = async (req, res) => {
     const paymentMap = new Map();
     const extraPaymentMap = new Map();
     const examPaymentMap = new Map();
+    const dueAmountMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId) {
         paymentMap.set(p.gradePrimaryId, parseFloat(p.payment || 0));
         extraPaymentMap.set(p.gradePrimaryId, parseFloat(p.extraPayment || 0));
         examPaymentMap.set(p.gradePrimaryId, parseFloat(p.examPayment || 0));
+        dueAmountMap.set(p.gradePrimaryId, parseFloat(p.dueAmount || 0));
       }
     });
 
@@ -112,6 +115,7 @@ const getGradeBreakdown = async (req, res) => {
       const payment = paymentMap.get(grade.primaryId) || 0;
       const extraPayment = extraPaymentMap.get(grade.primaryId) || 0;
       const examPayment = examPaymentMap.get(grade.primaryId) || 0;
+      const dueAmount = dueAmountMap.get(grade.primaryId) || 0;
       const totalPayment = payment + extraPayment;
       const totalRevenueForGrade = totalPayment + totalRevenue; // Revenue is shared across all grades
       const expenseForGrade = (totalExpense / grades.length); // Distribute expense equally (or you can change this logic)
@@ -124,6 +128,7 @@ const getGradeBreakdown = async (req, res) => {
         payment: payment,
         extraPayment: extraPayment,
         examPayment: examPayment,
+        dueAmount: dueAmount,
         expense: expenseForGrade,
         totalRevenue: totalRevenueForGrade,
         profit: profit,
@@ -147,4 +152,3 @@ const getGradeBreakdown = async (req, res) => {
 };
 
 module.exports = { getGradeBreakdown };
-

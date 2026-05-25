@@ -1,8 +1,10 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Card, Table, Row, Col, Form, Button, Spinner } from "react-bootstrap";
 import { connect } from "react-redux";
 import { getShiftBreakdown } from "../../actions/Report.action";
 import { months, years } from "../../constants/MonthsAndYears";
+import ReportExportActions from "./ReportExportActions";
+import ReportPrintHeader from "./ReportPrintHeader";
 
 const ShiftBreakdown = ({
   selectedTenant,
@@ -10,6 +12,7 @@ const ShiftBreakdown = ({
   getShiftBreakdown,
   loading,
 }) => {
+  const componentRef = useRef(null);
   const getStartMonth = () => {
     const currentMonth = new Date().getMonth();
     const startMonthIndex = currentMonth - 11;
@@ -40,16 +43,20 @@ const ShiftBreakdown = ({
       shiftBreakdown === null ||
       shiftBreakdown.length === 0
     )
-      return { payment: 0, extraPayment: 0, examPayment: 0 };
+      return { payment: 0, extraPayment: 0, examPayment: 0, dueAmount: 0 };
     return shiftBreakdown.reduce(
       (acc, d) => ({
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
         examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
+        dueAmount: acc.dueAmount + parseFloat(d.dueAmount || 0),
       }),
-      { payment: 0, extraPayment: 0, examPayment: 0 },
+      { payment: 0, extraPayment: 0, examPayment: 0, dueAmount: 0 },
     );
   }, [shiftBreakdown]);
+
+  const hasData = Array.isArray(shiftBreakdown) && shiftBreakdown.length > 0;
+  const subtitle = `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
 
   return (
     <div>
@@ -134,6 +141,12 @@ const ShiftBreakdown = ({
         </Card.Body>
       </Card>
 
+      <ReportExportActions
+        contentRef={componentRef}
+        fileName={`Shift-Breakdown-${startMonth}-${startYear}-${endMonth}-${endYear}`}
+        hasData={hasData}
+      />
+
       {loading ? (
         <div
           className="d-flex justify-content-center align-items-center"
@@ -141,12 +154,15 @@ const ShiftBreakdown = ({
         >
           <Spinner animation="border" variant="primary" />
         </div>
-      ) : shiftBreakdown &&
-        Array.isArray(shiftBreakdown) &&
-        shiftBreakdown.length > 0 ? (
-        <Card className="border-0">
-          <Card.Body>
-            <h5 className="mb-3">Shift-wise Payment Breakdown</h5>
+      ) : hasData ? (
+        <div ref={componentRef}>
+          <Card className="border-0">
+            <Card.Body>
+              <ReportPrintHeader
+                title="Shift-wise Payment Breakdown"
+                subtitle={subtitle}
+                tenant={selectedTenant}
+              />
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
@@ -155,6 +171,7 @@ const ShiftBreakdown = ({
                   <th className="text-end">Service Charge</th>
                   <th className="text-end">Session Charge/ Extra Cost</th>
                   <th className="text-end">Admission Fee/ Exam Fee</th>
+                  <th className="text-end">Due Amount</th>
                 </tr>
               </thead>
               <tbody>
@@ -171,6 +188,9 @@ const ShiftBreakdown = ({
                     <td className="text-end">
                       {parseFloat(d.examPayment || 0).toFixed(2)}
                     </td>
+                    <td className="text-end">
+                      {parseFloat(d.dueAmount || 0).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
                 <tr className="table-info fw-bold">
@@ -184,11 +204,15 @@ const ShiftBreakdown = ({
                   <td className="text-end">
                     {totalPayment.examPayment.toFixed(2)}
                   </td>
+                  <td className="text-end">
+                    {totalPayment.dueAmount.toFixed(2)}
+                  </td>
                 </tr>
               </tbody>
             </Table>
-          </Card.Body>
-        </Card>
+            </Card.Body>
+          </Card>
+        </div>
       ) : shiftBreakdown &&
         Array.isArray(shiftBreakdown) &&
         shiftBreakdown.length === 0 ? (

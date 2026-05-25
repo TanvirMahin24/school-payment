@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../constants/URL";
 import MonthDetailModal from "./MonthDetailModal";
+import ReportPrintHeader from "./ReportPrintHeader";
 // import Chart from "react-apexcharts";
 
 const INITIAL_MODAL_STATE = {
@@ -14,7 +15,14 @@ const INITIAL_MODAL_STATE = {
   loading: false,
 };
 
-const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
+const FilteredChart = ({
+  data,
+  hasFilter = false,
+  selectedTenant,
+  reportTitle,
+  reportSubtitle,
+  reportDetails,
+}) => {
   const [modalState, setModalState] = useState(INITIAL_MODAL_STATE);
 
   const handleOpenModal = async (type, row) => {
@@ -54,6 +62,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
         payment: acc.payment + parseFloat(d.payment || 0),
         extraPayment: acc.extraPayment + parseFloat(d.extraPayment || 0),
         examPayment: acc.examPayment + parseFloat(d.examPayment || 0),
+        dueAmount: acc.dueAmount + parseFloat(d.dueAmount || 0),
         expense: acc.expense + parseFloat(d.expense || 0),
         totalRevenue: acc.totalRevenue + parseFloat(d.totalRevenue || 0),
         profit: acc.profit + parseFloat(d.profit || 0),
@@ -63,6 +72,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
         payment: 0,
         extraPayment: 0,
         examPayment: 0,
+        dueAmount: 0,
         expense: 0,
         totalRevenue: 0,
         profit: 0,
@@ -207,7 +217,12 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
         <Col md={12} className="mb-4">
           <Card className="border-0">
             <Card.Body>
-              <h5 className="mb-3">Profit Breakdown</h5>
+              <ReportPrintHeader
+                title={reportTitle || "Filtered Report"}
+                subtitle={reportSubtitle}
+                details={reportDetails}
+                tenant={selectedTenant}
+              />
               {/* <Chart
                 options={profitChartData.options}
                 series={profitChartData.series}
@@ -221,6 +236,7 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                     <th className="text-end">Service Charge</th>
                     <th className="text-end">Session Charge/ Extra Cost</th>
                     <th className="text-end">Admission Fee/ Exam Fee</th>
+                    <th className="text-end">Due Amount</th>
                     {!hasFilter && <th className="text-end">Revenue</th>}
                     {!hasFilter && <th className="text-end">Expense</th>}
                     {!hasFilter && <th className="text-end">Profit</th>}
@@ -238,6 +254,9 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                       </td>
                       <td className="text-end">
                         {parseFloat(d.examPayment || 0).toFixed(2)}
+                      </td>
+                      <td className="text-end">
+                        {parseFloat(d.dueAmount || 0).toFixed(2)}
                       </td>
                       {!hasFilter && (
                         <td className="text-end">
@@ -301,6 +320,9 @@ const FilteredChart = ({ data, hasFilter = false, selectedTenant }) => {
                       </td>
                       <td className="text-end">
                         {totalStats.examPayment.toFixed(2)}
+                      </td>
+                      <td className="text-end">
+                        {totalStats.dueAmount.toFixed(2)}
                       </td>
                       {!hasFilter && (
                         <td className="text-end">

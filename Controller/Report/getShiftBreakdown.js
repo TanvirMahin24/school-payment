@@ -110,6 +110,7 @@ const getShiftBreakdown = async (req, res) => {
         [Sequelize.fn("SUM", Sequelize.col("amount")), "payment"],
         [Sequelize.fn("SUM", Sequelize.col("extra_amount")), "extraPayment"],
         [Sequelize.fn("SUM", Sequelize.col("exam_fee")), "examPayment"],
+        [Sequelize.fn("SUM", Sequelize.col("due_amount")), "dueAmount"],
       ],
       group: ["gradePrimaryId", "shiftPrimaryId"],
       raw: true,
@@ -119,12 +120,14 @@ const getShiftBreakdown = async (req, res) => {
     const paymentMap = new Map();
     const extraPaymentMap = new Map();
     const examPaymentMap = new Map();
+    const dueAmountMap = new Map();
     payments.forEach((p) => {
       if (p.gradePrimaryId && p.shiftPrimaryId) {
         const key = `${p.gradePrimaryId}_${p.shiftPrimaryId}`;
         paymentMap.set(key, parseFloat(p.payment || 0));
         extraPaymentMap.set(key, parseFloat(p.extraPayment || 0));
         examPaymentMap.set(key, parseFloat(p.examPayment || 0));
+        dueAmountMap.set(key, parseFloat(p.dueAmount || 0));
       }
     });
 
@@ -144,6 +147,7 @@ const getShiftBreakdown = async (req, res) => {
         const payment = paymentMap.get(key) || 0;
         const extraPayment = extraPaymentMap.get(key) || 0;
         const examPayment = examPaymentMap.get(key) || 0;
+        const dueAmount = dueAmountMap.get(key) || 0;
         const totalPayment = payment + extraPayment;
         const totalRevenueForShift = totalPayment + (totalRevenue / totalShifts); // Distribute revenue
         const expenseForShift = totalExpense / totalShifts; // Distribute expense equally
@@ -158,6 +162,7 @@ const getShiftBreakdown = async (req, res) => {
           payment: payment,
           extraPayment: extraPayment,
           examPayment: examPayment,
+          dueAmount: dueAmount,
           expense: expenseForShift,
           totalRevenue: totalRevenueForShift,
           profit: profit,
@@ -187,4 +192,3 @@ const getShiftBreakdown = async (req, res) => {
 };
 
 module.exports = { getShiftBreakdown };
-
