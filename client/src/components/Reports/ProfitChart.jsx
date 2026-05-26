@@ -13,6 +13,7 @@ const INITIAL_MODAL_STATE = {
   type: null,
   monthLabel: "",
   items: [],
+  detailData: null,
   loading: false,
 };
 
@@ -30,6 +31,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
       type,
       monthLabel: row.monthLabel,
       items: [],
+      detailData: null,
       loading: true,
     });
     const url =
@@ -179,7 +181,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
                 <th className="text-end">Session Charge/ Extra Cost</th>
                 <th className="text-end">Admission Fee/ Exam Fee</th>
                 <th className="text-end">Due Amount</th>
-                <th className="text-end">Revenue</th>
+                <th className="text-end">Manual Revenue</th>
                 <th className="text-end">Expense</th>
                 <th className="text-end">Profit</th>
               </tr>
@@ -268,6 +270,7 @@ const ProfitChart = ({ data, selectedTenant }) => {
         type={modalState.type}
         monthLabel={modalState.monthLabel}
         items={modalState.items}
+        detailData={modalState.detailData}
         loading={modalState.loading}
       />
     </>

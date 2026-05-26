@@ -148,7 +148,7 @@ const getShiftBreakdown = async (req, res) => {
         const extraPayment = extraPaymentMap.get(key) || 0;
         const examPayment = examPaymentMap.get(key) || 0;
         const dueAmount = dueAmountMap.get(key) || 0;
-        const totalPayment = payment + extraPayment;
+        const totalPayment = payment + extraPayment + examPayment;
         const totalRevenueForShift = totalPayment + (totalRevenue / totalShifts); // Distribute revenue
         const expenseForShift = totalExpense / totalShifts; // Distribute expense equally
         const profit = totalRevenueForShift - expenseForShift;

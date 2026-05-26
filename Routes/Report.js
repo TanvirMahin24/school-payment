@@ -9,6 +9,7 @@ const { getMonthlyIncomeExpense } = require("../Controller/Report/getMonthlyInco
 const { getYearlyExpenseReport } = require("../Controller/Report/getYearlyExpenseReport");
 const { getYearlyIncomeReport } = require("../Controller/Report/getYearlyIncomeReport");
 const { getSchoolPrimaryReport } = require("../Controller/Report/getSchoolPrimaryReport");
+const { getCombinedIncomeDetail } = require("../Controller/Report/getCombinedIncomeDetail");
 const {
   requireTenantAccess,
   requireCombinedSchoolPrimaryReportAccess,
@@ -59,6 +60,13 @@ router.get(
 );
 
 router.get(
+  "/combined-income-detail",
+  passport.authenticate("jwt", { session: false }),
+  requireTenantAccess,
+  getCombinedIncomeDetail
+);
+
+router.get(
   "/yearly-expense",
   passport.authenticate("jwt", { session: false }),
   requireTenantAccess,
@@ -80,5 +88,4 @@ router.get(
 );
 
 module.exports = router;
-
 

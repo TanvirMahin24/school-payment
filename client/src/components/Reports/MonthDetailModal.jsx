@@ -9,15 +9,27 @@ const MonthDetailModal = ({
   items,
   loading,
   showMonthColumn = false,
+  detailData = null,
 }) => {
   const isDueModal = type === "due";
-  const label = type === "expense" ? "Expenses" : isDueModal ? "Due Payments" : "Revenues";
+  const isCombinedIncomeModal = type === "combined-income";
+  const label = isCombinedIncomeModal
+    ? "Combined Income"
+    : type === "expense"
+      ? "Expenses"
+      : isDueModal
+        ? "Due Payments"
+        : "Revenues";
   const title = `${label} for ${monthLabel}`;
   const total = (items || []).reduce(
     (s, i) => s + parseFloat(isDueModal ? i.due_amount || 0 : i.amount || 0),
     0,
   );
-  const isEmpty = !loading && (!items || items.length === 0);
+  const isEmpty = !loading && (
+    isCombinedIncomeModal
+      ? !detailData
+      : (!items || items.length === 0)
+  );
   const totalColSpan = isDueModal
     ? showMonthColumn
       ? 4
@@ -42,7 +54,82 @@ const MonthDetailModal = ({
             No {label.toLowerCase()} for this period.
           </p>
         )}
-        {!loading && !isEmpty && (
+        {!loading && isCombinedIncomeModal && detailData && (
+          <>
+            <Table striped bordered hover responsive className="mb-4">
+              <thead>
+                <tr>
+                  <th>Income Source</th>
+                  <th className="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Service Charge</td>
+                  <td className="text-end">
+                    {parseFloat(detailData.paymentSummary?.payment || 0).toFixed(2)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Session Charge / Extra Cost</td>
+                  <td className="text-end">
+                    {parseFloat(detailData.paymentSummary?.extraPayment || 0).toFixed(2)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Admission Fee / Exam Fee</td>
+                  <td className="text-end">
+                    {parseFloat(detailData.paymentSummary?.examPayment || 0).toFixed(2)}
+                  </td>
+                </tr>
+                <tr className="table-info fw-bold">
+                  <td>Payment-Derived Income</td>
+                  <td className="text-end">
+                    {parseFloat(detailData.paymentSummary?.totalPaymentIncome || 0).toFixed(2)}
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+
+            <Table striped bordered hover responsive>
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th className="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {detailData.revenueEntries?.length > 0 ? (
+                  detailData.revenueEntries.map((entry) => (
+                    <tr key={entry.id}>
+                      <td>{entry.description || entry.note || "—"}</td>
+                      <td>{entry.categoryName || "—"}</td>
+                      <td className="text-end">
+                        {parseFloat(entry.amount || 0).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="text-center text-muted">
+                      No manual revenue entries for this period.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+              <tfoot>
+                <tr className="table-info fw-bold">
+                  <td colSpan={2}>Total Income</td>
+                  <td className="text-end">
+                    {parseFloat(detailData.totalIncome || 0).toFixed(2)}
+                  </td>
+                </tr>
+              </tfoot>
+            </Table>
+          </>
+        )}
+        {!loading && !isEmpty && !isCombinedIncomeModal && (
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -58,7 +145,7 @@ const MonthDetailModal = ({
                   <>
                     <th>Description</th>
                     <th>Category</th>
-                    <th className="text-end">Service Charge</th>
+                    <th className="text-end">Amount</th>
                   </>
                 )}
               </tr>

@@ -116,7 +116,7 @@ const getGradeBreakdown = async (req, res) => {
       const extraPayment = extraPaymentMap.get(grade.primaryId) || 0;
       const examPayment = examPaymentMap.get(grade.primaryId) || 0;
       const dueAmount = dueAmountMap.get(grade.primaryId) || 0;
-      const totalPayment = payment + extraPayment;
+      const totalPayment = payment + extraPayment + examPayment;
       const totalRevenueForGrade = totalPayment + totalRevenue; // Revenue is shared across all grades
       const expenseForGrade = (totalExpense / grades.length); // Distribute expense equally (or you can change this logic)
       const profit = totalRevenueForGrade - expenseForGrade;

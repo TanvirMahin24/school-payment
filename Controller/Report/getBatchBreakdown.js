@@ -176,7 +176,7 @@ const getBatchBreakdown = async (req, res) => {
           const extraPayment = extraPaymentMap.get(batchKey) || 0;
           const examPayment = examPaymentMap.get(batchKey) || 0;
           const dueAmount = dueAmountMap.get(batchKey) || 0;
-          const totalPayment = payment + extraPayment;
+          const totalPayment = payment + extraPayment + examPayment;
           const totalRevenueForBatch = totalPayment + (totalRevenue / totalBatches); // Distribute revenue
           const expenseForBatch = totalExpense / totalBatches; // Distribute expense equally
           const profit = totalRevenueForBatch - expenseForBatch;

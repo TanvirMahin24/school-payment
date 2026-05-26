@@ -12,6 +12,7 @@ const INITIAL_MODAL_STATE = {
   type: null,
   monthLabel: "",
   items: [],
+  detailData: null,
   loading: false,
 };
 
@@ -35,6 +36,7 @@ const FilteredChart = ({
       type,
       monthLabel: row.monthLabel,
       items: [],
+      detailData: null,
       loading: true,
     });
     const url =
@@ -237,7 +239,7 @@ const FilteredChart = ({
                     <th className="text-end">Session Charge/ Extra Cost</th>
                     <th className="text-end">Admission Fee/ Exam Fee</th>
                     <th className="text-end">Due Amount</th>
-                    {!hasFilter && <th className="text-end">Revenue</th>}
+                    {!hasFilter && <th className="text-end">Manual Revenue</th>}
                     {!hasFilter && <th className="text-end">Expense</th>}
                     {!hasFilter && <th className="text-end">Profit</th>}
                   </tr>
@@ -359,6 +361,7 @@ const FilteredChart = ({
         type={modalState.type}
         monthLabel={modalState.monthLabel}
         items={modalState.items}
+        detailData={modalState.detailData}
         loading={modalState.loading}
       />
     </div>

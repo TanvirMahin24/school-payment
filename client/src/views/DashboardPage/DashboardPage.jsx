@@ -20,6 +20,7 @@ const INITIAL_MODAL_STATE = {
   month: null,
   year: null,
   items: [],
+  detailData: null,
   loading: false,
 };
 
@@ -55,6 +56,7 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
       month,
       year,
       items: [],
+      detailData: null,
       loading: true,
     });
     const url =
@@ -204,7 +206,7 @@ const DashboardPage = ({ data, getDashboardData, selectedTenant }) => {
                         <Col md={2} className="py-2">
                           <div className="text-center">
                             <div className="text-muted small">
-                              {isAllMonths ? "Total Revenue" : "Revenue"}
+                              Manual Revenue
                             </div>
                             <span
                               role="button"

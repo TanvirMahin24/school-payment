@@ -11,6 +11,7 @@ const INITIAL_MODAL_STATE = {
   type: null,
   monthLabel: "",
   items: [],
+  detailData: null,
   loading: false,
 };
 
@@ -27,17 +28,23 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
       type,
       monthLabel: row.monthLabel,
       items: [],
+      detailData: null,
       loading: true,
     });
     const url =
       type === "expense"
         ? `${BASE_URL}/api/expense`
-        : `${BASE_URL}/api/revenue`;
+        : `${BASE_URL}/api/report/combined-income-detail`;
     try {
       const res = await axios.get(url, {
         params: { tenant: selectedTenant, month: row.month, year: row.year },
       });
-      setModalState((s) => ({ ...s, items: res.data.data, loading: false }));
+      setModalState((s) => ({
+        ...s,
+        items: type === "expense" ? res.data.data : [],
+        detailData: type === "expense" ? null : res.data.data,
+        loading: false,
+      }));
     } catch (err) {
       toast.error(err.response?.data?.message || `Error fetching ${type}s`);
       setModalState((s) => ({ ...s, loading: false }));
@@ -144,7 +151,7 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
   return (
     <Card className="border-0">
       <Card.Body>
-        <h5 className="mb-3">Expense vs Revenue (Last 12 Months)</h5>
+        <h5 className="mb-3">Expense vs Total Income (Last 12 Months)</h5>
         {/* <Chart
           options={chartData.options}
           series={chartData.series}
@@ -157,7 +164,7 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
               <th>Month</th>
               <th className="text-end text-danger">Expense</th>
               <th className="text-end text-success">
-                Revenue (Total + Revenue)
+                Total Income
               </th>
             </tr>
           </thead>
@@ -185,9 +192,9 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
                     tabIndex={0}
                     className="text-primary"
                     style={{ cursor: "pointer", textDecoration: "underline" }}
-                    onClick={() => handleOpenModal("revenue", d)}
+                    onClick={() => handleOpenModal("combined-income", d)}
                     onKeyDown={(e) =>
-                      e.key === "Enter" && handleOpenModal("revenue", d)
+                      e.key === "Enter" && handleOpenModal("combined-income", d)
                     }
                   >
                     {parseFloat(d.totalRevenue || 0).toFixed(2)}
@@ -215,6 +222,7 @@ const ExpenseRevenueChart = ({ data, selectedTenant }) => {
         type={modalState.type}
         monthLabel={modalState.monthLabel}
         items={modalState.items}
+        detailData={modalState.detailData}
         loading={modalState.loading}
       />
     </Card>
