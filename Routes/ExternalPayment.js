@@ -39,7 +39,7 @@ router.post(
       .isFloat({ min: 0 }),
     check("due", "Due should be a boolean").optional().isBoolean(),
     check("due_amount", "Due amount should be a number")
-      .optional()
+      .optional({ nullable: true })
       .isFloat({ min: 0 }),
   ],
   createExternalPayment
@@ -75,7 +75,7 @@ router.post(
       .optional()
       .isBoolean(),
     body("payments.*.due_amount", "Due amount should be a number")
-      .optional()
+      .optional({ nullable: true })
       .isFloat({ min: 0 }),
   ],
   createBulkExternalPayment

@@ -50,7 +50,7 @@ router.post(
       .isFloat({ min: 0 }),
     check("due", "Due should be a boolean").optional().isBoolean(),
     check("due_amount", "Due amount should be a number")
-      .optional()
+      .optional({ nullable: true })
       .isFloat({ min: 0 }),
     check("gradeId", "Grade ID should be a number")
       .optional()
@@ -165,7 +165,7 @@ router.patch(
       .isFloat({ min: 0 }),
     check("due", "Due should be a boolean").optional().isBoolean(),
     check("due_amount", "Due amount should be a number")
-      .optional()
+      .optional({ nullable: true })
       .isFloat({ min: 0 }),
     check("gradeId", "Grade ID should be a number")
       .optional()
